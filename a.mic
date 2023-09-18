@@ -1,0 +1,73 @@
+; SPDX-License-Identifier: MIT
+; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+
+
+ 
+ a; b  
+ a    ; b
+
+ b   ,  ; help
+    
+ c
+
+.GOT "milk?"
+
+RAMX /= < 77 , 77 > , .DEFAULT = 0        ; DATA PATH MIXER TO AMX
+    D=0                         ; DEFAULT
+    Q=1
+
+ALU_D   "RAMX/D,AMX/RAMX,ALU/A"
+
+MRF[]   "FOO[@1],@1"
+MRF2[,] "FOO[@1],@2"
+MRF2[]x[] "FOO@1x@2"
+
+SRCH:   ;-----------------------;
+        Q_RCR2J,                ; GET UPPER BOUND ADDR TO Q
+        STATE-KCZEROJ           ; INITIALIZE STATE REGISTER
+        
+        ;-----------------------;
+        D_R[ROJ                 ; GET COHPARAND TO HOLD IN RC
+
+        ;-----------------------;
+   =101*
+   = 10101
+        ALU_D,                  ; PREPARE TO WRITE COMPARAND TO RC
+        LAB-R1&RCCT1l-ALU       ; WRITE COMPARAND, GET LOWER BOUND
+
+0BAD:
+F00D:     
+12.34:   
+SRCH.1: ;-----------------------;
+        Q_(LA+Q).RIGHT,         ; COMPUTE MIDPOINT ADDRESS
+        INTRPT.STROBE,          ; TEST FOR INTERRUPT REQUESTS
+        STATE0?                 ; IS IT TIME TO STOP?
+
+;SRCH.2: PO----------------------;STATEO=O. KEEP LOOKING FOR HATCH.
+;Q_Q.ANDNOT.KC.3Jr
+;JFORCE LONGWORD ALIGNMENT
+;VA-ALUr
+;;GET READY TO READY MIDPOINT OF VECTOR
+;LC-RCCTlJ,
+;PLATCH COHPARAND INTO LC
+;INT?,J/SRCH.3
+;9IS THERE AN INTERRUPT REQUEST?
+;1----------------------;STATEO=l. SEARCH FAILED. NO HATCH.
+;ALU-KCZEROJr
+;
+;CCK/NZ-ALU.VC_OrLONGr
+;RETURN Z=l TO FLAG FAILURE.
+;CLR.IB.OPCrPC-PC+lr
+;fHOVE ON TO THE NEXT INSTRUCTION
+;J/IRD
+;=110
+;SRCH.3: 1110--------------------INO INTERRUPT REQUESTS
+;D[LONGJ_CACHEr
+;READY MIDPOINT ENTRY OF VECTOR
+;ALU-R[R2J.XOR.Or
+;COMPARE MIDPOINT EQL UPPER BOUND
+;CLK.UBCCrJ/SRCH.4
+;
+;111--------------------fINTERRUPT REQUEST IS UP
+;J/INT.9
+;TAKE IT. RESUME FROM REG'S AS rs

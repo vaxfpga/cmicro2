@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+
+/.project
+/.cproject
+/.settings/
+
+*.o
+/cmicro2*
+/test_*
+!*.c
+!*.mic
