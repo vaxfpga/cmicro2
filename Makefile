@@ -18,8 +18,8 @@ SOURCES = \
     macros.c \
     parser.c
 
-cmicro2: $(SOURCES)
-	$(CC) -g -o $@ $^
+cmicro2: $(SOURCES) *.h
+	$(CC) -g -o $@ $(SOURCES)
     
 test_hash: test_hash.c hashtable.c
 	$(CC) -g -o $@ $^

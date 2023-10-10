@@ -21,6 +21,20 @@ ALU_D   "RAMX/D,AMX/RAMX,ALU/A"
 MRF[]   "FOO[@1],@1"
 MRF2[,] "FOO[@1],@2"
 MRF2[]x[] "FOO@1x@2"
+MRF3[a,b[c,d]] "FOO@1x@2"
+
+M1 "A/A0,M2,B/B0"
+M2 "C/C0,M3"
+M3 "D/D0"
+
+L1: X/L2,M1
+
+ME: ME[hi]
+ME2: ME2[a,b]
+ME2a: ME2[a][b]
+ME3: ME3[a[b],c]
+ME33: ME3[a,b[c,d]]/blat
+ME4: ME4[a.x,b[3,40[]]]XX
 
 SRCH:   ;-----------------------;
         Q_RCR2J,                ; GET UPPER BOUND ADDR TO Q

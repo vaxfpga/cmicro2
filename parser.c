@@ -5,6 +5,7 @@
 
 #include "constraints.h"
 #include "fields.h"
+#include "macros.h"
 #include "utils.h"
 
 #include <ctype.h>
@@ -13,6 +14,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct args_s
+{
+    char buf[MAXLINE];
+    char *arg[MAXARGS];
+    uint nargs;
+} args_t;
 
 static inline const char *skip_ws(const char *str)
 {
@@ -21,12 +28,13 @@ static inline const char *skip_ws(const char *str)
     return str;
 }
 
-static inline void remove_trailing_ws(char *buffer, char *eos)
+static inline char *remove_trailing_ws(char *buffer, char *eos)
 {
     if (eos <= buffer)
-        return;
+        return buffer;
     while (*--eos == ' ')
         *eos = 0;
+    return eos+1;
 }
 
 static void normalize_line(char *line)
@@ -41,7 +49,7 @@ static void normalize_line(char *line)
             break;
         }
 
-        // convert any kind of spaces to ' '
+        // convert any kind of spaces to single ' '
         if (isspace(*p))
             *p = ' ';
 
@@ -54,46 +62,107 @@ static void normalize_line(char *line)
     remove_trailing_ws(line, p);
 }
 
-static inline bool is_name_or_num(char c)
+//static inline char *safe_strncpy(char *dst, const char *src, size_t n)
+//{
+//    if (n > 0)
+//    {
+//        strncpy(dst, src, len);
+//        dst[n-1] = 0;
+//    }
+//    return dst;
+//}
+
+static inline bool is_token(char c)
 {
-    return (c == ' ') || isalnum(c) || (strchr("!#&()*+-.?_<>", c) != 0);
+    return (c == ' ') || isalnum(c) || (c != 0 && strchr("!#&()<>*+-.?_", c) != 0);
 }
 
-static const char *parse_name_or_num(const char *str, char *name, uint max, bool allow_bracket)
+static const char *parse_token(const char *str, char *name, uint max, args_t *args, bool allow_bracket)
 {
     char *p = name;
+    char *q = args ? args->buf : 0;
+    uint maxa = sizeof(args->buf);
+    uint numa = 0;
 
     if (max <= 1)
-        return str;
+        return 0;
 
-    bool bracket = false;
-    while (max > 1)
+    if (args)
     {
-        if (!is_name_or_num(str[0]))
+        args->buf[0] = 0;
+        args->arg[0] = args->buf;
+        args->nargs = 0;
+    }
+
+    uint bracket = 0;
+    while (max > 1 && maxa > 1 && numa < MAXARGS)
+    {
+        if (!is_token(*str))
         {
-            if (allow_bracket && !bracket && str[0] == '[')
-                bracket = true;
-            else if (bracket && str[0] == ']')
-                bracket = false;
-            else if (!bracket || str[0] != ',')
+            if (!allow_bracket)
+                break;
+            else if (*str == ',' || *str == ']')
+            {
+                if (bracket <= 0)
+                    break;
+            }
+            else if (*str != '[')
                 break;
         }
 
-        p[0] = str[0];
-        ++str;
-        ++p;
-        --max;
-    }
-    p[0] = 0;
+        if (bracket > 0 && (*str == ']' || *str == ','))
+        {
+            --bracket;
 
+            if (bracket <= 0 && q) // end of arg
+            {
+                *q = 0;
+                q = remove_trailing_ws(args->arg[numa], q);
+                args->arg[++numa] = ++q;
+                maxa = (args->buf+sizeof(args->buf) - q);
+            }
+        }
+
+        if (bracket <= 0)
+        {
+            *p++ = *str, --max;
+        }
+        else if (q)
+            *q++ = *str, --maxa;
+
+        if (*str == '[' || *str == ',')
+            ++bracket;
+
+        if (isspace(*str))
+        {
+            while (isspace(*++str));
+            --str;
+        }
+
+        ++str;
+    }
+
+    *p = 0;
     remove_trailing_ws(name, p);
+
+    if (q && numa < MAXARGS)
+    {
+        *q = 0;
+        for (uint i=numa; i<MAXARGS; ++i)
+            args->arg[i] = 0;
+        args->nargs = numa;
+    }
+
+    if (max <= 1 || maxa <= 1)
+        return 0;
+
     return str;
 }
 
 bool get_logical_line(char *line, uint max)
 {
     char *p = line;
-    p[0] = 0;
+    *p = 0;
 
     while (true)
     {
@@ -125,29 +194,29 @@ bool parse_constraint(constraint_t *cst, const char *str)
     *cst = (constraint_t) { };
     const char *p = str;
 
-    if (p[0] != '=')
+    if (*p != '=')
         return false;
     ++p;
 
     p = skip_ws(p);
 
-    while (p[0] == '0' || p[0] == '1' || p[0] == '*')
+    while (*p == '0' || *p == '1' || *p == '*')
     {
         cst->incr  <<= 1;
         cst->mmask <<= 1;
         cst->cmask <<= 1;
 
-        if (p[0] == '0')
+        if (*p == '0')
         {
             cst->incr = 1;
             cst->mmask |= 1;
         }
-        else if (p[0] == '1')
+        else if (*p == '1')
         {
             cst->mmask |= 1;
             cst->cmask |= 1;
         }
-        else if (p[0] == '*')
+        else if (*p == '*')
         {
             cst->cmask |= 1;
         }
@@ -169,7 +238,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
 
     const char *p = skip_ws(str);
 
-    if (p[0] != '<')
+    if (*p != '<')
         return false;
     ++p;
 
@@ -179,7 +248,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
         return false;
     p = skip_ws(q);
 
-    if (p[0] == ',')
+    if (*p == ',')
     {
         ++p;
 
@@ -189,7 +258,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
         p = skip_ws(q);
     }
 
-    if (p[0] == '>')
+    if (*p == '>')
     {
         ++p;
 
@@ -199,18 +268,18 @@ bool parse_field_def(field_def_t *fdef, const char *str)
     else
         return false;
 
-    if (p[0] == ',')
+    if (*p == ',')
     {
         ++p;
         p = skip_ws(p);
 
         char name[32];
-        p = parse_name_or_num(p, name, sizeof(name), false);
+        p = parse_token(p, name, sizeof(name), 0, false);
 
         if (strcmp(name, ".DEFAULT") == 0)
         {
             p = skip_ws(p);
-            if (p[0] != '=')
+            if (*p != '=')
                 return false;
             ++p;
 
@@ -219,7 +288,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
                 return false;
 
             p = skip_ws(q);
-            if (p[0] != 0)
+            if (*p != 0)
                 return false;
 
             fdef->def_flag  = true;
@@ -242,7 +311,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
             return false;
     }
 
-    if (p[0] != 0)
+    if (*p != 0)
         return false;
 
     DEBUG("parsed field def: li=%u, ri=%u def=0x%02x flags=0b%03b\n",
@@ -251,12 +320,138 @@ bool parse_field_def(field_def_t *fdef, const char *str)
     return true;
 }
 
-bool parse_line(char *line)
+static char *expand_macro(char *xline, uint max, const char *macro_name, const args_t *args)
+{
+    const char *p = macro_get(macro_name);
+    char *q = xline;
+
+    if (!p)
+    {
+        uint len = strlen(macro_name);
+        if (len+1 > max)
+            return 0;
+        strncpy(q, macro_name, max);
+        q += len;
+        max -= len;
+        q = remove_trailing_ws(xline, q);
+        return q;
+    }
+
+    while (max > 1 && *p)
+    {
+        if (*p == '@')
+        {
+            uint ai = (*++p)-'1';
+            if (ai > MAXARGS)
+                return 0;
+            const char *a = args->arg[ai];
+            int len = strlen(a);
+            if (len+1 > max)
+                return false;
+            strncpy(q, a, max);
+            q += len;
+            max -= len;
+            ++p;
+        }
+        else
+            *q++ = *p++, --max;
+    }
+
+    *q = 0;
+    q = remove_trailing_ws(xline, q);
+
+#if defined(ENABLE_DEBUG)
+    DEBUG("expanding macro %s%s", macro_name, args->nargs > 0 ? "(" : "");
+    if (args->nargs > 0)
+    {
+        for (uint di=0; di<args->nargs; ++di)
+            fprintf(stderr, "%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+    }
+    fprintf(stderr, " to \"%s\"\n", xline);
+#endif
+
+    return q;
+}
+
+static bool expand_line_once(char *xline, uint max, const char *line)
+{
+    char name[MAXLINE]; // could be entire line
+    args_t args;
+
+    const char *p = line;
+    char *q = xline;
+    uint xmax = max;
+    while(*p && max > 1)
+    {
+        p = parse_token(p, name, sizeof(name), &args, true);
+        if (!p)
+            return false;
+
+        q = expand_macro(q, max, name, &args);
+        if (!q)
+            return false;
+        max = xline+xmax-q;
+
+        if (max <= 1)
+            return false;
+
+        if (*p == ',' || *p == '/')
+        {
+            *q++ = *p++, --max;
+            p = skip_ws(p);
+        }
+        else if (*p != 0)
+            return false;
+    }
+
+    *q = 0;
+    remove_trailing_ws(xline, q);
+
+    return true;
+}
+
+bool expand_line(char *xline, uint max, const char *line)
+{
+    DEBUG("expanding macros for line: \"%s\"\n", line);
+    char tmp[MAXLINE];
+    for (uint i=0; i<MAXRECURSE; ++i)
+    {
+        strncpy(tmp, line, sizeof(tmp));
+        if (tmp[sizeof(tmp)-1] != 0)
+            return false;
+
+        if (!expand_line_once(xline, max, tmp))
+            return false;
+
+        if (strcmp(xline, tmp) == 0)
+        {
+            DEBUG("expanded line: \"%s\"\n", xline);
+            return true;
+        }
+
+        line = xline;
+    }
+    return false;
+}
+
+bool parse_microcode(const char *line)
+{
+    DEBUG("parsing microcode: %s\n", line);
+
+    char xline[MAXLINE];
+    expand_line(xline, sizeof(xline), line);
+
+    return true;
+}
+
+bool parse_line(const char *line)
 {
     const char *p = skip_ws(line);
 
     char name[128];
-    p = parse_name_or_num(p, name, sizeof(name), true);
+    p = parse_token(p, name, sizeof(name), 0, true);
+    if (!p)
+        return false;
 
     if (name[0] == '.') // directive
     {
@@ -266,7 +461,7 @@ bool parse_line(char *line)
         if (!handle_directive(name, p))
             return false;
     }
-    else if (p[0] == '/' && p[1] == '=') // field def
+    else if (*p == '/' && p[1] == '=') // field def
     {
         p += 2; // '/='
 
@@ -277,7 +472,7 @@ bool parse_line(char *line)
         if (!handle_field_def(name, &fdef))
             return false;
     }
-    else if (p[0] == '=')
+    else if (*p == '=')
     {
         if (name[0] != 0) // field val
         {
@@ -289,7 +484,7 @@ bool parse_line(char *line)
                 return false;
 
             p = skip_ws(q);
-            if (p[0] != 0)
+            if (*p)
                 return false;
 
             DEBUG("parsed field val: %s %x\n", name, val);
@@ -303,43 +498,46 @@ bool parse_line(char *line)
             if (!parse_constraint(&cst, p))
                 return false;
             //handle_constraint
-            //DEBUG("parsed constraint: %s\n", p);
         }
     }
-    else if (p[0] == '"') // macro
+    else if (*p == '"') // macro
     {
         DEBUG("parsing macro: %s\n", line);
-        ++p; // skip leading '"'
 
-        // remove trailing '"'
-        char *q = &line[strlen(line)-1];
-        if (q[0] == '"')
-            q[0] = 0;
+        // check trailing '"'
+        const char *q = &p[strlen(p)-1];
+        if (*q != '"')
+            return false;
 
         if (!handle_macro_def(name, p))
             return false;
 
         DEBUG("parsed macro: %s %s\n", name, p);
     }
-    else if (p[0] == ':') // addr or label
+    else if (*p == ':') // addr or label
     {
         DEBUG("parsing address/label: %s:\n", name);
 
-        char *q = 0;
-        uint32_t addr = strtoul(name, &q, 16);
-
-        // if starts with a digit (0-9) and all are (hex) digits, go with address
-        if (isdigit(name[0]) && *q == 0)
+        // if starts with a digit (0-9) it is an address, not label
+        if (isdigit(name[0]))
         {
+            char *q = 0;
+            uint32_t addr = strtoul(name, &q, 16);
+
             DEBUG("parsed address 0x%0x\n", addr);
         }
         else
         {
             DEBUG("parsed label %s\n", name);
         }
+
+        // microcode can follow address/label on same line
+        p = skip_ws(p+1);
+        if (*p)
+            parse_microcode(p);
     }
     else  // microcode
     {
-        DEBUG("parsing microcode: %s\n", line);
+        parse_microcode(line);
     }
 }

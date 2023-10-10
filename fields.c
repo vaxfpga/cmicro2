@@ -10,6 +10,7 @@
 hashtable_t fields;
 
 field_def_t *field_active = 0;
+const char *field_active_name = 0;
 
 bool fields_init(void)
 {
@@ -28,19 +29,26 @@ bool handle_field_def(const char *field, const field_def_t *fdef)
         return false;
 
     if (!hashtable_add(&fields, field, f))
+    {
+        ERROR("field %s already defined\n", field);
         return false;
+    }
 
     field_active = f;
+    field_active_name = field;
     return true;
 }
 
 bool handle_field_val(const char *field_val, uint32_t value)
 {
-    if (!field_active)
+    if (!field_active || !field_active_name)
         return false;
 
     if (!hashtable_addi(&field_active->vals, field_val, value))
+    {
+        ERROR("field value %s already defined in field %s\n", field_val, field_active_name);
         return false;
+    }
 
     return true;
 }

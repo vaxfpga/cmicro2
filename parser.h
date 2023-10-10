@@ -26,13 +26,14 @@ extern bool handle_constraint(const constraint_t *cst);
 extern bool handle_addr      (uint32_t addr);
 extern bool handle_label     (const char *label);
 
-bool parse_field_def(field_def_t *fdef, const char *str);
-bool parse_constraint(constraint_t *cst, const char *str);
-
 // normalizes, removes comments, and splices
 bool get_logical_line(char *line, uint max);
 
 // parses logical lines
-bool parse_line(char *line);
+bool parse_line(const char *line);
+
+bool parse_field_def(field_def_t *fdef, const char *str);
+bool parse_constraint(constraint_t *cst, const char *str);
+bool expand_line(char *xline, uint max, const char *line);
 
 #endif // INCLUDED_PARSER_H

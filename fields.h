@@ -4,8 +4,8 @@
 #if !defined(INCLUDED_FIELDS_H)
 #define INCLUDED_FIELDS_H
 
-#include "utils.h"
 #include "hashtable.h"
+#include "utils.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -30,7 +30,5 @@ bool fields_init(void);
 
 bool handle_field_def(const char *field, const field_def_t *fdef);
 bool handle_field_val(const char *field_val, uint32_t value);
-
-extern hashtable_t fields;
 
 #endif // INCLUDED_FIELDS_H

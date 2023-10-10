@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
-#include <assert.h>
-#include <ctype.h>
+//#include <assert.h>
+//#include <ctype.h>
 #include <stdbool.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
+//#include <string.h>
 
-#include "fields.h"
-#include "hashtable.h"
 #include "constraints.h"
+#include "fields.h"
+#include "macros.h"
+#include "hashtable.h"
 #include "parser.h"
 #include "utils.h"
 
