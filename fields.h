@@ -26,7 +26,19 @@ typedef struct field_def_s
     hashtable_t vals;
 } field_def_t;
 
+extern hashtable_t fields;
+
 bool fields_init(void);
+
+static const field_def_t *field_def_get(const char *fname)
+{
+    return hashtable_get(&fields, fname);
+}
+
+static uint32_t field_val_get(const field_def_t *fdef, const char *fval)
+{
+    return hashtable_geti(&fdef->vals, fval);
+}
 
 bool handle_field_def(const char *field, const field_def_t *fdef);
 bool handle_field_val(const char *field_val, uint32_t value);

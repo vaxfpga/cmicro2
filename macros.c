@@ -39,7 +39,3 @@ bool handle_macro_def(const char *macro, const char *value)
     return true;
 }
 
-const char *macro_get(const char *macro)
-{
-    return hashtable_get(&macros, macro);
-}

@@ -6,6 +6,7 @@
 #include "constraints.h"
 #include "fields.h"
 #include "macros.h"
+#include "ucode.h"
 #include "utils.h"
 
 #include <ctype.h>
@@ -186,6 +187,59 @@ bool get_logical_line(char *line, uint max)
     return true;
 }
 
+bool parse_directive(const char *line, const char *name, const char *str)
+{
+    DEBUG("parsing directive: %s\n", line);
+
+    const char *p = skip_ws(line);
+
+    if (strcmp(name, ".REGION") == 0)
+    {
+        // TODO: should allow multiple ranges...
+        if (*p != '/')
+        {
+            ERROR("bad region directive: %s", line);
+            return false;
+        }
+
+        p = skip_ws(++p);
+
+        char *q = 0;
+        uint32_t low = strtoul(p, &q, 16);
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR("bad region directive: %s", line);
+            return false;
+        }
+
+        p = skip_ws(q);
+        if (*p != ',')
+        {
+            ERROR("bad region directive: %s", line);
+            return false;
+        }
+
+        p = skip_ws(++p);
+
+        q = 0;
+        uint32_t high = strtoul(p, &q, 16);
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR("bad region directive: %s", line);
+            return false;
+        }
+
+        DEBUG("parsed region directive: 0x%04x, 0x%04x\n", low, high);
+        return handle_region(high, low);
+    }
+
+    DEBUG("parsed directive: %s %s\n", name, str);
+
+    if (!handle_directive(name, str))
+        return false;
+
+    return true;
+}
 
 bool parse_constraint(constraint_t *cst, const char *str)
 {
@@ -232,10 +286,11 @@ bool parse_constraint(constraint_t *cst, const char *str)
     return (cst->mmask != 0 || cst->cmask != 0);
 }
 
-bool parse_field_def(field_def_t *fdef, const char *str)
+bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
 {
-    DEBUG("parsing field def: %s\n", str);
+    DEBUG("parsing field def: %s /= %s\n", name, str);
 
+    *fdef = (field_def_t) { };
     const char *p = skip_ws(str);
 
     if (*p != '<')
@@ -243,17 +298,16 @@ bool parse_field_def(field_def_t *fdef, const char *str)
     ++p;
 
     char *q = 0;
-    fdef->li = strtoul(p, &q, 10);
-    if (q == p)
+    fdef->li = fdef->ri = strtoul(p, &q, 10);
+    if (q == p) // couldn't parse any numbers
         return false;
     p = skip_ws(q);
 
-    if (*p == ',')
+    if (*p == ':')
     {
         ++p;
-
         fdef->ri = strtoul(p, &q, 10);
-        if (q == p)
+        if (q == p) // couldn't parse any numbers
             return false;
         p = skip_ws(q);
     }
@@ -261,8 +315,6 @@ bool parse_field_def(field_def_t *fdef, const char *str)
     if (*p == '>')
     {
         ++p;
-
-        fdef->ri = fdef->li;
         p = skip_ws(p);
     }
     else
@@ -284,7 +336,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
             ++p;
 
             fdef->def_val = strtoul(p, &q, 16);
-            if (q == p)
+            if (q == p)  // couldn't parse any numbers
                 return false;
 
             p = skip_ws(q);
@@ -314,7 +366,7 @@ bool parse_field_def(field_def_t *fdef, const char *str)
     if (*p != 0)
         return false;
 
-    DEBUG("parsed field def: li=%u, ri=%u def=0x%02x flags=0b%03b\n",
+    DEBUG("parsed field def: li=%u, ri=%u def=0x%0x flags=0b%03b\n",
             fdef->li, fdef->ri, fdef->def_val, (fdef->def_flag<<2|fdef->addr_flag|fdef->next_flag));
 
     return true;
@@ -439,26 +491,89 @@ bool parse_microcode(const char *line)
     DEBUG("parsing microcode: %s\n", line);
 
     char xline[MAXLINE];
+    const char *p = xline;
     expand_line(xline, sizeof(xline), line);
 
-    return true;
+    char buf[MAXLINE];
+    char *q = buf;
+    uint max = sizeof(buf);
+
+    ucode_field_t field[MAXFIELD] = { };
+
+    uint i;
+    for (i = 0; i < MAXFIELD; ++i)
+    {
+        char name[MAXNAME];
+
+        p = parse_token(p, name, sizeof(name), 0, false);
+        if (!p)
+            return false;
+
+        uint len = strlen(name)+1;
+        if (len > max)
+            return false;
+
+        strncpy(q, name, max);
+        field[i].name = q;
+        q += len;
+
+        if (*p != '/')
+            return false;
+
+        p = skip_ws(++p);
+
+        p = parse_token(p, name, sizeof(name), 0, false);
+        if (!p)
+            return false;
+
+        len = strlen(name)+1;
+        if (len > max)
+            return false;
+
+        if (isdigit(name[0]))
+        {
+            char *r = 0;
+            field[i].valstr = 0;
+            field[i].valint = strtoul(name, &r, 16);
+            if (r == name) // couldn't parse any numbers
+                return false;
+        }
+        else
+        {
+            strncpy(q, name, max);
+            field[i].valstr = q;
+            field[i].valint = 0;
+        }
+        q += len;
+
+        if (!*p)
+        {
+            if(!handle_ucode(field, i+1))
+                return false;
+
+            return true;
+        }
+        else if (*p != ',')
+            return false;
+
+        p = skip_ws(++p);
+    }
+
+    return false;
 }
 
 bool parse_line(const char *line)
 {
     const char *p = skip_ws(line);
 
-    char name[128];
+    char name[MAXNAME];
     p = parse_token(p, name, sizeof(name), 0, true);
     if (!p)
         return false;
 
     if (name[0] == '.') // directive
     {
-        DEBUG("parsing directive: %s\n", line);
-        DEBUG("parsed directive: %s %s\n", name, p);
-
-        if (!handle_directive(name, p))
+        if (!parse_directive(line, name, p))
             return false;
     }
     else if (*p == '/' && p[1] == '=') // field def
@@ -466,7 +581,7 @@ bool parse_line(const char *line)
         p += 2; // '/='
 
         field_def_t fdef;
-        if (!parse_field_def(&fdef, p))
+        if (!parse_field_def(&fdef, name, p))
             return false;
 
         if (!handle_field_def(name, &fdef))
@@ -480,14 +595,14 @@ bool parse_line(const char *line)
             ++p;
             char *q = 0;
             uint32_t val = strtoul(p, &q, 16);
-            if (q == p)
+            if (q == p) // couldn't parse any numbers
                 return false;
 
             p = skip_ws(q);
             if (*p)
                 return false;
 
-            DEBUG("parsed field val: %s %x\n", name, val);
+            DEBUG("parsed field val: %s 0x%x\n", name, val);
 
             if (!handle_field_val(name, val))
                 return false;
@@ -523,21 +638,35 @@ bool parse_line(const char *line)
         {
             char *q = 0;
             uint32_t addr = strtoul(name, &q, 16);
+            if (q == name) // couldn't parse any numbers
+                return false;
+
+            if (!handle_addr(addr))
+                return false;
 
             DEBUG("parsed address 0x%0x\n", addr);
         }
         else
         {
+            if (!handle_label(name))
+                return false;
+
             DEBUG("parsed label %s\n", name);
         }
 
         // microcode can follow address/label on same line
         p = skip_ws(p+1);
         if (*p)
-            parse_microcode(p);
+        {
+            if (!parse_microcode(p))
+                return false;
+        }
     }
     else  // microcode
     {
-        parse_microcode(line);
+        if (!parse_microcode(line))
+            return false;
     }
+
+    return true;
 }

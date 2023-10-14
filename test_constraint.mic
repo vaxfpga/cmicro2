@@ -1,0 +1,45 @@
+; SPDX-License-Identifier: MIT
+; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+
+=0101
+L0:
+L1:
+L2:
+L3:
+
+=000
+L0:
+L1:
+L2:
+L3:
+L4:
+L5:
+L6:
+L7:
+
+= 000
+L0:
+L1:
+=	011
+L2:
+L3:
+L4:
+L5:
+L6:
+L7:
+
+=000
+L0:
+L1:
+=
+=011
+L2:
+L3:
+L4:
+L5:
+L6:
+L7:
+
+=0
+=*
+=1

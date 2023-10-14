@@ -13,6 +13,7 @@
 #include "macros.h"
 #include "hashtable.h"
 #include "parser.h"
+#include "ucode.h"
 #include "utils.h"
 
 
@@ -70,6 +71,9 @@ int process_file(const char *fname)
 
 int main(int argc, char *argv[])
 {
+    if (!ucode_init())
+        return 1;
+
     if (!fields_init())
         return 1;
 
@@ -102,6 +106,8 @@ int main(int argc, char *argv[])
     {
         process_file(*argv);
     }
+
+    ucode_allocate();
 
     extern hashtable_t macros;
     for (uint i=0; i<macros.mask+1; ++i)

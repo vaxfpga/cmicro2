@@ -56,7 +56,7 @@ bool hashtable_init(hashtable_t *ht, uint init_size)
     return ht->table != 0;
 }
 
-static hashtable_entry_t *find_entry(hashtable_t *ht, const char *key)
+static hashtable_entry_t *find_entry(const hashtable_t *ht, const char *key)
 {
     uint32_t hash = fnv1a(key);
     for (uint i=1; i<=20; ++i)
@@ -135,7 +135,7 @@ bool hashtable_add_entry(hashtable_t *ht, hashtable_entry_t entry)
     return false;
 }
 
-const hashtable_entry_t *hashtable_get_entry(hashtable_t *ht, const char *key)
+hashtable_entry_t *hashtable_get_entry(const hashtable_t *ht, const char *key)
 {
     hashtable_entry_t *e = find_entry(ht, key);
     return e && e->key ? e : 0;
