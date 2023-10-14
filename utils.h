@@ -41,6 +41,6 @@ typedef struct
     uint32_t addr;
 } sym_pair_t;
 
-sym_pair_t *dump_symbols(uint *num);
+sym_pair_t *util_get_symbols(uint *num);
 
 #endif // INCLUDED_UTILS_H

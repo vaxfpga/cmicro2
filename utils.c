@@ -21,7 +21,7 @@ static int sym_compare(const void *a, const void *b)
     return strcmp(sa->name, sb->name);
 }
 
-sym_pair_t *dump_symbols(uint *num)
+sym_pair_t *util_get_symbols(uint *num)
 {
     sym_pair_t *syms = calloc(symbols.mask+1, sizeof(sym_pair_t));
     if (!syms)

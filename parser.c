@@ -361,7 +361,10 @@ bool parse_field_def(const char *name, const char *str)
             fdef.next_flag = true;
         }
         else
+        {
+            ERROR("bad field qualifier %s\n", name);
             return false;
+        }
     }
 
     if (*p != 0)

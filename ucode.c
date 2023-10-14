@@ -14,22 +14,26 @@
 
 hashtable_t symbols;
 
+ucode_inst_t  ucode[MAXUCODE];
+uint          ucode_num = 0;
+
+ucode_inst_t *ucode_alloc[MAXPC+1];
+
+static uint32_t ucode_addr = UCODE_UNALLOCATED;
+
+static uint32_t ucode_region_low  = 0;
+static uint32_t ucode_region_high = MAXPC;
+
 static const char *next_addr_str = "<.+1>";
 static const char *this_addr_str = "<.>";
 
-ucode_inst_t ucode[MAXUCODE];
-
-static ucode_inst_t       *ucode_cur       = 0;
-static uint                ucode_num       = 0;
-static uint                ucode_addr      = UCODE_UNALLOCATED;
-
-static ucode_inst_t       *ucode_alloc[MAXPC+1];
 
 bool ucode_init(void)
 {
-    ucode_cur       = &ucode[0];
-    ucode_num       = 0;
-    ucode_addr      = UCODE_UNALLOCATED;
+    ucode_num         = 0;
+    ucode_addr        = UCODE_UNALLOCATED;
+    ucode_region_low  = 0;
+    ucode_region_high = MAXPC;
 
     memset(ucode_alloc, 0, sizeof(ucode_alloc));
 
@@ -38,12 +42,14 @@ bool ucode_init(void)
 
 bool handle_region(uint32_t low, uint32_t high)
 {
+    ucode_region_low  = low;
+    ucode_region_high = high;
     return true;
 }
 
 bool handle_constraint(const constraint_t *cst)
 {
-    if (!ucode_cur || ucode_num >= MAXUCODE)
+    if (ucode_num >= MAXUCODE)
     {
         ERROR("too many ucodes\n");
         return false;
@@ -58,14 +64,13 @@ bool handle_constraint(const constraint_t *cst)
 
     *c = *cst;
 
-    *ucode_cur = (ucode_inst_t) {
+    ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
         .cst         = c,
         .target_addr = 0
     };
 
     ucode_addr = UCODE_UNALLOCATED;
-    ++ucode_cur;
     ++ucode_num;
     return true;
 }
@@ -92,10 +97,10 @@ bool handle_label(const char *label)
 {
     hashtable_entry_t *hte = hashtable_get_entry(&symbols, label);
     if (!hte)
-        return hashtable_add(&symbols, label, ucode_cur);
+        return hashtable_add(&symbols, label, &ucode[ucode_num]);
     else if (!hte->value_ptr)
     {
-        hte->value_ptr = ucode_cur;
+        hte->value_ptr = &ucode[ucode_num];
         return true;
     }
 
@@ -178,13 +183,13 @@ static bool is_set(uint32_t def[3], uint li, uint ri)
 
 bool handle_ucode(const ucode_field_t *field, uint num)
 {
-    if (!ucode_cur || ucode_num >= MAXUCODE)
+    if (ucode_num >= MAXUCODE)
     {
         ERROR("too many ucodes\n");
         return false;
     }
 
-    *ucode_cur = (ucode_inst_t) {
+    ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
         .cst         = 0,
         .target_addr = 0
@@ -215,7 +220,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             if (fdef->addr_flag)
             {
                 if (strcmp(field[i].valstr, this_addr_str) == 0)
-                    ucode_cur->target_addr = this_addr_str;
+                    ucode[ucode_num].target_addr = this_addr_str;
                 else
                 {
                     hashtable_add(&symbols, field[i].valstr, 0);
@@ -225,13 +230,13 @@ bool handle_ucode(const ucode_field_t *field, uint num)
                         ERROR("hashtable fail: %s\n", field[i].valstr);
                         return false;
                     }
-                    ucode_cur->target_addr = hte->key;
+                    ucode[ucode_num].target_addr = hte->key;
                 }
                 val = 0;
             }
         }
 
-        apply_val(ucode_cur->ucode, fdef->li, fdef->ri, val);
+        apply_val(ucode[ucode_num].uc, fdef->li, fdef->ri, val);
         apply_val(def, fdef->li, fdef->ri, ~(uint32_t)0);
     }
 
@@ -242,24 +247,23 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             continue;
 
         const field_def_t *fdef = fields.table[i].value_ptr;
+        if (is_set(def, fdef->li, fdef->ri))
+            continue;
+
         if (fdef->def_flag)
-        {
-            if (!is_set(def, fdef->li, fdef->ri))
-                apply_val(ucode_cur->ucode, fdef->li, fdef->ri, fdef->def_val);
-        }
+            apply_val(ucode[ucode_num].uc, fdef->li, fdef->ri, fdef->def_val);
         else if (fdef->next_flag)
-            ucode_cur->target_addr = next_addr_str;
+            ucode[ucode_num].target_addr = next_addr_str;
     }
 
     ucode_addr = UCODE_UNALLOCATED;
-    ++ucode_cur;
     ++ucode_num;
     return true;
 }
 
 static uint32_t get_cst_base(const constraint_t *cst)
 {
-    for (uint32_t a=0; a <= MAXPC; ++a)
+    for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
     {
         if (constraint_matches(cst, a))
         {
@@ -271,7 +275,7 @@ static uint32_t get_cst_base(const constraint_t *cst)
                 return a;
         }
     }
-    ERROR("can't match contraint\n");
+    ERROR("can't satisfy constraint\n");
     return CONSTRAINT_SET_FINISHED;
 }
 
@@ -343,20 +347,67 @@ bool ucode_allocate(void)
         if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
             continue; // skip constraints and allocated
 
-        uint32_t a = 0;
-        for (; a <= MAXPC; ++a)
+        uint32_t addr = UCODE_UNALLOCATED;
+        for (uint32_t a = ucode_region_low; a <= ucode_region_high; ++a)
         {
             if (!ucode_alloc[a])
+            {
+                addr = a;
                 break;
+            }
         }
 
-        if (a > MAXPC)
+        if (addr == UCODE_UNALLOCATED)
         {
-            ERROR("can't allocate address\n");
+            ERROR("can't allocate, no free address\n");
             return false;
         }
 
-        ucode_alloc[a] = &ucode[i];
-        ucode[i].addr = a;
+        ucode_alloc[addr] = &ucode[i];
+        ucode[i].addr = addr;
     }
+}
+
+bool ucode_resolve(void)
+{
+    const field_def_t *fdef = 0;
+    for (uint i=0; i<fields.mask+1; ++i)
+    {
+        if (!fields.table[i].key)
+            continue;
+
+        const field_def_t *f = fields.table[i].value_ptr;
+        if (f && f->addr_flag)
+        {
+            fdef = fields.table[i].value_ptr;
+            break;
+        }
+    }
+
+    for (uint i=0; i<ucode_num; ++i)
+    {
+        if (!ucode[i].target_addr)
+            continue;
+
+        if (strcmp(ucode[i].target_addr, this_addr_str) == 0)
+            apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr);
+        else if (strcmp(ucode[i].target_addr, next_addr_str) == 0)
+        {
+            uint j;
+            for (j=i+1; j<ucode_num && ucode[j].cst; ++j);
+            apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[j].addr);
+        }
+        else
+        {
+            ucode_inst_t *inst = hashtable_get(&symbols, ucode[i].target_addr);
+            if (!inst || inst->addr == UCODE_UNALLOCATED)
+            {
+                ERROR("unresolved symbol %s\n", ucode[i].target_addr);
+                return false;
+            }
+            apply_val(ucode[i].uc, fdef->li, fdef->ri, inst->addr);
+        }
+    }
+
+    return true;
 }

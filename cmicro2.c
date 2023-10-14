@@ -108,14 +108,44 @@ int main(int argc, char *argv[])
     }
 
     ucode_allocate();
+    ucode_resolve();
 
     uint num_syms = 0;
-    sym_pair_t *syms = dump_symbols(&num_syms);
+    sym_pair_t *syms = util_get_symbols(&num_syms);
     if (syms)
     {
         printf("number of symbols: %u\n", num_syms);
         for (uint i=0; i<num_syms; ++i)
             printf("%-16s : 0x%04x\n", syms[i].name, syms[i].addr);
+    }
+
+    extern ucode_inst_t *ucode_alloc[MAXPC];
+
+    printf("---- memory order ----\n");
+    for (uint i=0; i<=MAXPC; ++i)
+    {
+        if (!ucode_alloc[i])
+            continue;
+        printf("U,%04X, %04X,%04X,%04X,%04X,%04X,%04X\n", i,
+            ucode_alloc[i]->uc[2]>>16, ucode_alloc[i]->uc[2] & 0xffff,
+            ucode_alloc[i]->uc[1]>>16, ucode_alloc[i]->uc[1] & 0xffff,
+            ucode_alloc[i]->uc[0]>>16, ucode_alloc[i]->uc[0] & 0xffff
+        );
+    }
+
+    extern ucode_inst_t ucode[MAXUCODE];
+    extern uint ucode_num;
+
+    printf("---- code order ----\n");
+    for (uint i=0; i<ucode_num; ++i)
+    {
+        if (ucode[i].cst)
+            continue;
+        printf("U,%04X, %04X,%04X,%04X,%04X,%04X,%04X\n", ucode[i].addr,
+            ucode[i].uc[2]>>16, ucode[i].uc[2] & 0xffff,
+            ucode[i].uc[1]>>16, ucode[i].uc[1] & 0xffff,
+            ucode[i].uc[0]>>16, ucode[i].uc[0] & 0xffff
+        );
     }
 
 //    extern hashtable_t symbols;

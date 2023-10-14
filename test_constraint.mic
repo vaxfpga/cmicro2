@@ -1,7 +1,10 @@
 ; SPDX-License-Identifier: MIT
 ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
-X/=<7:0>
+.REGION/0200,02ff
+
+X/=<23:16>
+J/=<11:0>,.NEXTADDRESS
 
 =0101
 L00: X/0
@@ -31,7 +34,7 @@ L26: X/6
 L27: X/7
 
 =000
-L30: X/0
+L30: X/0,J/L10
 L31: X/1
 =
 =011
@@ -40,7 +43,7 @@ L33:X/1
 L34:X/2
 L35:X/3
 L36:X/4
-L37:X/5
+L37:X/5,J/<.>
 
 =0
 =*
