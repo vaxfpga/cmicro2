@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 
-uint32_t constraint_next(constraint_t *cst, constraint_t *inner_cst, uint32_t base, uint32_t cur_addr)
+uint32_t constraint_next(const constraint_t *cst, const constraint_t *inner_cst, uint32_t base, uint32_t cur_addr)
 {
     uint32_t next_addr = cur_addr;
     while (true)

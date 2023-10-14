@@ -109,13 +109,34 @@ int main(int argc, char *argv[])
 
     ucode_allocate();
 
-    extern hashtable_t macros;
-    for (uint i=0; i<macros.mask+1; ++i)
+    uint num_syms = 0;
+    sym_pair_t *syms = dump_symbols(&num_syms);
+    if (syms)
     {
-        if (!macros.table[i].key)
-            continue;
-        printf("macro: %s \"%s\"\n", macros.table[i].key, macros.table[i].value_ptr);
+        printf("number of symbols: %u\n", num_syms);
+        for (uint i=0; i<num_syms; ++i)
+            printf("%-16s : 0x%04x\n", syms[i].name, syms[i].addr);
     }
+
+//    extern hashtable_t symbols;
+//    for (uint i=0; i<symbols.mask+1; ++i)
+//    {
+//        if (!symbols.table[i].key)
+//            continue;
+//        ucode_inst_t *inst = symbols.table[i].value_ptr;
+//        if (!inst)
+//            printf("undefined symbol %s\n", symbols.table[i].key);
+//        else
+//            printf("symbols: %-16s : 0x%04x\n", symbols.table[i].key, inst->addr);
+//
+//    }
+//    extern hashtable_t macros;
+//    for (uint i=0; i<macros.mask+1; ++i)
+//    {
+//        if (!macros.table[i].key)
+//            continue;
+//        printf("macro: %s \"%s\"\n", macros.table[i].key, macros.table[i].value_ptr);
+//    }
 
     return 0;
 }

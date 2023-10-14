@@ -36,7 +36,7 @@ bool ucode_init(void)
     return hashtable_init(&symbols, 256);
 }
 
-bool handle_region(uint32_t high, uint32_t low)
+bool handle_region(uint32_t low, uint32_t high)
 {
     return true;
 }
@@ -257,19 +257,106 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     return true;
 }
 
+static uint32_t get_cst_base(const constraint_t *cst)
+{
+    for (uint32_t a=0; a <= MAXPC; ++a)
+    {
+        if (constraint_matches(cst, a))
+        {
+            uint32_t cur  = a;
+            while (cur != CONSTRAINT_SET_FINISHED && !ucode_alloc[cur])
+                cur = constraint_next(cst, 0, a, cur);
+
+            if (cur == CONSTRAINT_SET_FINISHED)
+                return a;
+        }
+    }
+    ERROR("can't match contraint\n");
+    return CONSTRAINT_SET_FINISHED;
+}
+
 bool ucode_allocate(void)
 {
     // allocate fixed
     for (uint i=0; i<ucode_num; ++i)
     {
-        if (!ucode[i].cst && ucode[i].addr != UCODE_UNALLOCATED)
+        if (ucode[i].cst || ucode[i].addr == UCODE_UNALLOCATED)
+            continue; // skip constraints and unallocated
+
+        if (ucode_alloc[ucode[i].addr])
         {
-            if (ucode_alloc[ucode[i].addr])
-            {
-                ERROR("duplicate address 0x%04x\n", ucode[i].addr);
-                return false;
-            }
-            ucode_alloc[ucode[i].addr] = &ucode[i];
+            ERROR("duplicate address 0x%04x\n", ucode[i].addr);
+            return false;
         }
+        ucode_alloc[ucode[i].addr] = &ucode[i];
+    }
+
+    const constraint_t *cst = 0;
+    uint32_t base = 0;
+    uint32_t cur = 0;
+
+    // allocate constrained
+    for (uint i=0; i<ucode_num; ++i)
+    {
+        // process constraint
+        if (ucode[i].cst)
+        {
+            if (constraint_is_terminator(ucode[i].cst))
+            {
+                cst = 0;
+                cur = base = 0;
+            }
+            else if (!cst)
+            {
+                cst = ucode[i].cst;
+                cur = base = get_cst_base(cst);
+                if (base == CONSTRAINT_SET_FINISHED)
+                    return false;
+            }
+            else
+            {
+                // inner-constraint may skip addrs
+                if (!constraint_matches(ucode[i].cst, cur))
+                    cur = constraint_next(cst, ucode[i].cst, base, cur);
+            }
+
+            continue;
+        }
+        else if (!cst || ucode[i].addr != UCODE_UNALLOCATED)
+            continue; // skip outside constraint or allocated
+
+        // allocate ucode!
+        ucode_alloc[cur] = &ucode[i];
+        ucode[i].addr = cur;
+
+        cur = constraint_next(cst, 0, base, cur);
+        if (cur == CONSTRAINT_SET_FINISHED)
+        {
+            cst = 0;
+            cur = base = 0;
+        }
+    }
+
+    // allocate rest
+    for (uint i=0; i<ucode_num; ++i)
+    {
+        if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
+            continue; // skip constraints and allocated
+
+        uint32_t a = 0;
+        for (; a <= MAXPC; ++a)
+        {
+            if (!ucode_alloc[a])
+                break;
+        }
+
+        if (a > MAXPC)
+        {
+            ERROR("can't allocate address\n");
+            return false;
+        }
+
+        ucode_alloc[a] = &ucode[i];
+        ucode[i].addr = a;
     }
 }

@@ -1,44 +1,46 @@
 ; SPDX-License-Identifier: MIT
 ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
+X/=<7:0>
+
 =0101
-L0:
-L1:
-L2:
-L3:
+L00: X/0
+L01: X/1
+L02: X/2
+L03: X/3
 
 =000
-L0:
-L1:
-L2:
-L3:
-L4:
-L5:
-L6:
-L7:
+L10: X/0
+L11: X/1
+L12: X/2
+L13: X/3
+L14: X/4
+L15: X/5
+L16: X/6
+L17: X/7
 
 = 000
-L0:
-L1:
+L20: X/0
+L21: X/1
 =	011
-L2:
-L3:
-L4:
-L5:
-L6:
-L7:
+L22: X/2
+L23: X/3
+L24: X/4
+L25: X/5
+L26: X/6
+L27: X/7
 
 =000
-L0:
-L1:
+L30: X/0
+L31: X/1
 =
 =011
-L2:
-L3:
-L4:
-L5:
-L6:
-L7:
+L32:X/0
+L33:X/1
+L34:X/2
+L35:X/3
+L36:X/4
+L37:X/5
 
 =0
 =*

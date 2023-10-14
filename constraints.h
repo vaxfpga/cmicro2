@@ -24,11 +24,11 @@ static inline bool constraint_matches(const constraint_t *cst, uint32_t base)
     return (base & cst->mmask) == cst->vmask;
 }
 
-static inline bool constraint_terminator(const constraint_t *cst)
+static inline bool constraint_is_terminator(const constraint_t *cst)
 {
     return !cst->mmask && !cst->cmask;
 }
 
-uint32_t constraint_next(constraint_t *cst, constraint_t *inner_cst, uint32_t base, uint32_t cur_addr);
+uint32_t constraint_next(const constraint_t *cst, const constraint_t *inner_cst, uint32_t base, uint32_t cur_addr);
 
 #endif // INCLUDED_CONSTRAINTS_H

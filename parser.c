@@ -134,13 +134,11 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
         if (*str == '[' || *str == ',')
             ++bracket;
 
+        // normalize internal spaces to single space
         if (isspace(*str))
-        {
-            while (isspace(*++str));
-            --str;
-        }
-
-        ++str;
+            str = skip_ws(str);
+        else
+            ++str;
     }
 
     *p = 0;
@@ -191,14 +189,14 @@ bool parse_directive(const char *line, const char *name, const char *str)
 {
     DEBUG("parsing directive: %s\n", line);
 
-    const char *p = skip_ws(line);
+    const char *p = skip_ws(str);
 
     if (strcmp(name, ".REGION") == 0)
     {
         // TODO: should allow multiple ranges...
         if (*p != '/')
         {
-            ERROR("bad region directive: %s", line);
+            ERROR("bad region directive: %s\n", line);
             return false;
         }
 
@@ -208,14 +206,14 @@ bool parse_directive(const char *line, const char *name, const char *str)
         uint32_t low = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR("bad region directive: %s", line);
+            ERROR("bad region directive: %s\n", line);
             return false;
         }
 
         p = skip_ws(q);
         if (*p != ',')
         {
-            ERROR("bad region directive: %s", line);
+            ERROR("bad region directive: %s\n", line);
             return false;
         }
 
@@ -225,12 +223,12 @@ bool parse_directive(const char *line, const char *name, const char *str)
         uint32_t high = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR("bad region directive: %s", line);
+            ERROR("bad region directive: %s\n", line);
             return false;
         }
 
         DEBUG("parsed region directive: 0x%04x, 0x%04x\n", low, high);
-        return handle_region(high, low);
+        return handle_region(low, high);
     }
 
     DEBUG("parsed directive: %s %s\n", name, str);
@@ -241,56 +239,59 @@ bool parse_directive(const char *line, const char *name, const char *str)
     return true;
 }
 
-bool parse_constraint(constraint_t *cst, const char *str)
+bool parse_constraint(const char *str)
 {
     DEBUG("parsing constraint: %s\n", str);
 
-    *cst = (constraint_t) { };
+    constraint_t cst = { };
+
     const char *p = str;
 
     if (*p != '=')
         return false;
-    ++p;
 
-    p = skip_ws(p);
+    p = skip_ws(++p);
 
     while (*p == '0' || *p == '1' || *p == '*')
     {
-        cst->incr  <<= 1;
-        cst->mmask <<= 1;
-        cst->cmask <<= 1;
+        cst.incr  <<= 1;
+        cst.mmask <<= 1;
+        cst.cmask <<= 1;
 
         if (*p == '0')
         {
-            cst->incr = 1;
-            cst->mmask |= 1;
+            cst.incr = 1;
+            cst.mmask |= 1;
         }
         else if (*p == '1')
         {
-            cst->mmask |= 1;
-            cst->cmask |= 1;
+            cst.mmask |= 1;
+            cst.cmask |= 1;
         }
         else if (*p == '*')
         {
-            cst->cmask |= 1;
+            cst.cmask |= 1;
         }
 
         ++p;
     }
 
-    cst->vmask = cst->mmask & cst->cmask;
+    cst.vmask = cst.mmask & cst.cmask;
 
     DEBUG("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
-          cst->incr, cst->vmask, cst->mmask, cst->cmask);
+          cst.incr, cst.vmask, cst.mmask, cst.cmask);
 
-    return (cst->mmask != 0 || cst->cmask != 0);
+    if (!handle_constraint(&cst))
+        return false;
+
+    return true;
 }
 
-bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
+bool parse_field_def(const char *name, const char *str)
 {
     DEBUG("parsing field def: %s /= %s\n", name, str);
 
-    *fdef = (field_def_t) { };
+    field_def_t fdef = { };
     const char *p = skip_ws(str);
 
     if (*p != '<')
@@ -298,7 +299,7 @@ bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
     ++p;
 
     char *q = 0;
-    fdef->li = fdef->ri = strtoul(p, &q, 10);
+    fdef.li = fdef.ri = strtoul(p, &q, 10);
     if (q == p) // couldn't parse any numbers
         return false;
     p = skip_ws(q);
@@ -306,7 +307,7 @@ bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
     if (*p == ':')
     {
         ++p;
-        fdef->ri = strtoul(p, &q, 10);
+        fdef.ri = strtoul(p, &q, 10);
         if (q == p) // couldn't parse any numbers
             return false;
         p = skip_ws(q);
@@ -335,7 +336,7 @@ bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
                 return false;
             ++p;
 
-            fdef->def_val = strtoul(p, &q, 16);
+            fdef.def_val = strtoul(p, &q, 16);
             if (q == p)  // couldn't parse any numbers
                 return false;
 
@@ -343,21 +344,21 @@ bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
             if (*p != 0)
                 return false;
 
-            fdef->def_flag  = true;
-            fdef->addr_flag = false;
-            fdef->next_flag = false;
+            fdef.def_flag  = true;
+            fdef.addr_flag = false;
+            fdef.next_flag = false;
         }
         else if (strcmp(name, ".ADDRESS") == 0)
         {
-            fdef->def_flag  = false;
-            fdef->addr_flag = true;
-            fdef->next_flag = false;
+            fdef.def_flag  = false;
+            fdef.addr_flag = true;
+            fdef.next_flag = false;
         }
         else if (strcmp(name, ".NEXTADDRESS") == 0)
         {
-            fdef->def_flag  = false;
-            fdef->addr_flag = true;
-            fdef->next_flag = true;
+            fdef.def_flag  = false;
+            fdef.addr_flag = true;
+            fdef.next_flag = true;
         }
         else
             return false;
@@ -367,7 +368,10 @@ bool parse_field_def(field_def_t *fdef, const char *name, const char *str)
         return false;
 
     DEBUG("parsed field def: li=%u, ri=%u def=0x%0x flags=0b%03b\n",
-            fdef->li, fdef->ri, fdef->def_val, (fdef->def_flag<<2|fdef->addr_flag|fdef->next_flag));
+            fdef.li, fdef.ri, fdef.def_val, (fdef.def_flag<<2|fdef.addr_flag|fdef.next_flag));
+
+    if (!handle_field_def(name, &fdef))
+        return false;
 
     return true;
 }
@@ -580,11 +584,7 @@ bool parse_line(const char *line)
     {
         p += 2; // '/='
 
-        field_def_t fdef;
-        if (!parse_field_def(&fdef, name, p))
-            return false;
-
-        if (!handle_field_def(name, &fdef))
+        if (!parse_field_def(name, p))
             return false;
     }
     else if (*p == '=')
@@ -609,10 +609,8 @@ bool parse_line(const char *line)
         }
         else // constraint
         {
-            constraint_t cst;
-            if (!parse_constraint(&cst, p))
+            if (!parse_constraint(p))
                 return false;
-            //handle_constraint
         }
     }
     else if (*p == '"') // macro

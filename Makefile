@@ -17,6 +17,7 @@ SOURCES = \
     hashtable.c \
     macros.c \
     ucode.c \
+    utils.c \
     parser.c
 
 cmicro2: $(SOURCES) *.h

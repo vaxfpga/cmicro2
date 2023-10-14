@@ -16,7 +16,7 @@ typedef struct constraint_s constraint_t;
 
 typedef struct ucode_inst_s
 {
-    uint addr;
+    uint32_t addr;
     const constraint_t *cst;
     const char *target_addr;
     uint32_t ucode[3];
@@ -33,9 +33,9 @@ bool ucode_init(void);
 
 bool ucode_allocate(void);
 
-bool handle_region(uint32_t high, uint32_t low);
+bool handle_region(uint32_t low, uint32_t high);
 bool handle_constraint(const constraint_t *cst);
-bool handle_addr (uint addr);
+bool handle_addr (uint32_t addr);
 bool handle_label(const char *label);
 bool handle_ucode(const ucode_field_t *field, uint num);
 
