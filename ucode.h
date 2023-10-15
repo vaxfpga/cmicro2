@@ -34,6 +34,8 @@ extern uint ucode_num;
 
 extern ucode_inst_t *ucode_alloc[MAXPC+1];
 
+// callbacks to be defined by impl
+extern bool io_write_uc_placeholder(uint ucode_idx);
 
 bool ucode_init(void);
 

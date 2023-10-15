@@ -203,8 +203,10 @@ bool handle_ucode(const ucode_field_t *field, uint num)
         const field_def_t *fdef = field_def_get(field[i].name);
         if (!fdef)
         {
+            ucode_addr = UCODE_UNALLOCATED;
             ERROR_LINE("undefined field %s\n", field[i].name);
-            return false;
+            //return false;
+            break;
         }
 
         uint32_t val = field[i].valint;
@@ -213,8 +215,10 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             val = field_val_get(fdef, field[i].valstr);
             if (val == HASHTABLE_ENTRY_NOT_FOUND && !fdef->addr_flag)
             {
+                ucode_addr = UCODE_UNALLOCATED;
                 ERROR_LINE("undefined field value %s\n", field[i].name);
-                return false;
+                //return false;
+                break;
             }
 
             if (fdef->addr_flag)
@@ -227,8 +231,10 @@ bool handle_ucode(const ucode_field_t *field, uint num)
                     hashtable_entry_t *hte = hashtable_get_entry(&symbols, field[i].valstr);
                     if (!hte)
                     {
+                        ucode_addr = UCODE_UNALLOCATED;
                         ERROR_LINE("hashtable fail: %s\n", field[i].valstr);
-                        return false;
+                        //return false;
+                        break;
                     }
                     ucode[ucode_num].target_addr = hte->key;
                 }
@@ -256,6 +262,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             ucode[ucode_num].target_addr = next_addr_str;
     }
 
+    io_write_uc_placeholder(ucode_num);
     ucode_addr = UCODE_UNALLOCATED;
     ++ucode_num;
     return true;
@@ -277,6 +284,27 @@ static uint32_t get_cst_base(const constraint_t *cst)
     }
     ERROR("can't satisfy constraint\n");
     return CONSTRAINT_SET_FINISHED;
+}
+
+static void init_default_ucode(uint addr, uint ucode_idx)
+{
+    uint32_t def[3] = { };
+
+    // set defaulted fields
+    for (uint i=0; i<fields.mask+1; ++i)
+    {
+        if (!fields.table[i].key)
+            continue;
+
+        const field_def_t *fdef = fields.table[i].value_ptr;
+        if (is_set(def, fdef->li, fdef->ri))
+            continue;
+
+        if (fdef->def_flag)
+            apply_val(ucode[ucode_idx].uc, fdef->li, fdef->ri, fdef->def_val);
+        else if (fdef->addr_flag)
+            apply_val(ucode[ucode_idx].uc, fdef->li, fdef->ri, addr);
+    }
 }
 
 bool ucode_allocate(void)
@@ -372,6 +400,17 @@ bool ucode_allocate(void)
         ucode[i].addr = addr;
     }
 
+    // fill unallocated space
+    for (uint i=0, j=ucode_num; i<=MAXPC && j<MAXUCODE; ++i)
+    {
+        if (ucode_alloc[i])
+            continue;
+
+        init_default_ucode(i, j);
+        ucode_alloc[i] = &ucode[j];
+        ++j;
+    }
+
     return true;
 }
 
@@ -403,6 +442,7 @@ bool ucode_resolve(void)
             if (i+1 >= ucode_num)
             {
                 ERROR("can't use address of next instruction on last instruction\n");
+                apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr); // substitute with <.>
                 //return false;
                 continue;
             }
@@ -416,6 +456,7 @@ bool ucode_resolve(void)
             if (!inst || inst->addr == UCODE_UNALLOCATED)
             {
                 ERROR("unresolved symbol %s\n", ucode[i].target_addr);
+                apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr); // substitute with <.>
                 //return false;
                 continue;
             }

@@ -1,6 +1,8 @@
 ; SPDX-License-Identifier: MIT
 ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
+J/=<7:0>,.NEXTADDRESS
+
 M1 "A/A0,M2 ,B/B0"
 M2 "C/C0, M3"
 M3 "D/D0"	
@@ -8,7 +10,7 @@ M3 "D/D0"
 L1: X/L2 , M1
 ; X/L2,A/A0,C/C0,D/D0,B/B0
 
-L2: X/L2 , M1 , M1 , X
+L2: X/L2 , M1 , M1 , X/
 ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X
 
 M4[]	"A/A0,B/@1"   
@@ -40,3 +42,7 @@ L7: M5[1,M6]
 
 L8: M5[1,M7[C1]+[D1]]
 ; A/1,C/C1,D/D1
+
+J/LX
+A/3
+]a

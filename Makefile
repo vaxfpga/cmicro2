@@ -16,10 +16,11 @@ SOURCES = \
     constraints.c \
     fields.c \
     hashtable.c \
+    io.c \
     macros.c \
+    parser.c \
     ucode.c \
-    utils.c \
-    parser.c
+    utils.c
 
 cmicro2: $(SOURCES) *.h
 	$(CC) $(CFLAGS) -g -o $@ $(SOURCES)

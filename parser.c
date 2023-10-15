@@ -142,8 +142,17 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
         args->nargs = numa;
     }
 
-    if (max <= 1 || maxa <= 1)
+    if (max <= 1)
+    {
+        ERROR_LINE("token name truncated: %s\n", name);
         return 0;
+    }
+
+    if (maxa <= 1)
+    {
+        ERROR_LINE("argument list overflow\n");
+        return 0;
+    }
 
     return str;
 }
@@ -318,6 +327,13 @@ bool parse_field_def(const char *name, const char *str)
 
         char name[32];
         p = parse_token(p, name, sizeof(name), 0, false);
+        if (!p)
+            return false;
+        if (!name[0])
+        {
+            ERROR_LINE("field syntax: expected token after ','\n");
+            return false;
+        }
 
         if (strcmp(name, ".DEFAULT") == 0)
         {
@@ -369,7 +385,7 @@ bool parse_field_def(const char *name, const char *str)
     return true;
 }
 
-static char *expand_macro(char *xline, uint max, const char *macro_name, const args_t *args)
+static char *expand_macro(char *xline, uint max, const char *macro_name, const args_t *args, bool *expanded)
 {
     const char *p = macro_get(macro_name);
     char *q = xline;
@@ -378,11 +394,16 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
     {
         uint len = strlen(macro_name);
         if (len+1 > max)
+        {
+            ERROR_LINE("macro expansion buffer overflow\n");
             return 0;
+        }
         strncpy(q, macro_name, max);
         q += len;
         max -= len;
         q = remove_trailing_ws(xline, q);
+        if (expanded)
+            *expanded = false;
         return q;
     }
 
@@ -396,7 +417,10 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
             const char *a = args->arg[ai];
             int len = strlen(a);
             if (len+1 > max)
-                return false;
+            {
+                ERROR_LINE("macro expansion buffer overflow on args\n");
+                return 0;
+            }
             strncpy(q, a, max);
             q += len;
             max -= len;
@@ -408,6 +432,9 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
 
     *q = 0;
     q = remove_trailing_ws(xline, q);
+
+    if (expanded)
+        *expanded = true;
 
 #if defined(ENABLE_DEBUG)
     DEBUG_MACROS("expanding macro %s%s", macro_name, args->nargs > 0 ? "(" : "");
@@ -425,27 +452,43 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
     return q;
 }
 
-static bool expand_line_once(char *xline, uint max, const char *line)
+static bool expand_line_once(char *xline, uint max, const char *line, uint *num_expanded)
 {
     char name[MAXLINE]; // could be entire line
     args_t args;
 
+    if (num_expanded)
+        *num_expanded = 0;
+
     const char *p = line;
     char *q = xline;
-    uint xmax = max;
     while(*p && max > 1)
     {
         p = parse_token(p, name, sizeof(name), &args, true);
         if (!p)
             return false;
 
-        q = expand_macro(q, max, name, &args);
-        if (!q)
+        if (!name[0])
+        {
+            ERROR_LINE("macro expansion syntax: empty token\n");
             return false;
-        max = xline+xmax-q;
+        }
+
+        bool expanded = false;
+        char *r = expand_macro(q, max, name, &args, &expanded);
+        if (!r)
+            return false;
+        max -= (r-q);
+        q = r;
+
+        if (num_expanded && expanded)
+            ++*num_expanded;
 
         if (max <= 1)
+        {
+            ERROR_LINE("macro expansion overflow\n");
             return false;
+        }
 
         if (*p == ',' || *p == '/')
         {
@@ -453,7 +496,10 @@ static bool expand_line_once(char *xline, uint max, const char *line)
             p = skip_ws(p);
         }
         else if (*p != 0)
+        {
+            ERROR_LINE("macro expansion syntax: separator must be '/' or ','\n");
             return false;
+        }
     }
 
     *q = 0;
@@ -471,14 +517,20 @@ bool expand_line(char *xline, uint max, const char *line)
     {
         strncpy(tmp, line, sizeof(tmp));
         if (tmp[sizeof(tmp)-1] != 0)
+        {
+            ERROR_LINE("macro expansion tmp buffer overflow\n");
+            return false;
+        }
+
+        uint ne = 0;
+        if (!expand_line_once(xline, max, tmp, &ne))
             return false;
 
-        if (!expand_line_once(xline, max, tmp))
-            return false;
-
-        if (strcmp(xline, tmp) == 0)
+        if (ne <= 0)
         {
             DEBUG_MACROS("expanded  : %s\n", xline);
+            if (i > 0)
+                io_write_expanded(xline);
             return true;
         }
 
@@ -493,7 +545,8 @@ bool parse_microcode(const char *line)
 
     char xline[MAXLINE];
     const char *p = xline;
-    expand_line(xline, sizeof(xline), line);
+    if (!expand_line(xline, sizeof(xline), line))
+        return false;
 
     char buf[MAXLINE];
     char *q = buf;
@@ -509,43 +562,67 @@ bool parse_microcode(const char *line)
         p = parse_token(p, name, sizeof(name), 0, false);
         if (!p)
             return false;
+        if (!name[0])
+        {
+            ERROR_LINE("ucode syntax: line truncated after ',' or start\n");
+            return false;
+        }
 
         uint len = strlen(name)+1;
         if (len > max)
+        {
+            ERROR_LINE("ucode buffer overflow\n");
             return false;
+        }
 
         strncpy(q, name, max);
         field[i].name = q;
         q += len;
+        max -= len;
 
         if (*p != '/')
+        {
+            ERROR_LINE("ucode syntax: expected '/' after %s\n", name);
             return false;
+        }
 
         p = skip_ws(++p);
 
         p = parse_token(p, name, sizeof(name), 0, false);
         if (!p)
             return false;
-
-        len = strlen(name)+1;
-        if (len > max)
+        if (!name[0])
+        {
+            ERROR_LINE("ucode syntax: line truncated after '/'\n");
             return false;
+        }
 
         if (isdigit(name[0]))
         {
             char *r = 0;
             field[i].valstr = 0;
             field[i].valint = strtoul(name, &r, 16);
-            if (r == name) // couldn't parse any numbers
+            if (!r || *r) // couldn't parse all numbers
+            {
+                ERROR_LINE("ucode syntax: number format bad: %s\n", name);
                 return false;
+            }
         }
         else
         {
+            len = strlen(name)+1;
+            if (len > max)
+            {
+                ERROR_LINE("ucode buffer overflow\n");
+                return false;
+            }
+
             strncpy(q, name, max);
             field[i].valstr = q;
             field[i].valint = 0;
+            q += len;
+            max -= len;
         }
-        q += len;
 
         if (!*p)
         {
@@ -555,7 +632,10 @@ bool parse_microcode(const char *line)
             return true;
         }
         else if (*p != ',')
+        {
+            ERROR_LINE("ucode syntax: expected ',' after %s\n", name);
             return false;
+        }
 
         p = skip_ws(++p);
     }

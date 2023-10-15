@@ -18,6 +18,7 @@ typedef struct ucode_field_s ucode_field_t;
 
 // callbacks to be defined by impl
 extern bool io_get_line(char *buf, uint max);
+extern bool io_write_expanded(const char *xline);
 
 //extern bool handle_directive (const char *directive, const char *value);
 extern bool handle_region    (uint32_t low, uint32_t high);
