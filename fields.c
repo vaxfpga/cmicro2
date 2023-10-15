@@ -30,7 +30,7 @@ bool handle_field_def(const char *field, const field_def_t *fdef)
 
     if (!hashtable_add(&fields, field, f))
     {
-        ERROR("field %s already defined\n", field);
+        ERROR_LINE("field %s already defined\n", field);
         return false;
     }
 
@@ -46,7 +46,7 @@ bool handle_field_val(const char *field_val, uint32_t value)
 
     if (!hashtable_addi(&field_active->vals, field_val, value))
     {
-        ERROR("field value %s already defined in field %s\n", field_val, field_active_name);
+        ERROR_LINE("field value %s already defined in field %s\n", field_val, field_active_name);
         return false;
     }
 

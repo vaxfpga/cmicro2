@@ -13,7 +13,6 @@ SOURCES = \
     cmicro2.c \
     constraints.c \
     fields.c \
-    handlers.c \
     hashtable.c \
     macros.c \
     ucode.c \

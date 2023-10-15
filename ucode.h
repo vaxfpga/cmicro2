@@ -29,6 +29,12 @@ typedef struct ucode_field_s
     uint32_t    valint;
 } ucode_field_t;
 
+extern ucode_inst_t ucode[MAXUCODE];
+extern uint ucode_num;
+
+extern ucode_inst_t *ucode_alloc[MAXPC+1];
+
+
 bool ucode_init(void);
 
 bool ucode_allocate(void);

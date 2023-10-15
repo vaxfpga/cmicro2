@@ -51,14 +51,14 @@ bool handle_constraint(const constraint_t *cst)
 {
     if (ucode_num >= MAXUCODE)
     {
-        ERROR("too many ucodes\n");
+        ERROR_LINE("too many ucodes\n");
         return false;
     }
 
     constraint_t *c = calloc(1, sizeof(constraint_t));
     if (!c)
     {
-        ERROR("allocation failed (cst)\n");
+        ERROR_LINE("allocation failed (cst)\n");
         return false;
     }
 
@@ -81,12 +81,12 @@ bool handle_addr(uint addr)
         ucode_addr = addr;
     else if (addr > MAXPC)
     {
-        ERROR("address 0x%04x out of range\n", addr);
+        ERROR_LINE("address 0x%04x out of range\n", addr);
         return false;
     }
     else
     {
-        ERROR("multiple address specifiers\n");
+        ERROR_LINE("multiple address specifiers\n");
         return false;
     }
 
@@ -104,7 +104,7 @@ bool handle_label(const char *label)
         return true;
     }
 
-    ERROR("duplicate label: %s\n", label);
+    ERROR_LINE("duplicate label: %s\n", label);
     return false;
 }
 
@@ -185,7 +185,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
 {
     if (ucode_num >= MAXUCODE)
     {
-        ERROR("too many ucodes\n");
+        ERROR_LINE("too many ucodes\n");
         return false;
     }
 
@@ -203,7 +203,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
         const field_def_t *fdef = field_def_get(field[i].name);
         if (!fdef)
         {
-            ERROR("undefined field %s\n", field[i].name);
+            ERROR_LINE("undefined field %s\n", field[i].name);
             return false;
         }
 
@@ -213,7 +213,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             val = field_val_get(fdef, field[i].valstr);
             if (val == HASHTABLE_ENTRY_NOT_FOUND && !fdef->addr_flag)
             {
-                ERROR("undefined field value %s\n", field[i].name);
+                ERROR_LINE("undefined field value %s\n", field[i].name);
                 return false;
             }
 
@@ -227,7 +227,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
                     hashtable_entry_t *hte = hashtable_get_entry(&symbols, field[i].valstr);
                     if (!hte)
                     {
-                        ERROR("hashtable fail: %s\n", field[i].valstr);
+                        ERROR_LINE("hashtable fail: %s\n", field[i].valstr);
                         return false;
                     }
                     ucode[ucode_num].target_addr = hte->key;
@@ -290,7 +290,8 @@ bool ucode_allocate(void)
         if (ucode_alloc[ucode[i].addr])
         {
             ERROR("duplicate address 0x%04x\n", ucode[i].addr);
-            return false;
+            //return false;
+            continue;
         }
         ucode_alloc[ucode[i].addr] = &ucode[i];
     }
@@ -315,7 +316,10 @@ bool ucode_allocate(void)
                 cst = ucode[i].cst;
                 cur = base = get_cst_base(cst);
                 if (base == CONSTRAINT_SET_FINISHED)
-                    return false;
+                {
+                    //return false;
+                    continue;
+                }
             }
             else
             {
@@ -360,12 +364,15 @@ bool ucode_allocate(void)
         if (addr == UCODE_UNALLOCATED)
         {
             ERROR("can't allocate, no free address\n");
-            return false;
+            //return false;
+            continue;
         }
 
         ucode_alloc[addr] = &ucode[i];
         ucode[i].addr = addr;
     }
+
+    return true;
 }
 
 bool ucode_resolve(void)
@@ -393,6 +400,12 @@ bool ucode_resolve(void)
             apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr);
         else if (strcmp(ucode[i].target_addr, next_addr_str) == 0)
         {
+            if (i+1 >= ucode_num)
+            {
+                ERROR("can't use address of next instruction on last instruction\n");
+                //return false;
+                continue;
+            }
             uint j;
             for (j=i+1; j<ucode_num && ucode[j].cst; ++j);
             apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[j].addr);
@@ -403,7 +416,8 @@ bool ucode_resolve(void)
             if (!inst || inst->addr == UCODE_UNALLOCATED)
             {
                 ERROR("unresolved symbol %s\n", ucode[i].target_addr);
-                return false;
+                //return false;
+                continue;
             }
             apply_val(ucode[i].uc, fdef->li, fdef->ri, inst->addr);
         }

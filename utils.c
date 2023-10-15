@@ -8,11 +8,11 @@
 
 #include <stdlib.h>
 
+#if ENABLE_DEBUG
+    uint debug_flags = 0;
+#endif
+
 extern hashtable_t symbols;
-
-typedef bool (*handle_sym_t)(const char *name , uint32_t addr);
-
-
 
 static int sym_compare(const void *a, const void *b)
 {

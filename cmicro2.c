@@ -6,6 +6,7 @@
 #include <stdbool.h>
 //#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 //#include <string.h>
 
 #include "constraints.h"
@@ -16,9 +17,13 @@
 #include "ucode.h"
 #include "utils.h"
 
-
+uint line_number = 0;
+uint num_errors = 0;
 
 static FILE *f;
+
+static const char *listing_fname;
+static const char *output_fname;
 
 bool io_get_line(char *buf, uint max)
 {
@@ -27,50 +32,140 @@ bool io_get_line(char *buf, uint max)
 
     if (max < 2)
     {
-        ERROR("exceeded max line length!\n");
+        ERROR_LINE("exceeded max line length!\n");
         return false;
     }
 
-    buf[max-2] = '\n'; // to verify complete line fit
+    buf[max-2] = '\n'; // to verify complete line fits
     const char *ret = fgets(buf, max, f);
     if (!ret)
         return false;
 
     if (buf[max-2] != '\n')
     {
-        ERROR("truncated line!\n");
+        ERROR_LINE("truncated line!\n");
+        return false;
+    }
+
+    ++line_number;
+    DEBUG_LINES("line %-5u: %s", line_number, buf);
+
+    return true;
+}
+
+bool process_file(const char *fname)
+{
+    DEBUG_FILES("begin processing file %s\n", fname);
+    line_number = 0;
+    num_errors = 0;
+
+    f = fopen(fname, "r");
+    if (!f)
+    {
+        ERROR_LINE("failed to open file \"%s\"\n", fname);
+        return false;
+    }
+
+    char line[4096];
+    while (get_logical_line(line, sizeof(line)))
+    {
+        parse_line(line);
+    }
+
+    DEBUG_FILES("end processing file %s\n", fname);
+
+    if (num_errors > 0)
+        ERROR("%u errors found in file %s\n", num_errors, fname);
+
+    return true;
+}
+
+void print_usage(void)
+{
+    printf("usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...\n\n");
+    printf("options:\n");
+    printf("    -h, --help                    prints usage and exits\n");
+    printf("    -d, --debug 0xNN              set debug flags to hex or decimal arg\n");
+    printf("    -l, --listing <listfile.txt>  specify listing file (optional)\n");
+    printf("    -o, --output <outfile.bin>    specify output bin file (mandatory)\n\n");
+}
+
+bool process_args(char *argv[])
+{
+    uint fc=0;
+    while (*++argv)
+    {
+        if (strcmp(*argv, "--") == 0)
+        {
+            ++argv;
+            break;
+        }
+        else if (strcmp(*argv, "-h") == 0 || strcmp(*argv, "--help") == 0)
+        {
+            print_usage();
+            return false;
+        }
+        else if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0)
+        {
+            ++argv;
+            if (!*argv)
+            {
+                ERROR("cmicro2 -d option requires an argument\n");
+                return false;
+            }
+            char *q = 0;
+            debug_flags = strtoul(*argv, &q, 0);
+            if (q == *argv)
+            {
+                ERROR("cmicro2 -d option requires numeric (NN or 0xNN) argument\n");
+                return false;
+            }
+        }
+        else if (strcmp(*argv, "-l") == 0 || strcmp(*argv, "--listing") == 0)
+        {
+            ++argv;
+            if (!*argv)
+            {
+                ERROR("cmicro2 -l option requires an argument\n");
+                return false;
+            }
+            listing_fname = *argv;
+        }
+        else if (strcmp(*argv, "-o") == 0 || strcmp(*argv, "--output") == 0)
+        {
+            ++argv;
+            if (!*argv)
+            {
+                ERROR("cmicro2 -o option requires an argument\n");
+                return false;
+            }
+            output_fname = *argv;
+        }
+        else if (**argv == '-')
+        {
+            ERROR("cmicro2 unknown option %s\n", *argv);
+            return false;
+        }
+        else
+            ++fc;
+    }
+    while (*argv++)
+        ++fc;
+
+    if (fc < 1)
+    {
+        ERROR("cmicro2 requires one or more input files\n");
         return false;
     }
 
     return true;
 }
 
-int process_file(const char *fname)
-{
-    DEBUG("begin processing file %s\n", fname);
-
-    f = fopen(fname, "r");
-    if (!f)
-    {
-        ERROR("failed to open file \"%s\"\n", fname);
-        return -1;
-    }
-
-    char line[4096];
-    while (true)
-    {
-        if (!get_logical_line(line, sizeof(line)))
-            break;
-
-        parse_line(line);
-    }
-
-    DEBUG("end processing file %s\n", fname);
-    return 0;
-}
-
 int main(int argc, char *argv[])
 {
+    if (!process_args(argv))
+        return 1;
+
     if (!ucode_init())
         return 1;
 
@@ -80,35 +175,38 @@ int main(int argc, char *argv[])
     if (!macros_init())
         return 1;
 
-//    constraint_t c;
-//    constraint_parse(&c, "=0101");
-//    uint32_t base = 0225;
-//    uint32_t addr = base;
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, 0, base, addr);
-//
-//    constraint_parse(&c, "=01*1*01");
-//    constraint_t nc;
-//    constraint_parse(&nc, "=1*");
-//    base = addr = 0b10111001;
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-//    printf("0b%08b\n", addr); addr=constraint_next(&c, &nc, base, addr);
-
+    // process non-options as input files
     while (*++argv)
     {
+        if (strcmp(*argv, "--") == 0)
+        {
+            ++argv;
+            break;
+        }
+        else if (**argv == '-')
+        {
+            ++argv;
+            continue;
+        }
+
         process_file(*argv);
     }
 
-    ucode_allocate();
-    ucode_resolve();
+    // process everything after -- as input files
+    while (*argv)
+        process_file(*argv++);
+
+    if (!ucode_allocate())
+    {
+        ERROR("failure to allocate all ucode addresses\n");
+    }
+
+    if (!ucode_resolve())
+    {
+        ERROR("failure to resolve all ucode symbol references\n");
+    }
+
+
 
     uint num_syms = 0;
     sym_pair_t *syms = util_get_symbols(&num_syms);
@@ -119,7 +217,7 @@ int main(int argc, char *argv[])
             printf("%-16s : 0x%04x\n", syms[i].name, syms[i].addr);
     }
 
-    extern ucode_inst_t *ucode_alloc[MAXPC];
+//    extern ucode_inst_t *ucode_alloc[MAXPC];
 
     printf("---- memory order ----\n");
     for (uint i=0; i<=MAXPC; ++i)
@@ -133,8 +231,8 @@ int main(int argc, char *argv[])
         );
     }
 
-    extern ucode_inst_t ucode[MAXUCODE];
-    extern uint ucode_num;
+//    extern ucode_inst_t ucode[MAXUCODE];
+//    extern uint ucode_num;
 
     printf("---- code order ----\n");
     for (uint i=0; i<ucode_num; ++i)

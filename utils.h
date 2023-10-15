@@ -23,16 +23,28 @@
 
 typedef unsigned int uint;
 
+extern uint line_number;
+extern uint num_errors;
 
 #if !defined(ENABLE_DEBUG)
     #define ENABLE_DEBUG 1
 #endif
 
+#define DEBUG_FILES(...)   DEBUG_FLAG(1, __VA_ARGS__)
+#define DEBUG_LINES(...)   DEBUG_FLAG(2, __VA_ARGS__)
+#define DEBUG_PARSING(...) DEBUG_FLAG(4, __VA_ARGS__)
+#define DEBUG_MACROS(...)  DEBUG_FLAG(8, __VA_ARGS__)
+
 #if ENABLE_DEBUG
-    #define DEBUG(...) fprintf(stderr, "DEBUG: " __VA_ARGS__)
+    extern uint debug_flags;
+
+    #define DEBUG_FLAG(flag, fmt, ...) do { if ((debug_flags & flag) != 0) fprintf(stderr, "DEBUG: " fmt, ##__VA_ARGS__); } while (0)
+#else
+    #define DEBUG_FLAG(flag, fmt, ...) do { } while(0)
 #endif
 
-#define ERROR(...) fprintf(stderr, "ERROR: " __VA_ARGS__)
+#define ERROR(fmt, ...)      do { fprintf(stderr, "ERROR: " fmt, ##__VA_ARGS__); } while (0)
+#define ERROR_LINE(fmt, ...) do { ++num_errors; fprintf(stderr, "ERROR: line %u, " fmt, line_number, ##__VA_ARGS__); } while (0)
 
 
 typedef struct

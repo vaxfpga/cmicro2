@@ -63,16 +63,6 @@ static void normalize_line(char *line)
     remove_trailing_ws(line, p);
 }
 
-//static inline char *safe_strncpy(char *dst, const char *src, size_t n)
-//{
-//    if (n > 0)
-//    {
-//        strncpy(dst, src, len);
-//        dst[n-1] = 0;
-//    }
-//    return dst;
-//}
-
 static inline bool is_token(char c)
 {
     return (c == ' ') || isalnum(c) || (c != 0 && strchr("!#&()<>*+-.?_", c) != 0);
@@ -181,13 +171,13 @@ bool get_logical_line(char *line, uint max)
         max -= len;
     }
 
-    DEBUG("read line len %u: |%s|\n", strlen(line), line);
+    DEBUG_LINES("normalized: %s\n", line);
     return true;
 }
 
 bool parse_directive(const char *line, const char *name, const char *str)
 {
-    DEBUG("parsing directive: %s\n", line);
+    DEBUG_PARSING("parsing directive: %s\n", line);
 
     const char *p = skip_ws(str);
 
@@ -196,7 +186,7 @@ bool parse_directive(const char *line, const char *name, const char *str)
         // TODO: should allow multiple ranges...
         if (*p != '/')
         {
-            ERROR("bad region directive: %s\n", line);
+            ERROR_LINE("bad region directive: %s\n", line);
             return false;
         }
 
@@ -206,14 +196,14 @@ bool parse_directive(const char *line, const char *name, const char *str)
         uint32_t low = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR("bad region directive: %s\n", line);
+            ERROR_LINE("bad region directive: %s\n", line);
             return false;
         }
 
         p = skip_ws(q);
         if (*p != ',')
         {
-            ERROR("bad region directive: %s\n", line);
+            ERROR_LINE("bad region directive: %s\n", line);
             return false;
         }
 
@@ -223,25 +213,25 @@ bool parse_directive(const char *line, const char *name, const char *str)
         uint32_t high = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR("bad region directive: %s\n", line);
+            ERROR_LINE("bad region directive: %s\n", line);
             return false;
         }
 
-        DEBUG("parsed region directive: 0x%04x, 0x%04x\n", low, high);
+        DEBUG_PARSING("parsed region directive: 0x%04x, 0x%04x\n", low, high);
         return handle_region(low, high);
     }
 
-    DEBUG("parsed directive: %s %s\n", name, str);
+    DEBUG_PARSING("parsed directive: %s %s\n", name, str);
 
-    if (!handle_directive(name, str))
-        return false;
+//    if (!handle_directive(name, str))
+//        return false;
 
     return true;
 }
 
 bool parse_constraint(const char *str)
 {
-    DEBUG("parsing constraint: %s\n", str);
+    DEBUG_PARSING("parsing constraint: %s\n", str);
 
     constraint_t cst = { };
 
@@ -278,7 +268,7 @@ bool parse_constraint(const char *str)
 
     cst.vmask = cst.mmask & cst.cmask;
 
-    DEBUG("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
+    DEBUG_PARSING("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
           cst.incr, cst.vmask, cst.mmask, cst.cmask);
 
     if (!handle_constraint(&cst))
@@ -289,7 +279,7 @@ bool parse_constraint(const char *str)
 
 bool parse_field_def(const char *name, const char *str)
 {
-    DEBUG("parsing field def: %s /= %s\n", name, str);
+    DEBUG_PARSING("parsing field def: %s /= %s\n", name, str);
 
     field_def_t fdef = { };
     const char *p = skip_ws(str);
@@ -362,7 +352,7 @@ bool parse_field_def(const char *name, const char *str)
         }
         else
         {
-            ERROR("bad field qualifier %s\n", name);
+            ERROR_LINE("bad field qualifier %s\n", name);
             return false;
         }
     }
@@ -370,7 +360,7 @@ bool parse_field_def(const char *name, const char *str)
     if (*p != 0)
         return false;
 
-    DEBUG("parsed field def: li=%u, ri=%u def=0x%0x flags=0b%03b\n",
+    DEBUG_PARSING("parsed field def: li=%u, ri=%u def=0x%0x flags=0b%03b\n",
             fdef.li, fdef.ri, fdef.def_val, (fdef.def_flag<<2|fdef.addr_flag|fdef.next_flag));
 
     if (!handle_field_def(name, &fdef))
@@ -420,13 +410,16 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
     q = remove_trailing_ws(xline, q);
 
 #if defined(ENABLE_DEBUG)
-    DEBUG("expanding macro %s%s", macro_name, args->nargs > 0 ? "(" : "");
-    if (args->nargs > 0)
+    DEBUG_MACROS("expanding macro %s%s", macro_name, args->nargs > 0 ? "(" : "");
+    if ((debug_flags & 8) != 0)
     {
-        for (uint di=0; di<args->nargs; ++di)
-            fprintf(stderr, "%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+        if (args->nargs > 0)
+        {
+            for (uint di=0; di<args->nargs; ++di)
+                fprintf(stderr, "%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+        }
+        fprintf(stderr, " to \"%s\"\n", xline);
     }
-    fprintf(stderr, " to \"%s\"\n", xline);
 #endif
 
     return q;
@@ -471,7 +464,8 @@ static bool expand_line_once(char *xline, uint max, const char *line)
 
 bool expand_line(char *xline, uint max, const char *line)
 {
-    DEBUG("expanding macros for line: \"%s\"\n", line);
+    DEBUG_MACROS("expanding : %s\n", line);
+
     char tmp[MAXLINE];
     for (uint i=0; i<MAXRECURSE; ++i)
     {
@@ -484,7 +478,7 @@ bool expand_line(char *xline, uint max, const char *line)
 
         if (strcmp(xline, tmp) == 0)
         {
-            DEBUG("expanded line: \"%s\"\n", xline);
+            DEBUG_MACROS("expanded  : %s\n", xline);
             return true;
         }
 
@@ -495,7 +489,7 @@ bool expand_line(char *xline, uint max, const char *line)
 
 bool parse_microcode(const char *line)
 {
-    DEBUG("parsing microcode: %s\n", line);
+    DEBUG_PARSING("parsing microcode: %s\n", line);
 
     char xline[MAXLINE];
     const char *p = xline;
@@ -594,7 +588,7 @@ bool parse_line(const char *line)
     {
         if (name[0] != 0) // field val
         {
-            DEBUG("parsing field val: %s %s\n", name, p);
+            DEBUG_PARSING("parsing field val: %s %s\n", name, p);
             ++p;
             char *q = 0;
             uint32_t val = strtoul(p, &q, 16);
@@ -605,7 +599,7 @@ bool parse_line(const char *line)
             if (*p)
                 return false;
 
-            DEBUG("parsed field val: %s 0x%x\n", name, val);
+            DEBUG_PARSING("parsed field val: %s 0x%x\n", name, val);
 
             if (!handle_field_val(name, val))
                 return false;
@@ -618,21 +612,21 @@ bool parse_line(const char *line)
     }
     else if (*p == '"') // macro
     {
-        DEBUG("parsing macro: %s\n", line);
+        DEBUG_PARSING("parsing macro: %s\n", line);
 
         // check trailing '"'
         const char *q = &p[strlen(p)-1];
         if (*q != '"')
             return false;
 
+        DEBUG_PARSING("parsed macro: %s %s\n", name, p);
+
         if (!handle_macro_def(name, p))
             return false;
-
-        DEBUG("parsed macro: %s %s\n", name, p);
     }
     else if (*p == ':') // addr or label
     {
-        DEBUG("parsing address/label: %s:\n", name);
+        DEBUG_PARSING("parsing address/label: %s:\n", name);
 
         // if starts with a digit (0-9) it is an address, not label
         if (isdigit(name[0]))
@@ -642,17 +636,17 @@ bool parse_line(const char *line)
             if (q == name) // couldn't parse any numbers
                 return false;
 
+            DEBUG_PARSING("parsed address 0x%0x\n", addr);
+
             if (!handle_addr(addr))
                 return false;
-
-            DEBUG("parsed address 0x%0x\n", addr);
         }
         else
         {
+            DEBUG_PARSING("parsed label %s\n", name);
+
             if (!handle_label(name))
                 return false;
-
-            DEBUG("parsed label %s\n", name);
         }
 
         // microcode can follow address/label on same line
