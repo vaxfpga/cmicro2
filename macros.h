@@ -14,7 +14,7 @@ extern hashtable_t macros;
 
 bool macros_init(void);
 
-static const char *macro_get(const char *macro)
+static inline const char *macro_get(const char *macro)
 {
     return hashtable_get(&macros, macro);
 }

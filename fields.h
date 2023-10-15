@@ -30,12 +30,12 @@ extern hashtable_t fields;
 
 bool fields_init(void);
 
-static const field_def_t *field_def_get(const char *fname)
+static inline const field_def_t *field_def_get(const char *fname)
 {
     return hashtable_get(&fields, fname);
 }
 
-static uint32_t field_val_get(const field_def_t *fdef, const char *fval)
+static inline uint32_t field_val_get(const field_def_t *fdef, const char *fval)
 {
     return hashtable_geti(&fdef->vals, fval);
 }

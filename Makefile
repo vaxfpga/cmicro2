@@ -6,6 +6,8 @@
 
 all: cmicro2
 
+CFLAGS += -Wall
+
 clean:
 	$(RM) -f cmicro2 cmicro2-gcov test_hash *.o
 
@@ -20,7 +22,7 @@ SOURCES = \
     parser.c
 
 cmicro2: $(SOURCES) *.h
-	$(CC) -g -o $@ $(SOURCES)
+	$(CC) $(CFLAGS) -g -o $@ $(SOURCES)
     
 test_hash: test_hash.c hashtable.c
-	$(CC) -g -o $@ $^
+	$(CC) $(CFLAGS) -g -o $@ $^

@@ -7,11 +7,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static uint32_t fnv1a_add_bytes(const char *key, uint32_t hash)
-{
-
-    return hash;
-}
 
 static inline uint32_t fnv1a(const char *key)
 {
