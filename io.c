@@ -66,7 +66,7 @@ bool io_process_input(const char *fname)
     fin = fopen(fname, "r");
     if (!fin)
     {
-        ERROR("failed to open file \"%s\"\n", fname);
+        ERROR("failed to open input file \"%s\"\n", fname);
         return false;
     }
 
@@ -95,7 +95,7 @@ bool io_open_list(const char *fname)
     flist = fopen(fname, "w+");
     if (!flist)
     {
-        ERROR("failed to open file \"%s\"\n", fname);
+        ERROR("failed to open listing file \"%s\"\n", fname);
         return false;
     }
 
@@ -138,7 +138,6 @@ bool io_write_error_list(const char *fmt, ...)
 
     va_list args;
     va_start(args, fmt);
-    fprintf(flist, "; ERROR: ");
     vfprintf(flist, fmt, args);
     return true;
 }
@@ -207,7 +206,7 @@ bool io_write_bin(const char *fname)
     FILE *f = fopen(fname, "wb");
     if (!f)
     {
-        ERROR("failed to open file \"%s\"\n", fname);
+        ERROR("failed to open output file \"%s\"\n", fname);
         return false;
     }
 

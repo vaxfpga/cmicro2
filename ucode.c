@@ -51,7 +51,7 @@ bool handle_constraint(const constraint_t *cst)
 {
     if (ucode_num >= MAXUCODE)
     {
-        ERROR_LINE("too many ucodes\n");
+        ERROR_LINE("too many ucodes (cst)\n");
         return false;
     }
 
@@ -216,7 +216,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             if (val == HASHTABLE_ENTRY_NOT_FOUND && !fdef->addr_flag)
             {
                 ucode_addr = UCODE_UNALLOCATED;
-                ERROR_LINE("undefined field value %s\n", field[i].name);
+                ERROR_LINE("undefined field value %s\n", field[i].valstr);
                 //return false;
                 break;
             }
@@ -360,6 +360,12 @@ bool ucode_allocate(void)
         }
         else if (!cst || ucode[i].addr != UCODE_UNALLOCATED)
             continue; // skip outside constraint or allocated
+
+        if (base == CONSTRAINT_SET_FINISHED || cur == CONSTRAINT_SET_FINISHED)
+        {
+            ERROR("unable to satisfy constraint\n");
+            continue;
+        }
 
         // allocate ucode!
         ucode_alloc[cur] = &ucode[i];

@@ -1,6 +1,28 @@
 ; SPDX-License-Identifier: MIT
 ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
+A/=<0>
+  A0=0
+  A1=1
+
+B/=<0>
+  B0=0
+  B1=1
+
+C/=<0>
+  C0=0
+  C1=1
+  C2=2
+  
+D/=<0>
+  D0=0
+  D1=1
+  D3=3
+
+X/=<0>
+  L2=2
+  L2=3
+
 J/=<7:0>,.NEXTADDRESS
 
 M1 "A/A0,M2 ,B/B0"
@@ -10,8 +32,8 @@ M3 "D/D0"
 L1: X/L2 , M1
 ; X/L2,A/A0,C/C0,D/D0,B/B0
 
-L2: X/L2 , M1 , M1 , X/
-; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X
+L2: X/L2 , M1 , M1 , X/1
+; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
 
 M4[]	"A/A0,B/@1"   
 
@@ -43,6 +65,33 @@ L7: M5[1,M6]
 L8: M5[1,M7[C1]+[D1]]
 ; A/1,C/C1,D/D1
 
-J/LX
-A/3
-]a
+; from old a.mic test (made functional for expand)
+
+MRF[]   "FOO[@1],@1"
+MRF2[,] "FOO[@1],@2"
+MRF2[]x[] "FOO@1x@2"
+MRF3[a,b[c,d]] "FOO@1x@2"
+
+;m1      "X/L3"
+foo[]    "@1,@1"
+fooaxb   "A/0"
+
+mrf[A/0]
+mrf2[A/0,B/0]
+mrf2[A]x[B]
+mrf3[A,B]
+
+L1: X/L2,M1
+
+ME         "A/0"
+ME[]       "A/0"
+ME2[a,b]   "@1/1,@2/2"
+ME2a[][]   "@1/1,@2/2"
+ME3[]      "ME2[@1]"
+
+ME: ME[hi]
+ME2: ME2[a,b]
+;ME2a: ME2[a][b] ; fails?
+;ME3: ME3[a[b],c]
+;ME33: ME3[a,b[c,d]]/blat
+;ME4: ME4[a.x,b[3,40[]]]XX

@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
-//#include <assert.h>
-//#include <ctype.h>
 #include <stdbool.h>
-//#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <string.h>
+#include <string.h>
 
 #include "constraints.h"
 #include "fields.h"
@@ -52,7 +49,7 @@ bool process_args(char *argv[])
         else if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0)
         {
             ++argv;
-            if (!*argv)
+            if (!*argv || **argv == '-')
             {
                 ERROR("cmicro2 -d option requires an argument\n");
                 return false;
@@ -68,7 +65,7 @@ bool process_args(char *argv[])
         else if (strcmp(*argv, "-l") == 0 || strcmp(*argv, "--listing") == 0)
         {
             ++argv;
-            if (!*argv)
+            if (!*argv || **argv == '-')
             {
                 ERROR("cmicro2 -l option requires an argument\n");
                 return false;
@@ -78,7 +75,7 @@ bool process_args(char *argv[])
         else if (strcmp(*argv, "-o") == 0 || strcmp(*argv, "--output") == 0)
         {
             ++argv;
-            if (!*argv)
+            if (!*argv || **argv == '-')
             {
                 ERROR("cmicro2 -o option requires an argument\n");
                 return false;
@@ -129,6 +126,7 @@ int main(int argc, char *argv[])
     if (listing_fname && !io_open_list(listing_fname))
         return 1;
 
+    uint fc = 0;
     // process non-options as input files
     while (*++argv)
     {
@@ -143,12 +141,19 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        io_process_input(*argv);
+        if (io_process_input(*argv))
+            ++fc;
     }
 
     // process everything after -- as input files
     while (*argv)
-        io_process_input(*argv++);
+    {
+        if (io_process_input(*argv++))
+            ++fc;
+    }
+
+    if (fc <= 0)
+        return 1;
 
     if (!ucode_allocate())
     {

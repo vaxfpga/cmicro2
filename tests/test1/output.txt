@@ -1,0 +1,45 @@
++ ./cmicro2 -l /dev/null -o runs/x/a.bin -- tests/x/input.mic
+ERROR: failed to open input file "tests/x/input.mic"
++ ./cmicro2 -o /dev/null tests/x/input.mic
+ERROR: failed to open input file "tests/x/input.mic"
++ ./cmicro2 -o /runs/x/a.bin /dev/null
+ERROR: failed to open output file "/runs/x/a.bin"
++ ./cmicro2 -o /dev/null -- /dev/null
++ ./cmicro2 -h
+usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...
+
+options:
+    -h, --help                    prints usage and exits
+    -d, --debug 0xNN              set debug flags to hex or decimal arg
+    -l, --listing <listfile.lst>  specify listing file (optional)
+    -o, --output <outfile.bin>    specify output bin file (mandatory)
+
++ ./cmicro2 --listing /dev/null --debug 0xf --output runs/x/a.bin --help
+usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...
+
+options:
+    -h, --help                    prints usage and exits
+    -d, --debug 0xNN              set debug flags to hex or decimal arg
+    -l, --listing <listfile.lst>  specify listing file (optional)
+    -o, --output <outfile.bin>    specify output bin file (mandatory)
+
++ ./cmicro2 -d
+ERROR: cmicro2 -d option requires an argument
++ ./cmicro2 -d x
+ERROR: cmicro2 -d option requires numeric (NN or 0xNN) argument
++ ./cmicro2 -d -x
+ERROR: cmicro2 -d option requires an argument
++ ./cmicro2 -l
+ERROR: cmicro2 -l option requires an argument
++ ./cmicro2 -l -x
+ERROR: cmicro2 -l option requires an argument
++ ./cmicro2 -o
+ERROR: cmicro2 -o option requires an argument
++ ./cmicro2 -o -x
+ERROR: cmicro2 -o option requires an argument
++ ./cmicro2 -x
+ERROR: cmicro2 unknown option -x
++ ./cmicro2
+ERROR: cmicro2 requires one or more input files
++ ./cmicro2 -l runs/x/a.lst -- tests/x/input.mic
+ERROR: failed to open listing file "runs/x/a.lst"

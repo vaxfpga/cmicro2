@@ -5,6 +5,7 @@
 /.cproject
 /.settings/
 
+*.swp
 *.o
 /cmicro2*
 /test_*
@@ -13,3 +14,9 @@
 
 *.bin
 *.lst
+
+/gcov
+/runs
+*.gcda
+*.gcno
+*.gcov

@@ -34,10 +34,13 @@ extern bool handle_ucode     (const ucode_field_t *field, uint numf);
 bool get_logical_line(char *line, uint max);
 
 // parses logical lines
+bool parse_directive(const char *name, const char *str);
+bool parse_constraint(const char *str);
+bool parse_field_def(const char *name, const char *str);
+bool expand_line(char *xline, uint max, const char *line);
+bool parse_microcode(const char *line);
+
 bool parse_line(const char *line);
 
-bool parse_field_def(const char *name, const char *str);
-bool parse_constraint(const char *str);
-bool expand_line(char *xline, uint max, const char *line);
 
 #endif // INCLUDED_PARSER_H

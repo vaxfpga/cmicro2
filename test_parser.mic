@@ -1,0 +1,93 @@
+; SPDX-License-Identifier: MIT
+; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+
+.REGION/200,2ff
+
+.REGION,bad1
+.REGION/xbad2
+.REGION/badx3
+.REGION/200,xbad4
+.REGION/200,badx5
+
+.MOO COW ; moo
+
+=01*
+=1*0
+=*01
+=
+=2
+=01*2
+
+FG1/=<0>
+FG2 /=<13:0>
+FG3/= <1:0>,
+  .DEFAULT=f
+FG4/= <1:0>,.DEFAULT = 100
+FG5 /= <1:0>, .ADDRESS
+FG6 /= <1:0>, .NEXTADDRESS
+
+/= FB0
+FB1 /= x
+FB2 /= <x
+FB3 /= <0x
+FB4 /= <0:x
+FB5 /= <0>x
+FB6 /= <0>,]
+FB7 /= <0>,.POOP
+FB8 /= <0>,.DEFAULT]
+FB8 /= <0>,.DEFAULT=x
+FB8 /= <0>,.DEFAULT=f] 
+FB8 /= <0>,.ADDRESS]
+FB8 /= <0>,.NEXTADDRESS]
+FB9 /= <0:1>
+FG1 /= <0>
+
+A /= <0>
+    FDG1=0
+    FDG2 =0
+    FDG3= 0
+    FDG4 =0
+
+    FDB1 = x
+    FDB2 = 0x
+    FDG1 = 0
+
+MG1 "A/FDG1"
+MG2[a,b] "@1,@2"
+
+MB1 "A/A1
+MG1 "MB2"
+
+FDB3 = 0
+
+lg1: A/FDG1
+lg2: X/ ; bad ucode
+lg1: A/FDG1 ; bad dup label
+   
+0cab: ; lg3
+0x12: ; lb3 bad mult addr
+123x: ; lb4
+: ;lb5
+
+A/0
+X/0x,
+X/
+X/0/
+X,X
+X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+X]
+MB2[] "@:"
+MB2[A/0]
+MB3[] "@/"
+MB3[A/0]
+MB4[] "@2"
+MB4[A/0]
+
+; 127 max name
+1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
+/0
+
+MG2[A/0,MG2[MG1,MG1]]
+
+A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
+A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0

@@ -38,14 +38,14 @@ extern uint num_errors;
 #if ENABLE_DEBUG
     extern uint debug_flags;
 
-    #define DEBUG_FLAG(flag, fmt, ...) do { if ((debug_flags & flag) != 0) fprintf(stderr, "DEBUG: " fmt, ##__VA_ARGS__); } while (0)
+    #define DEBUG_FLAG(flag, fmt, ...) do { if ((debug_flags & flag) != 0) { if ((flag & 3) == 0) io_write_error_list("; DEBUG: " fmt, ##__VA_ARGS__); fprintf(stderr, "DEBUG: " fmt, ##__VA_ARGS__); } } while (0)
 #else
     #define DEBUG_FLAG(flag, fmt, ...) do { } while(0)
 #endif
 
 extern bool io_write_error_list(const char *fmt, ...);
 #define ERROR(fmt, ...)      do { fprintf(stderr, "ERROR: " fmt, ##__VA_ARGS__); } while (0)
-#define ERROR_LINE(fmt, ...) do { ++num_errors; io_write_error_list(fmt, ##__VA_ARGS__); fprintf(stderr, "ERROR: line %u, " fmt, line_number, ##__VA_ARGS__); } while (0)
+#define ERROR_LINE(fmt, ...) do { ++num_errors; io_write_error_list("; ERROR: " fmt, ##__VA_ARGS__); fprintf(stderr, "ERROR: line %u, " fmt, line_number, ##__VA_ARGS__); } while (0)
 
 
 typedef struct

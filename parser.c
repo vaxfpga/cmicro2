@@ -63,6 +63,33 @@ static void normalize_line(char *line)
     remove_trailing_ws(line, p);
 }
 
+bool get_logical_line(char *line, uint max)
+{
+    char *p = line;
+    *p = 0;
+
+    while (true)
+    {
+        if (!io_get_line(p, max))
+            return false;
+
+        normalize_line(p);
+
+        uint len = strlen(p);
+
+        // if blank or last char is ',', join physical lines
+        // otherwise break to return
+        if (len > 0 && p[len - 1] != ',')
+            break;
+
+        p   += len;
+        max -= len;
+    }
+
+    DEBUG_LINES("normalized: %s\n", line);
+    return true;
+}
+
 static inline bool is_token(char c)
 {
     return (c == ' ') || isalnum(c) || (c != 0 && strchr("!#&()<>*+-.?_", c) != 0);
@@ -92,12 +119,7 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
         {
             if (!allow_bracket)
                 break;
-            else if (*str == ',' || *str == ']')
-            {
-                if (bracket <= 0)
-                    break;
-            }
-            else if (*str != '[')
+            else if (bracket <= 0 && *str != '[')
                 break;
         }
 
@@ -157,36 +179,9 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
     return str;
 }
 
-bool get_logical_line(char *line, uint max)
+bool parse_directive(const char *name, const char *str)
 {
-    char *p = line;
-    *p = 0;
-
-    while (true)
-    {
-        if (!io_get_line(p, max))
-            return false;
-
-        normalize_line(p);
-
-        uint len = strlen(p);
-
-        // if blank or last char is ',', join physical lines
-        // otherwise break to return
-        if (len > 0 && p[len - 1] != ',')
-            break;
-
-        p   += len;
-        max -= len;
-    }
-
-    DEBUG_LINES("normalized: %s\n", line);
-    return true;
-}
-
-bool parse_directive(const char *line, const char *name, const char *str)
-{
-    DEBUG_PARSING("parsing directive: %s\n", line);
+    DEBUG_PARSING("parsing directive: %s %s\n", name, str);
 
     const char *p = skip_ws(str);
 
@@ -195,34 +190,41 @@ bool parse_directive(const char *line, const char *name, const char *str)
         // TODO: should allow multiple ranges...
         if (*p != '/')
         {
-            ERROR_LINE("bad region directive: %s\n", line);
+            ERROR_LINE("region syntax in %s %s: '/' expected after .REGION\n", name, str);
             return false;
         }
 
-        p = skip_ws(++p);
+        p = skip_ws(p+1);
 
         char *q = 0;
         uint32_t low = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR_LINE("bad region directive: %s\n", line);
+            ERROR_LINE("region syntax in  %s %s: number expected after '/'\n", name, str);
             return false;
         }
 
         p = skip_ws(q);
         if (*p != ',')
         {
-            ERROR_LINE("bad region directive: %s\n", line);
+            ERROR_LINE("region syntax in  %s %s: ',' expected after low address\n", name, str);
             return false;
         }
 
-        p = skip_ws(++p);
+        p = skip_ws(p+1);
 
         q = 0;
         uint32_t high = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR_LINE("bad region directive: %s\n", line);
+            ERROR_LINE("region syntax in  %s %s: number expected after ','\n", name, str);
+            return false;
+        }
+
+        p = skip_ws(q);
+        if (*p)
+        {
+            ERROR_LINE("region syntax in  %s %s: bad char %c after high address\n", name, str, *p);
             return false;
         }
 
@@ -244,12 +246,13 @@ bool parse_constraint(const char *str)
 
     constraint_t cst = { };
 
-    const char *p = str;
+    const char *p = skip_ws(str);
 
-    if (*p != '=')
+    if (*p != '0' && *p != '1' && *p != '*')
+    {
+        ERROR_LINE("constraint syntax in =%s: bad char %c after '='\n", str, *p);
         return false;
-
-    p = skip_ws(++p);
+    }
 
     while (*p == '0' || *p == '1' || *p == '*')
     {
@@ -275,6 +278,13 @@ bool parse_constraint(const char *str)
         ++p;
     }
 
+    p = skip_ws(p);
+    if (*p)
+    {
+        ERROR_LINE("constraint syntax in =%s: bad char %c after constraint\n", str, *p);
+        return false;
+    }
+
     cst.vmask = cst.mmask & cst.cmask;
 
     DEBUG_PARSING("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
@@ -290,17 +300,29 @@ bool parse_field_def(const char *name, const char *str)
 {
     DEBUG_PARSING("parsing field def: %s /= %s\n", name, str);
 
+    if (!name[0])
+    {
+        ERROR_LINE("field def syntax in /= %s: empty name\n", str);
+        return false;
+    }
+
     field_def_t fdef = { };
     const char *p = skip_ws(str);
 
     if (*p != '<')
+    {
+        ERROR_LINE("field def syntax in %s /= %s: '<' expected after '/='\n", name, str);
         return false;
+    }
     ++p;
 
     char *q = 0;
     fdef.li = fdef.ri = strtoul(p, &q, 10);
     if (q == p) // couldn't parse any numbers
+    {
+        ERROR_LINE("field def syntax in %s /= %s: number expected after '<'\n", name, str);
         return false;
+    }
     p = skip_ws(q);
 
     if (*p == ':')
@@ -308,76 +330,104 @@ bool parse_field_def(const char *name, const char *str)
         ++p;
         fdef.ri = strtoul(p, &q, 10);
         if (q == p) // couldn't parse any numbers
+        {
+            ERROR_LINE("field def syntax in %s /= %s: number expected after ':'\n", name, str);
             return false;
+        }
         p = skip_ws(q);
     }
 
-    if (*p == '>')
+    if (*p != '>')
     {
-        ++p;
-        p = skip_ws(p);
-    }
-    else
+        ERROR_LINE("field def syntax in %s /= %s: '>' expected after number\n", name, str);
         return false;
+    }
+
+    ++p;
+    p = skip_ws(p);
 
     if (*p == ',')
     {
         ++p;
         p = skip_ws(p);
 
-        char name[32];
-        p = parse_token(p, name, sizeof(name), 0, false);
+        char qual[32];
+        p = parse_token(p, qual, sizeof(qual), 0, false);
         if (!p)
             return false;
-        if (!name[0])
+        if (!qual[0])
         {
-            ERROR_LINE("field syntax: expected token after ','\n");
+            ERROR_LINE("field syntax in %s /= %s: qualifier expected after ','\n", name, str);
             return false;
         }
 
-        if (strcmp(name, ".DEFAULT") == 0)
+        if (strcmp(qual, ".DEFAULT") == 0)
         {
             p = skip_ws(p);
             if (*p != '=')
+            {
+                ERROR_LINE("field syntax in %s /= %s: expected '=' after .DEFAULT\n", name, str);
                 return false;
+            }
             ++p;
 
             fdef.def_val = strtoul(p, &q, 16);
             if (q == p)  // couldn't parse any numbers
+            {
+                ERROR_LINE("field def syntax in %s /= %s: number expected after '='\n", name, str);
                 return false;
+            }
 
             p = skip_ws(q);
             if (*p != 0)
+            {
+                ERROR_LINE("field def syntax in %s /= %s: bad char %c after .DEFAULT=\n", name, str, *p);
                 return false;
+            }
 
             fdef.def_flag  = true;
             fdef.addr_flag = false;
             fdef.next_flag = false;
         }
-        else if (strcmp(name, ".ADDRESS") == 0)
+        else if (strcmp(qual, ".ADDRESS") == 0)
         {
+            if (*p != 0)
+            {
+                ERROR_LINE("field def syntax in %s /= %s: bad char %c after .ADDRESS=\n", name, str, *p);
+                return false;
+            }
+
             fdef.def_flag  = false;
             fdef.addr_flag = true;
             fdef.next_flag = false;
         }
-        else if (strcmp(name, ".NEXTADDRESS") == 0)
+        else if (strcmp(qual, ".NEXTADDRESS") == 0)
         {
+            if (*p != 0)
+            {
+                ERROR_LINE("field def syntax in %s /= %s: bad char %c after .NEXTADDRESS=\n", name, str, *p);
+                return false;
+            }
+
             fdef.def_flag  = false;
             fdef.addr_flag = true;
             fdef.next_flag = true;
         }
         else
         {
-            ERROR_LINE("bad field qualifier %s\n", name);
+            ERROR_LINE("field def syntax in %s /= %s: bad qualifier %s\n", name, str, qual);
             return false;
         }
     }
 
     if (*p != 0)
+    {
+        ERROR_LINE("field def syntax in %s /= %s: bad char %c after '>'\n", name, str, *p);
         return false;
+    }
 
-    DEBUG_PARSING("parsed field def: li=%u, ri=%u def=0x%0x flags=0b%03b\n",
-            fdef.li, fdef.ri, fdef.def_val, (fdef.def_flag<<2|fdef.addr_flag|fdef.next_flag));
+    DEBUG_PARSING("parsed field def %s: li=%u, ri=%u def=0x%0x flags=0b%03b\n", name,
+            fdef.li, fdef.ri, fdef.def_val, (fdef.def_flag<<2|fdef.addr_flag<<1|fdef.next_flag));
 
     if (!handle_field_def(name, &fdef))
         return false;
@@ -412,8 +462,16 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
         if (*p == '@')
         {
             uint ai = (*++p)-'1';
-            if (ai > MAXARGS)
+            if (ai >= MAXARGS)
+            {
+                ERROR_LINE("macro expansion bad arg: @%c\n", *p);
                 return 0;
+            }
+            else if (ai >= args->nargs)
+            {
+                ERROR_LINE("macro expansion not enough arguments for @%u\n", ai+1);
+                return 0;
+            }
             const char *a = args->arg[ai];
             int len = strlen(a);
             if (len+1 > max)
@@ -443,9 +501,13 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
         if (args->nargs > 0)
         {
             for (uint di=0; di<args->nargs; ++di)
-                fprintf(stderr, "%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+            {
+                io_write_error_list("%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+                fprintf(stderr,     "%s%s", args->arg[di], (di+1)<args->nargs ? "," : ")");
+            }
         }
-        fprintf(stderr, " to \"%s\"\n", xline);
+        io_write_error_list(" to \"%s\"\n", xline);
+        fprintf(stderr,     " to \"%s\"\n", xline);
     }
 #endif
 
@@ -513,6 +575,7 @@ bool expand_line(char *xline, uint max, const char *line)
     DEBUG_MACROS("expanding : %s\n", line);
 
     char tmp[MAXLINE];
+    tmp[sizeof(tmp)-1] = 0;
     for (uint i=0; i<MAXRECURSE; ++i)
     {
         strncpy(tmp, line, sizeof(tmp));
@@ -536,6 +599,7 @@ bool expand_line(char *xline, uint max, const char *line)
 
         line = xline;
     }
+    ERROR_LINE("macro expansion recursion limit hit\n");
     return false;
 }
 
@@ -586,7 +650,7 @@ bool parse_microcode(const char *line)
             return false;
         }
 
-        p = skip_ws(++p);
+        p = skip_ws(p+1);
 
         p = parse_token(p, name, sizeof(name), 0, false);
         if (!p)
@@ -637,9 +701,10 @@ bool parse_microcode(const char *line)
             return false;
         }
 
-        p = skip_ws(++p);
+        p = skip_ws(p+1);
     }
 
+    ERROR_LINE("ucode too many fields\n");
     return false;
 }
 
@@ -654,7 +719,8 @@ bool parse_line(const char *line)
 
     if (name[0] == '.') // directive
     {
-        if (!parse_directive(line, name, p))
+        handle_field_def(0, 0);
+        if (!parse_directive(name, p))
             return false;
     }
     else if (*p == '/' && p[1] == '=') // field def
@@ -666,18 +732,27 @@ bool parse_line(const char *line)
     }
     else if (*p == '=')
     {
+        p = skip_ws(p+1); // '='
+
         if (name[0] != 0) // field val
         {
-            DEBUG_PARSING("parsing field val: %s %s\n", name, p);
-            ++p;
+            const char *rhs = p;
+
+            DEBUG_PARSING("parsing field val: %s = %s\n", name, rhs);
             char *q = 0;
             uint32_t val = strtoul(p, &q, 16);
             if (q == p) // couldn't parse any numbers
+            {
+                ERROR_LINE("field val syntax in %s = %s: expected number\n", name, rhs);
                 return false;
+            }
 
             p = skip_ws(q);
             if (*p)
+            {
+                ERROR_LINE("field val syntax in %s = %s: bad char %c after number\n", name, rhs, *p);
                 return false;
+            }
 
             DEBUG_PARSING("parsed field val: %s 0x%x\n", name, val);
 
@@ -686,18 +761,23 @@ bool parse_line(const char *line)
         }
         else // constraint
         {
+            handle_field_def(0, 0);
             if (!parse_constraint(p))
                 return false;
         }
     }
     else if (*p == '"') // macro
     {
+        handle_field_def(0, 0);
         DEBUG_PARSING("parsing macro: %s\n", line);
 
         // check trailing '"'
         const char *q = &p[strlen(p)-1];
         if (*q != '"')
+        {
+            ERROR_LINE("macro def syntax: expected trailing '\"'\n");
             return false;
+        }
 
         DEBUG_PARSING("parsed macro: %s %s\n", name, p);
 
@@ -706,15 +786,32 @@ bool parse_line(const char *line)
     }
     else if (*p == ':') // addr or label
     {
-        DEBUG_PARSING("parsing address/label: %s:\n", name);
+        handle_field_def(0, 0);
+        DEBUG_PARSING("parsing address/label: %s\n", name);
+
+        if (!name[0])
+        {
+            ERROR_LINE("label syntax: empty label before ':'\n");
+            return false;
+        }
 
         // if starts with a digit (0-9) it is an address, not label
         if (isdigit(name[0]))
         {
-            char *q = 0;
-            uint32_t addr = strtoul(name, &q, 16);
+            const char *q = 0;
+            uint32_t addr = strtoul(name, (char **)&q, 16);
             if (q == name) // couldn't parse any numbers
+            {
+                ERROR_LINE("addr syntax: expected number\n");
                 return false;
+            }
+
+            q = skip_ws(q);
+            if (*q)
+            {
+                ERROR_LINE("addr syntax: bad char %c after number\n", *p);
+                return false;
+            }
 
             DEBUG_PARSING("parsed address 0x%0x\n", addr);
 
@@ -739,6 +836,7 @@ bool parse_line(const char *line)
     }
     else  // microcode
     {
+        handle_field_def(0, 0);
         if (!parse_microcode(line))
             return false;
     }
