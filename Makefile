@@ -41,7 +41,11 @@ cmicro2-gcov: $(SOURCES) *.h
 	$(CC) $(CFLAGS) -fprofile-dir=gcov/ -fprofile-prefix-path=$(MAKE_DIR) --coverage -g -o $@ $(SOURCES)
 	mv -f *.gcno gcov/
 
-coverage: cmicro2-gcov test_parser.mic run-tests.sh
-	rm -f gcov/*.gcda
+tests: cmicro2 *.mic run-tests.sh
+	rm -fr runs/*
+	./run-tests.sh
+
+coverage: cmicro2-gcov *.mic run-tests.sh
+	rm -fr gcov/*.gcda runs/*
 	./run-tests.sh ./cmicro2-gcov
 	gcovr --html-details gcov/coverage.html

@@ -21,7 +21,7 @@ check() {
 # command line parsing
 (
     set -x
-    "${cmd}" -l /dev/null -o runs/x/a.bin -- tests/x/input.mic
+    "${cmd}" -l/dev/null -oruns/x/a.bin -d0xf -- tests/x/input.mic
     "${cmd}" -o /dev/null tests/x/input.mic
     "${cmd}" -o /runs/x/a.bin /dev/null
     "${cmd}" -o /dev/null -- /dev/null
@@ -34,6 +34,7 @@ check() {
     "${cmd}" -l -x
     "${cmd}" -o
     "${cmd}" -o -x
+    "${cmd}" -o-x
     "${cmd}" -x
     "${cmd}"
     "${cmd}" -l runs/x/a.lst -- tests/x/input.mic
@@ -46,6 +47,6 @@ check "test1"
     "${cmd}" -l runs/test2/a.lst -o /dev/null test_parser.mic
     "${cmd}" -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
 ) >runs/test2/output0.txt 2>&1
-rm runs/test2/output.txt
+rm -f runs/test2/output.txt
 cat runs/test2/a.lst runs/test2/b.lst runs/test2/output0.txt > runs/test2/output.txt
 check "test2"

@@ -1,4 +1,6 @@
-+ ./cmicro2 -l /dev/null -o runs/x/a.bin -- tests/x/input.mic
++ ./cmicro2 -l/dev/null -oruns/x/a.bin -d0xf -- tests/x/input.mic
+DEBUG: opening listing file /dev/null
+DEBUG: begin processing file tests/x/input.mic
 ERROR: failed to open input file "tests/x/input.mic"
 + ./cmicro2 -o /dev/null tests/x/input.mic
 ERROR: failed to open input file "tests/x/input.mic"
@@ -36,6 +38,8 @@ ERROR: cmicro2 -l option requires an argument
 + ./cmicro2 -o
 ERROR: cmicro2 -o option requires an argument
 + ./cmicro2 -o -x
+ERROR: cmicro2 -o option requires an argument
++ ./cmicro2 -o-x
 ERROR: cmicro2 -o option requires an argument
 + ./cmicro2 -x
 ERROR: cmicro2 unknown option -x

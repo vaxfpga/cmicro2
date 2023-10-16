@@ -31,6 +31,16 @@ void print_usage(void)
     printf("    -o, --output <outfile.bin>    specify output bin file (mandatory)\n\n");
 }
 
+static inline const char *get_arg(char ***argv) // yes, sigh
+{
+    // single letter options return part of current arg
+    // otherwise argv is incremented
+    if ((**argv)[0] == '-' && (**argv)[1] != '-' && (**argv)[2])
+        return &(**argv)[2];
+    ++*argv;
+    return **argv ? **argv : 0;
+}
+
 bool process_args(char *argv[])
 {
     uint fc=0;
@@ -46,41 +56,41 @@ bool process_args(char *argv[])
             print_usage();
             return false;
         }
-        else if (strcmp(*argv, "-d") == 0 || strcmp(*argv, "--debug") == 0)
+        else if (strncmp(*argv, "-d",2) == 0 || strcmp(*argv, "--debug") == 0)
         {
-            ++argv;
-            if (!*argv || **argv == '-')
+            const char *p = get_arg(&argv);
+            if (!p || *p == '-')
             {
                 ERROR("cmicro2 -d option requires an argument\n");
                 return false;
             }
             char *q = 0;
-            debug_flags = strtoul(*argv, &q, 0);
+            debug_flags = strtoul(p, &q, 0);
             if (q == *argv)
             {
                 ERROR("cmicro2 -d option requires numeric (NN or 0xNN) argument\n");
                 return false;
             }
         }
-        else if (strcmp(*argv, "-l") == 0 || strcmp(*argv, "--listing") == 0)
+        else if (strncmp(*argv, "-l", 2) == 0 || strcmp(*argv, "--listing") == 0)
         {
-            ++argv;
-            if (!*argv || **argv == '-')
+            const char *p = get_arg(&argv);
+            if (!p || *p == '-')
             {
                 ERROR("cmicro2 -l option requires an argument\n");
                 return false;
             }
-            listing_fname = *argv;
+            listing_fname = p;
         }
-        else if (strcmp(*argv, "-o") == 0 || strcmp(*argv, "--output") == 0)
+        else if (strncmp(*argv, "-o", 2) == 0 || strcmp(*argv, "--output") == 0)
         {
-            ++argv;
-            if (!*argv || **argv == '-')
+            const char *p = get_arg(&argv);
+            if (!p || *p == '-')
             {
                 ERROR("cmicro2 -o option requires an argument\n");
                 return false;
             }
-            output_fname = *argv;
+            output_fname = p;
         }
         else if (**argv == '-')
         {
