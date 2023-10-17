@@ -241,10 +241,7 @@ DEBUG: line 78   : FOO[]    "@1,@1"
 DEBUG: normalized: FOO[]    "@1,@1"
 DEBUG: parsing macro: FOO[]    "@1,@1"
 DEBUG: parsed macro: FOO[] "@1,@1"
-DEBUG: line 79   : FOO[]X   "@1,A"
-DEBUG: normalized: FOO[]X   "@1,A"
-DEBUG: parsing macro: FOO[]X   "@1,A"
-DEBUG: parsed macro: FOO[]X "@1,A"
+DEBUG: line 79   : ;FOO[]X   "@1,A"
 DEBUG: line 80   : 
 DEBUG: line 81   : MRF[A/0]
 DEBUG: normalized: MRF[A/0]
@@ -264,22 +261,22 @@ DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanded  : A/0,A/0,B/0
 DEBUG: line 85   : ; A/0,A/0,B/0
 DEBUG: line 86   : 
-DEBUG: line 87   : MRF2[[A/0]]x[/0]
-DEBUG: normalized: MRF2[[A/0]]X[/0]
-DEBUG: parsing microcode: MRF2[[A/0]]X[/0]
-DEBUG: expanding : MRF2[[A/0]]X[/0]
-DEBUG: expanding macro MRF2[]X[]([A/0],/0) to "FOO[A/0]X/0"
-DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
-DEBUG: expanded  : A/0,A/0
+DEBUG: line 87   : MRF2[[A/0]@,]x[/0]
+DEBUG: normalized: MRF2[[A/0]@,]X[/0]
+DEBUG: parsing microcode: MRF2[[A/0]@,]X[/0]
+DEBUG: expanding : MRF2[[A/0]@,]X[/0]
+DEBUG: expanding macro MRF2[]X[]([A/0],,/0) to "FOO[A/0],X/0"
+DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
+DEBUG: expanded  : A/0,A/0,X/0
 DEBUG: line 88   : ; A/0,A/0,B/0
 DEBUG: line 89   : 
-DEBUG: line 90   : MRF3[[A/0],/1]
-DEBUG: normalized: MRF3[[A/0],/1]
-DEBUG: parsing microcode: MRF3[[A/0],/1]
-DEBUG: expanding : MRF3[[A/0],/1]
-DEBUG: expanding macro MRF3[,]([A/0],/1) to "FOO[A/0]X/1"
-DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
-DEBUG: expanded  : A/0,A/1
+DEBUG: line 90   : MRF3[[A/0]@,,/1]
+DEBUG: normalized: MRF3[[A/0]@,,/1]
+DEBUG: parsing microcode: MRF3[[A/0]@,,/1]
+DEBUG: expanding : MRF3[[A/0]@,,/1]
+DEBUG: expanding macro MRF3[,]([A/0],,/1) to "FOO[A/0],X/1"
+DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
+DEBUG: expanded  : A/0,A/0,X/1
 DEBUG: line 91   : ; A/0,A/1
 DEBUG: line 92   : 
 DEBUG: line 93   : L1: X/L2,M1
@@ -578,9 +575,7 @@ U,0007, 0000,0000,0000,0000,0000,0001
 ;    78: FOO[]    "@1,@1"
 ; DEBUG: parsing macro: FOO[]    "@1,@1"
 ; DEBUG: parsed macro: FOO[] "@1,@1"
-;    79: FOO[]X   "@1,A"
-; DEBUG: parsing macro: FOO[]X   "@1,A"
-; DEBUG: parsed macro: FOO[]X "@1,A"
+;    79: ;FOO[]X   "@1,A"
 ;    80: 
 ;    81: MRF[A/0]
 ; DEBUG: parsing microcode: MRF[A/0]
@@ -602,23 +597,23 @@ U,0008, 0000,0000,0000,0000,0000,0000
 U,0009, 0000,0000,0000,0000,0000,0000
 ;    85: ; A/0,A/0,B/0
 ;    86: 
-;    87: MRF2[[A/0]]x[/0]
-; DEBUG: parsing microcode: MRF2[[A/0]]X[/0]
-; DEBUG: expanding : MRF2[[A/0]]X[/0]
-; DEBUG: expanding macro MRF2[]X[]([A/0],/0) to "FOO[A/0]X/0"
-; DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
-; DEBUG: expanded  : A/0,A/0
-;         "A/0,A/0"
+;    87: MRF2[[A/0]@,]x[/0]
+; DEBUG: parsing microcode: MRF2[[A/0]@,]X[/0]
+; DEBUG: expanding : MRF2[[A/0]@,]X[/0]
+; DEBUG: expanding macro MRF2[]X[]([A/0],,/0) to "FOO[A/0],X/0"
+; DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
+; DEBUG: expanded  : A/0,A/0,X/0
+;         "A/0,A/0,X/0"
 U,000A, 0000,0000,0000,0000,0000,0000
 ;    88: ; A/0,A/0,B/0
 ;    89: 
-;    90: MRF3[[A/0],/1]
-; DEBUG: parsing microcode: MRF3[[A/0],/1]
-; DEBUG: expanding : MRF3[[A/0],/1]
-; DEBUG: expanding macro MRF3[,]([A/0],/1) to "FOO[A/0]X/1"
-; DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
-; DEBUG: expanded  : A/0,A/1
-;         "A/0,A/1"
+;    90: MRF3[[A/0]@,,/1]
+; DEBUG: parsing microcode: MRF3[[A/0]@,,/1]
+; DEBUG: expanding : MRF3[[A/0]@,,/1]
+; DEBUG: expanding macro MRF3[,]([A/0],,/1) to "FOO[A/0],X/1"
+; DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
+; DEBUG: expanded  : A/0,A/0,X/1
+;         "A/0,A/0,X/1"
 U,000B, 0000,0000,0000,0000,0000,0001
 ;    91: ; A/0,A/1
 ;    92: 

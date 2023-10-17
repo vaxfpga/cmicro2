@@ -115,15 +115,23 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
     uint bracket = 0;
     while (max > 1 && maxa > 1 && numa < MAXARGS)
     {
+        bool escape = false;
         if (!is_token(*str))
         {
             if (!allow_bracket)
                 break;
+            else if (*str == '@')
+            {
+                escape = true;
+                ++str;
+                if (!*str)
+                    break;
+            }
             else if (bracket <= 0 && *str != '[')
                 break;
         }
 
-        if (bracket > 0 && (*str == ']' || *str == ','))
+        if (bracket > 0 && (*str == ']' || *str == ',') && !escape)
         {
             --bracket;
 
@@ -137,13 +145,11 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
         }
 
         if (bracket <= 0)
-        {
             *p++ = *str, --max;
-        }
         else if (q)
             *q++ = *str, --maxa;
 
-        if (*str == '[' || *str == ',')
+        if ((*str == '[' || *str == ',') && !escape)
             ++bracket;
 
         // normalize internal spaces to single space

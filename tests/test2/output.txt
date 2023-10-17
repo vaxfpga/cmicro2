@@ -40,7 +40,7 @@ ERROR: line 78, ucode syntax: expected '/' after X
 ERROR: line 81, macro expansion bad arg: @:
 ERROR: line 84, macro expansion bad arg: @/
 ERROR: line 87, macro expansion not enough arguments for @2
-ERROR: line 88, argument list overflow
+ERROR: line 88, ucode syntax: expected '/' after MB4
 ERROR: line 91, macro expansion recursion limit hit
 ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
@@ -366,7 +366,8 @@ DEBUG: line 88   : MB4[@
 DEBUG: normalized: MB4[@
 DEBUG: parsing microcode: MB4[@
 DEBUG: expanding : MB4[@
-ERROR: line 88, argument list overflow
+DEBUG: expanded  : MB4[@
+ERROR: line 88, ucode syntax: expected '/' after MB4
 DEBUG: line 89   : 
 DEBUG: line 90   : MB5 "A/0,MB5"
 DEBUG: normalized: MB5 "A/0,MB5"
@@ -554,7 +555,7 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    87: MB4[A/0]
 ; ERROR: macro expansion not enough arguments for @2
 ;    88: MB4[@
-; ERROR: argument list overflow
+; ERROR: ucode syntax: expected '/' after MB4
 ;    89: 
 ;    90: MB5 "A/0,MB5"
 ;    91: MB5
@@ -836,7 +837,8 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    88: MB4[@
 ; DEBUG: parsing microcode: MB4[@
 ; DEBUG: expanding : MB4[@
-; ERROR: argument list overflow
+; DEBUG: expanded  : MB4[@
+; ERROR: ucode syntax: expected '/' after MB4
 ;    89: 
 ;    90: MB5 "A/0,MB5"
 ; DEBUG: parsing macro: MB5 "A/0,MB5"
