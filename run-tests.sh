@@ -57,3 +57,13 @@ mkdir -p "./runs/test3"
 ) >runs/test3/output.txt 2>&1
 cat runs/test3/*.lst >> runs/test3/output.txt
 check "test3"
+
+mkdir -p "./runs/test4"
+# constraints
+(
+    set -x
+    "${cmd}" -d 0xf -l runs/test4/a.lst -o /dev/null test_constraint.mic
+    "${cmd}" -l runs/test4/a.lst -o /dev/null test_constraint.mic
+) >runs/test4/output.txt 2>&1
+cat runs/test4/*.lst >> runs/test4/output.txt
+check "test4"

@@ -1,102 +1,105 @@
 + ./cmicro2 -d 0xf -l runs/test3/a.lst -o /dev/null test_macro.mic
 DEBUG: opening listing file runs/test3/a.lst
 DEBUG: begin processing file test_macro.mic
-DEBUG: line 1    : ; ---- allow macros to generate syntactically correct ucode ----
-DEBUG: line 2    : A/=<0>
+DEBUG: line 1    : ; SPDX-License-Identifier: MIT
+DEBUG: line 2    : ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+DEBUG: line 3    : 
+DEBUG: line 4    : ; ---- allow macros to generate syntactically correct ucode ----
+DEBUG: line 5    : A/=<0>
 DEBUG: normalized: A/=<0>
 DEBUG: parsing field def: A /= <0>
 DEBUG: parsed field def A: li=0, ri=0 def=0x0 flags=0b000
-DEBUG: line 3    :   A0=0
+DEBUG: line 6    :   A0=0
 DEBUG: normalized:   A0=0
 DEBUG: parsing field val: A0 = 0
 DEBUG: parsed field val: A0 0x0
-DEBUG: line 4    :   A1=1
+DEBUG: line 7    :   A1=1
 DEBUG: normalized:   A1=1
 DEBUG: parsing field val: A1 = 1
 DEBUG: parsed field val: A1 0x1
-DEBUG: line 5    : 
-DEBUG: line 6    : B/=<0>
+DEBUG: line 8    : 
+DEBUG: line 9    : B/=<0>
 DEBUG: normalized: B/=<0>
 DEBUG: parsing field def: B /= <0>
 DEBUG: parsed field def B: li=0, ri=0 def=0x0 flags=0b000
-DEBUG: line 7    :   B0=0
+DEBUG: line 10   :   B0=0
 DEBUG: normalized:   B0=0
 DEBUG: parsing field val: B0 = 0
 DEBUG: parsed field val: B0 0x0
-DEBUG: line 8    :   B1=1
+DEBUG: line 11   :   B1=1
 DEBUG: normalized:   B1=1
 DEBUG: parsing field val: B1 = 1
 DEBUG: parsed field val: B1 0x1
-DEBUG: line 9    : 
-DEBUG: line 10   : C/=<0>
+DEBUG: line 12   : 
+DEBUG: line 13   : C/=<0>
 DEBUG: normalized: C/=<0>
 DEBUG: parsing field def: C /= <0>
 DEBUG: parsed field def C: li=0, ri=0 def=0x0 flags=0b000
-DEBUG: line 11   :   C0=0
+DEBUG: line 14   :   C0=0
 DEBUG: normalized:   C0=0
 DEBUG: parsing field val: C0 = 0
 DEBUG: parsed field val: C0 0x0
-DEBUG: line 12   :   C1=1
+DEBUG: line 15   :   C1=1
 DEBUG: normalized:   C1=1
 DEBUG: parsing field val: C1 = 1
 DEBUG: parsed field val: C1 0x1
-DEBUG: line 13   :   C2=2
+DEBUG: line 16   :   C2=2
 DEBUG: normalized:   C2=2
 DEBUG: parsing field val: C2 = 2
 DEBUG: parsed field val: C2 0x2
-DEBUG: line 14   : 
-DEBUG: line 15   : D/=<0>
+DEBUG: line 17   : 
+DEBUG: line 18   : D/=<0>
 DEBUG: normalized: D/=<0>
 DEBUG: parsing field def: D /= <0>
 DEBUG: parsed field def D: li=0, ri=0 def=0x0 flags=0b000
-DEBUG: line 16   :   D0=0
+DEBUG: line 19   :   D0=0
 DEBUG: normalized:   D0=0
 DEBUG: parsing field val: D0 = 0
 DEBUG: parsed field val: D0 0x0
-DEBUG: line 17   :   D1=1
+DEBUG: line 20   :   D1=1
 DEBUG: normalized:   D1=1
 DEBUG: parsing field val: D1 = 1
 DEBUG: parsed field val: D1 0x1
-DEBUG: line 18   :   D3=3
+DEBUG: line 21   :   D3=3
 DEBUG: normalized:   D3=3
 DEBUG: parsing field val: D3 = 3
 DEBUG: parsed field val: D3 0x3
-DEBUG: line 19   : 
-DEBUG: line 20   : X/=<0>
+DEBUG: line 22   : 
+DEBUG: line 23   : X/=<0>
 DEBUG: normalized: X/=<0>
 DEBUG: parsing field def: X /= <0>
 DEBUG: parsed field def X: li=0, ri=0 def=0x0 flags=0b000
-DEBUG: line 21   :   L2=2
+DEBUG: line 24   :   L2=2
 DEBUG: normalized:   L2=2
 DEBUG: parsing field val: L2 = 2
 DEBUG: parsed field val: L2 0x2
-DEBUG: line 22   :   L2=3
+DEBUG: line 25   :   L2=3
 DEBUG: normalized:   L2=3
 DEBUG: parsing field val: L2 = 3
 DEBUG: parsed field val: L2 0x3
-ERROR: line 22, field value L2 = 0x3 already defined in field X
-DEBUG: line 23   : 
-DEBUG: line 24   : J/=<7:0>,.NEXTADDRESS
+ERROR: line 25, field value L2 = 0x3 already defined in field X
+DEBUG: line 26   : 
+DEBUG: line 27   : J/=<7:0>,.NEXTADDRESS
 DEBUG: normalized: J/=<7:0>,.NEXTADDRESS
 DEBUG: parsing field def: J /= <7:0>,.NEXTADDRESS
 DEBUG: parsed field def J: li=7, ri=0 def=0x0 flags=0b011
-DEBUG: line 25   : 
-DEBUG: line 26   : ; ---- from AA-H531A Micro Users Guide macros chapter examples: ----
-DEBUG: line 27   : 
-DEBUG: line 28   : M1 "A/A0,M2 ,B/B0"
+DEBUG: line 28   : 
+DEBUG: line 29   : ; ---- from AA-H531A Micro Users Guide macros chapter examples: ----
+DEBUG: line 30   : 
+DEBUG: line 31   : M1 "A/A0,M2 ,B/B0"
 DEBUG: normalized: M1 "A/A0,M2 ,B/B0"
 DEBUG: parsing macro: M1 "A/A0,M2 ,B/B0"
 DEBUG: parsed macro: M1 "A/A0,M2 ,B/B0"
-DEBUG: line 29   : M2 "C/C0, M3"
+DEBUG: line 32   : M2 "C/C0, M3"
 DEBUG: normalized: M2 "C/C0, M3"
 DEBUG: parsing macro: M2 "C/C0, M3"
 DEBUG: parsed macro: M2 "C/C0, M3"
-DEBUG: line 30   : M3 "D/D0"	
+DEBUG: line 33   : M3 "D/D0"	
 DEBUG: normalized: M3 "D/D0"
 DEBUG: parsing macro: M3 "D/D0"
 DEBUG: parsed macro: M3 "D/D0"
-DEBUG: line 31   : 
-DEBUG: line 32   : L1: X/L2 , M1
+DEBUG: line 34   : 
+DEBUG: line 35   : L1: X/L2 , M1
 DEBUG: normalized: L1: X/L2 , M1
 DEBUG: parsing address/label: L1
 DEBUG: parsed label L1
@@ -106,9 +109,9 @@ DEBUG: expanding macro M1 to "A/A0,M2 ,B/B0"
 DEBUG: expanding macro M2 to "C/C0, M3"
 DEBUG: expanding macro M3 to "D/D0"
 DEBUG: expanded  : X/L2,A/A0,C/C0,D/D0,B/B0
-DEBUG: line 33   : ; X/L2,A/A0,C/C0,D/D0,B/B0
-DEBUG: line 34   : 
-DEBUG: line 35   : L2: X/L2 , M1 , M1 , X/1
+DEBUG: line 36   : ; X/L2,A/A0,C/C0,D/D0,B/B0
+DEBUG: line 37   : 
+DEBUG: line 38   : L2: X/L2 , M1 , M1 , X/1
 DEBUG: normalized: L2: X/L2 , M1 , M1 , X/1
 DEBUG: parsing address/label: L2
 DEBUG: parsed label L2
@@ -121,14 +124,14 @@ DEBUG: expanding macro M2 to "C/C0, M3"
 DEBUG: expanding macro M3 to "D/D0"
 DEBUG: expanding macro M3 to "D/D0"
 DEBUG: expanded  : X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
-DEBUG: line 36   : ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
-DEBUG: line 37   : 
-DEBUG: line 38   : M4[]	"A/A0,B/@1"
+DEBUG: line 39   : ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
+DEBUG: line 40   : 
+DEBUG: line 41   : M4[]	"A/A0,B/@1"
 DEBUG: normalized: M4[] "A/A0,B/@1"
 DEBUG: parsing macro: M4[] "A/A0,B/@1"
 DEBUG: parsed macro: M4[] "A/A0,B/@1"
-DEBUG: line 39   : 
-DEBUG: line 40   : L3: C/C0,M4[B0]
+DEBUG: line 42   : 
+DEBUG: line 43   : L3: C/C0,M4[B0]
 DEBUG: normalized: L3: C/C0,M4[B0]
 DEBUG: parsing address/label: L3
 DEBUG: parsed label L3
@@ -136,9 +139,9 @@ DEBUG: parsing microcode: C/C0,M4[B0]
 DEBUG: expanding : C/C0,M4[B0]
 DEBUG: expanding macro M4[](B0) to "A/A0,B/B0"
 DEBUG: expanded  : C/C0,A/A0,B/B0
-DEBUG: line 41   : ; C/C0,A/A0,B/B0
-DEBUG: line 42   : 
-DEBUG: line 43   : L4: M4[B1]
+DEBUG: line 44   : ; C/C0,A/A0,B/B0
+DEBUG: line 45   : 
+DEBUG: line 46   : L4: M4[B1]
 DEBUG: normalized: L4: M4[B1]
 DEBUG: parsing address/label: L4
 DEBUG: parsed label L4
@@ -146,14 +149,14 @@ DEBUG: parsing microcode: M4[B1]
 DEBUG: expanding : M4[B1]
 DEBUG: expanding macro M4[](B1) to "A/A0,B/B1"
 DEBUG: expanded  : A/A0,B/B1
-DEBUG: line 44   : ; A/A0,B/B1
-DEBUG: line 45   : 
-DEBUG: line 46   : M5[a,a]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
+DEBUG: line 47   : ; A/A0,B/B1
+DEBUG: line 48   : 
+DEBUG: line 49   : M5[a,a]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
 DEBUG: normalized: M5[A,A]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
 DEBUG: parsing macro: M5[A,A]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
 DEBUG: parsed macro: M5[,]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
-DEBUG: line 47   : 
-DEBUG: line 48   : L5: M5[A1,B1]AB[C2]C[D3]
+DEBUG: line 50   : 
+DEBUG: line 51   : L5: M5[A1,B1]AB[C2]C[D3]
 DEBUG: normalized: L5: M5[A1,B1]AB[C2]C[D3]
 DEBUG: parsing address/label: L5
 DEBUG: parsed label L5
@@ -161,14 +164,14 @@ DEBUG: parsing microcode: M5[A1,B1]AB[C2]C[D3]
 DEBUG: expanding : M5[A1,B1]AB[C2]C[D3]
 DEBUG: expanding macro M5[,]AB[]C[](A1,B1,C2,D3) to "A/A1,B/B1,C/C2,D/D3"
 DEBUG: expanded  : A/A1,B/B1,C/C2,D/D3
-DEBUG: line 49   : ; A/A1,B/B1,C/C2,D/D3
-DEBUG: line 50   : 
-DEBUG: line 51   : SET ABC[] "A/@1,B/@1,C/@1"
+DEBUG: line 52   : ; A/A1,B/B1,C/C2,D/D3
+DEBUG: line 53   : 
+DEBUG: line 54   : SET ABC[] "A/@1,B/@1,C/@1"
 DEBUG: normalized: SET ABC[] "A/@1,B/@1,C/@1"
 DEBUG: parsing macro: SET ABC[] "A/@1,B/@1,C/@1"
 DEBUG: parsed macro: SET ABC[] "A/@1,B/@1,C/@1"
-DEBUG: line 52   : 
-DEBUG: line 53   : L6: SET	 ABC[0]
+DEBUG: line 55   : 
+DEBUG: line 56   : L6: SET	 ABC[0]
 DEBUG: normalized: L6: SET  ABC[0]
 DEBUG: parsing address/label: L6
 DEBUG: parsed label L6
@@ -176,24 +179,24 @@ DEBUG: parsing microcode: SET  ABC[0]
 DEBUG: expanding : SET  ABC[0]
 DEBUG: expanding macro SET ABC[](0) to "A/0,B/0,C/0"
 DEBUG: expanded  : A/0,B/0,C/0
-DEBUG: line 54   : ; A/0,B/0,C/0
-DEBUG: line 55   : 
-DEBUG: line 56   : M5[,]  "A/@1,@2"
+DEBUG: line 57   : ; A/0,B/0,C/0
+DEBUG: line 58   : 
+DEBUG: line 59   : M5[,]  "A/@1,@2"
 DEBUG: normalized: M5[,]  "A/@1,@2"
 DEBUG: parsing macro: M5[,]  "A/@1,@2"
 DEBUG: parsed macro: M5[,] "A/@1,@2"
-DEBUG: line 57   : M6      "B/B1"
+DEBUG: line 60   : M6      "B/B1"
 DEBUG: normalized: M6      "B/B1"
 DEBUG: parsing macro: M6      "B/B1"
 DEBUG: parsed macro: M6 "B/B1"
-DEBUG: line 58   : M7[]+[] "C/@1,D/@2"
+DEBUG: line 61   : M7[]+[] "C/@1,D/@2"
 DEBUG: normalized: M7[]+[] "C/@1,D/@2"
 DEBUG: parsing macro: M7[]+[] "C/@1,D/@2"
 DEBUG: parsed macro: M7[]+[] "C/@1,D/@2"
-DEBUG: line 59   : 
-DEBUG: line 60   : ;M5[,] "a" ; error
-DEBUG: line 61   : 
-DEBUG: line 62   : L7: M5[1,M6]
+DEBUG: line 62   : 
+DEBUG: line 63   : ;M5[,] "a" ; error
+DEBUG: line 64   : 
+DEBUG: line 65   : L7: M5[1,M6]
 DEBUG: normalized: L7: M5[1,M6]
 DEBUG: parsing address/label: L7
 DEBUG: parsed label L7
@@ -202,9 +205,9 @@ DEBUG: expanding : M5[1,M6]
 DEBUG: expanding macro M5[,](1,M6) to "A/1,M6"
 DEBUG: expanding macro M6 to "B/B1"
 DEBUG: expanded  : A/1,B/B1
-DEBUG: line 63   : ; A/1,B/B1
-DEBUG: line 64   : 
-DEBUG: line 65   : L8: M5[1,M7[C1]+[D1]]
+DEBUG: line 66   : ; A/1,B/B1
+DEBUG: line 67   : 
+DEBUG: line 68   : L8: M5[1,M7[C1]+[D1]]
 DEBUG: normalized: L8: M5[1,M7[C1]+[D1]]
 DEBUG: parsing address/label: L8
 DEBUG: parsed label L8
@@ -213,132 +216,132 @@ DEBUG: expanding : M5[1,M7[C1]+[D1]]
 DEBUG: expanding macro M5[,](1,M7[C1]+[D1]) to "A/1,M7[C1]+[D1]"
 DEBUG: expanding macro M7[]+[](C1,D1) to "C/C1,D/D1"
 DEBUG: expanded  : A/1,C/C1,D/D1
-DEBUG: line 66   : ; A/1,C/C1,D/D1
-DEBUG: line 67   : 
-DEBUG: line 68   : ; ---- tidied up from old a.mic test (made functional for expand)
-DEBUG: line 69   : 
-DEBUG: line 70   : MRF[]          "FOO[@1],@1"
+DEBUG: line 69   : ; A/1,C/C1,D/D1
+DEBUG: line 70   : 
+DEBUG: line 71   : ; ---- tidied up from old a.mic test (made functional for expand)
+DEBUG: line 72   : 
+DEBUG: line 73   : MRF[]          "FOO[@1],@1"
 DEBUG: normalized: MRF[]          "FOO[@1],@1"
 DEBUG: parsing macro: MRF[]          "FOO[@1],@1"
 DEBUG: parsed macro: MRF[] "FOO[@1],@1"
-DEBUG: line 71   : MRF2[,]        "FOO[@1],@2"
+DEBUG: line 74   : MRF2[,]        "FOO[@1],@2"
 DEBUG: normalized: MRF2[,]        "FOO[@1],@2"
 DEBUG: parsing macro: MRF2[,]        "FOO[@1],@2"
 DEBUG: parsed macro: MRF2[,] "FOO[@1],@2"
-DEBUG: line 72   : MRF2[]x[]      "FOO@1x@2"
+DEBUG: line 75   : MRF2[]x[]      "FOO@1x@2"
 DEBUG: normalized: MRF2[]X[]      "FOO@1X@2"
 DEBUG: parsing macro: MRF2[]X[]      "FOO@1X@2"
 DEBUG: parsed macro: MRF2[]X[] "FOO@1X@2"
-DEBUG: line 73   : MRF3[a,b[c,d]] "FOO@1x@2"
+DEBUG: line 76   : MRF3[a,b[c,d]] "FOO@1x@2"
 DEBUG: normalized: MRF3[A,B[C,D]] "FOO@1X@2"
 DEBUG: parsing macro: MRF3[A,B[C,D]] "FOO@1X@2"
 DEBUG: parsed macro: MRF3[,] "FOO@1X@2"
-DEBUG: line 74   : 
-DEBUG: line 75   : FOO[]    "@1,@1"
+DEBUG: line 77   : 
+DEBUG: line 78   : FOO[]    "@1,@1"
 DEBUG: normalized: FOO[]    "@1,@1"
 DEBUG: parsing macro: FOO[]    "@1,@1"
 DEBUG: parsed macro: FOO[] "@1,@1"
-DEBUG: line 76   : FOO[]X   "@1,A"
+DEBUG: line 79   : FOO[]X   "@1,A"
 DEBUG: normalized: FOO[]X   "@1,A"
 DEBUG: parsing macro: FOO[]X   "@1,A"
 DEBUG: parsed macro: FOO[]X "@1,A"
-DEBUG: line 77   : 
-DEBUG: line 78   : MRF[A/0]
+DEBUG: line 80   : 
+DEBUG: line 81   : MRF[A/0]
 DEBUG: normalized: MRF[A/0]
 DEBUG: parsing microcode: MRF[A/0]
 DEBUG: expanding : MRF[A/0]
 DEBUG: expanding macro MRF[](A/0) to "FOO[A/0],A/0"
 DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanded  : A/0,A/0,A/0
-DEBUG: line 79   : ; A/0,A/0,A/0
-DEBUG: line 80   : 
-DEBUG: line 81   : MRF2[A/0,B/0]
+DEBUG: line 82   : ; A/0,A/0,A/0
+DEBUG: line 83   : 
+DEBUG: line 84   : MRF2[A/0,B/0]
 DEBUG: normalized: MRF2[A/0,B/0]
 DEBUG: parsing microcode: MRF2[A/0,B/0]
 DEBUG: expanding : MRF2[A/0,B/0]
 DEBUG: expanding macro MRF2[,](A/0,B/0) to "FOO[A/0],B/0"
 DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanded  : A/0,A/0,B/0
-DEBUG: line 82   : ; A/0,A/0,B/0
-DEBUG: line 83   : 
-DEBUG: line 84   : MRF2[[A/0]]x[/0]
+DEBUG: line 85   : ; A/0,A/0,B/0
+DEBUG: line 86   : 
+DEBUG: line 87   : MRF2[[A/0]]x[/0]
 DEBUG: normalized: MRF2[[A/0]]X[/0]
 DEBUG: parsing microcode: MRF2[[A/0]]X[/0]
 DEBUG: expanding : MRF2[[A/0]]X[/0]
 DEBUG: expanding macro MRF2[]X[]([A/0],/0) to "FOO[A/0]X/0"
 DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
 DEBUG: expanded  : A/0,A/0
-DEBUG: line 85   : ; A/0,A/0,B/0
-DEBUG: line 86   : 
-DEBUG: line 87   : MRF3[[A/0],/1]
+DEBUG: line 88   : ; A/0,A/0,B/0
+DEBUG: line 89   : 
+DEBUG: line 90   : MRF3[[A/0],/1]
 DEBUG: normalized: MRF3[[A/0],/1]
 DEBUG: parsing microcode: MRF3[[A/0],/1]
 DEBUG: expanding : MRF3[[A/0],/1]
 DEBUG: expanding macro MRF3[,]([A/0],/1) to "FOO[A/0]X/1"
 DEBUG: expanding macro FOO[]X(A/0) to "A/0,A"
 DEBUG: expanded  : A/0,A/1
-DEBUG: line 88   : ; A/0,A/1
-DEBUG: line 89   : 
-DEBUG: line 90   : L1: X/L2,M1
+DEBUG: line 91   : ; A/0,A/1
+DEBUG: line 92   : 
+DEBUG: line 93   : L1: X/L2,M1
 DEBUG: normalized: L1: X/L2,M1
 DEBUG: parsing address/label: L1
 DEBUG: parsed label L1
-ERROR: line 90, duplicate label: L1
-DEBUG: line 91   : 
-DEBUG: line 92   : ME         "A/0"
+ERROR: line 93, duplicate label: L1
+DEBUG: line 94   : 
+DEBUG: line 95   : ME         "A/0"
 DEBUG: normalized: ME         "A/0"
 DEBUG: parsing macro: ME         "A/0"
 DEBUG: parsed macro: ME "A/0"
-DEBUG: line 93   : ME[]       "A/0"
+DEBUG: line 96   : ME[]       "A/0"
 DEBUG: normalized: ME[]       "A/0"
 DEBUG: parsing macro: ME[]       "A/0"
 DEBUG: parsed macro: ME[] "A/0"
-DEBUG: line 94   : ME2[a,b]   "@1/1,@2/2"
+DEBUG: line 97   : ME2[a,b]   "@1/1,@2/2"
 DEBUG: normalized: ME2[A,B]   "@1/1,@2/2"
 DEBUG: parsing macro: ME2[A,B]   "@1/1,@2/2"
 DEBUG: parsed macro: ME2[,] "@1/1,@2/2"
-DEBUG: line 95   : ME2a[][]   "@1/1,@2/2"
+DEBUG: line 98   : ME2a[][]   "@1/1,@2/2"
 DEBUG: normalized: ME2A[][]   "@1/1,@2/2"
 DEBUG: parsing macro: ME2A[][]   "@1/1,@2/2"
 DEBUG: parsed macro: ME2A[][] "@1/1,@2/2"
-DEBUG: line 96   : ME3[]      "MRF2[@1,@1]"
+DEBUG: line 99   : ME3[]      "MRF2[@1,@1]"
 DEBUG: normalized: ME3[]      "MRF2[@1,@1]"
 DEBUG: parsing macro: ME3[]      "MRF2[@1,@1]"
 DEBUG: parsed macro: ME3[] "MRF2[@1,@1]"
-DEBUG: line 97   : 
-DEBUG: line 98   : ME
+DEBUG: line 100  : 
+DEBUG: line 101  : ME
 DEBUG: normalized: ME
 DEBUG: parsing microcode: ME
 DEBUG: expanding : ME
 DEBUG: expanding macro ME to "A/0"
 DEBUG: expanded  : A/0
-DEBUG: line 99   : ; A/0
-DEBUG: line 100  : 
-DEBUG: line 101  : ME[hello]
+DEBUG: line 102  : ; A/0
+DEBUG: line 103  : 
+DEBUG: line 104  : ME[hello]
 DEBUG: normalized: ME[HELLO]
 DEBUG: parsing microcode: ME[HELLO]
 DEBUG: expanding : ME[HELLO]
 DEBUG: expanding macro ME[](HELLO) to "A/0"
 DEBUG: expanded  : A/0
-DEBUG: line 102  : ; A/0
-DEBUG: line 103  : 
-DEBUG: line 104  : ME2[a,b]
+DEBUG: line 105  : ; A/0
+DEBUG: line 106  : 
+DEBUG: line 107  : ME2[a,b]
 DEBUG: normalized: ME2[A,B]
 DEBUG: parsing microcode: ME2[A,B]
 DEBUG: expanding : ME2[A,B]
 DEBUG: expanding macro ME2[,](A,B) to "A/1,B/2"
 DEBUG: expanded  : A/1,B/2
-DEBUG: line 105  : ; A/1,B/2
-DEBUG: line 106  : 
-DEBUG: line 107  : ME2A[a][b]
+DEBUG: line 108  : ; A/1,B/2
+DEBUG: line 109  : 
+DEBUG: line 110  : ME2A[a][b]
 DEBUG: normalized: ME2A[A][B]
 DEBUG: parsing microcode: ME2A[A][B]
 DEBUG: expanding : ME2A[A][B]
 DEBUG: expanding macro ME2A[][](A,B) to "A/1,B/2"
 DEBUG: expanded  : A/1,B/2
-DEBUG: line 108  : ; A/1,B/2
-DEBUG: line 109  : 
-DEBUG: line 110  : ME3[MRF[A/0]]
+DEBUG: line 111  : ; A/1,B/2
+DEBUG: line 112  : 
+DEBUG: line 113  : ME3[MRF[A/0]]
 DEBUG: normalized: ME3[MRF[A/0]]
 DEBUG: parsing microcode: ME3[MRF[A/0]]
 DEBUG: expanding : ME3[MRF[A/0]]
@@ -352,88 +355,91 @@ DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
-DEBUG: line 111  : ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
+DEBUG: line 114  : ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: end processing file test_macro.mic
 ERROR: 2 errors found in file test_macro.mic
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
 ; ---- begin file "test_macro.mic" ----
 ;
-;     1: ; ---- allow macros to generate syntactically correct ucode ----
-;     2: A/=<0>
+;     1: ; SPDX-License-Identifier: MIT
+;     2: ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+;     3: 
+;     4: ; ---- allow macros to generate syntactically correct ucode ----
+;     5: A/=<0>
 ; DEBUG: parsing field def: A /= <0>
 ; DEBUG: parsed field def A: li=0, ri=0 def=0x0 flags=0b000
-;     3:   A0=0
+;     6:   A0=0
 ; DEBUG: parsing field val: A0 = 0
 ; DEBUG: parsed field val: A0 0x0
-;     4:   A1=1
+;     7:   A1=1
 ; DEBUG: parsing field val: A1 = 1
 ; DEBUG: parsed field val: A1 0x1
-;     5: 
-;     6: B/=<0>
+;     8: 
+;     9: B/=<0>
 ; DEBUG: parsing field def: B /= <0>
 ; DEBUG: parsed field def B: li=0, ri=0 def=0x0 flags=0b000
-;     7:   B0=0
+;    10:   B0=0
 ; DEBUG: parsing field val: B0 = 0
 ; DEBUG: parsed field val: B0 0x0
-;     8:   B1=1
+;    11:   B1=1
 ; DEBUG: parsing field val: B1 = 1
 ; DEBUG: parsed field val: B1 0x1
-;     9: 
-;    10: C/=<0>
+;    12: 
+;    13: C/=<0>
 ; DEBUG: parsing field def: C /= <0>
 ; DEBUG: parsed field def C: li=0, ri=0 def=0x0 flags=0b000
-;    11:   C0=0
+;    14:   C0=0
 ; DEBUG: parsing field val: C0 = 0
 ; DEBUG: parsed field val: C0 0x0
-;    12:   C1=1
+;    15:   C1=1
 ; DEBUG: parsing field val: C1 = 1
 ; DEBUG: parsed field val: C1 0x1
-;    13:   C2=2
+;    16:   C2=2
 ; DEBUG: parsing field val: C2 = 2
 ; DEBUG: parsed field val: C2 0x2
-;    14: 
-;    15: D/=<0>
+;    17: 
+;    18: D/=<0>
 ; DEBUG: parsing field def: D /= <0>
 ; DEBUG: parsed field def D: li=0, ri=0 def=0x0 flags=0b000
-;    16:   D0=0
+;    19:   D0=0
 ; DEBUG: parsing field val: D0 = 0
 ; DEBUG: parsed field val: D0 0x0
-;    17:   D1=1
+;    20:   D1=1
 ; DEBUG: parsing field val: D1 = 1
 ; DEBUG: parsed field val: D1 0x1
-;    18:   D3=3
+;    21:   D3=3
 ; DEBUG: parsing field val: D3 = 3
 ; DEBUG: parsed field val: D3 0x3
-;    19: 
-;    20: X/=<0>
+;    22: 
+;    23: X/=<0>
 ; DEBUG: parsing field def: X /= <0>
 ; DEBUG: parsed field def X: li=0, ri=0 def=0x0 flags=0b000
-;    21:   L2=2
+;    24:   L2=2
 ; DEBUG: parsing field val: L2 = 2
 ; DEBUG: parsed field val: L2 0x2
-;    22:   L2=3
+;    25:   L2=3
 ; DEBUG: parsing field val: L2 = 3
 ; DEBUG: parsed field val: L2 0x3
 ; ERROR: field value L2 = 0x3 already defined in field X
-;    23: 
-;    24: J/=<7:0>,.NEXTADDRESS
+;    26: 
+;    27: J/=<7:0>,.NEXTADDRESS
 ; DEBUG: parsing field def: J /= <7:0>,.NEXTADDRESS
 ; DEBUG: parsed field def J: li=7, ri=0 def=0x0 flags=0b011
-;    25: 
-;    26: ; ---- from AA-H531A Micro Users Guide macros chapter examples: ----
-;    27: 
-;    28: M1 "A/A0,M2 ,B/B0"
+;    28: 
+;    29: ; ---- from AA-H531A Micro Users Guide macros chapter examples: ----
+;    30: 
+;    31: M1 "A/A0,M2 ,B/B0"
 ; DEBUG: parsing macro: M1 "A/A0,M2 ,B/B0"
 ; DEBUG: parsed macro: M1 "A/A0,M2 ,B/B0"
-;    29: M2 "C/C0, M3"
+;    32: M2 "C/C0, M3"
 ; DEBUG: parsing macro: M2 "C/C0, M3"
 ; DEBUG: parsed macro: M2 "C/C0, M3"
-;    30: M3 "D/D0"	
+;    33: M3 "D/D0"	
 ; DEBUG: parsing macro: M3 "D/D0"
 ; DEBUG: parsed macro: M3 "D/D0"
-;    31: 
-;    32: L1: X/L2 , M1
+;    34: 
+;    35: L1: X/L2 , M1
 ; DEBUG: parsing address/label: L1
 ; DEBUG: parsed label L1
 ; DEBUG: parsing microcode: X/L2 , M1
@@ -444,9 +450,9 @@ DEBUG: end writing output file /dev/null
 ; DEBUG: expanded  : X/L2,A/A0,C/C0,D/D0,B/B0
 ;         "X/L2,A/A0,C/C0,D/D0,B/B0"
 U,0000, 0000,0000,0000,0000,0000,0000
-;    33: ; X/L2,A/A0,C/C0,D/D0,B/B0
-;    34: 
-;    35: L2: X/L2 , M1 , M1 , X/1
+;    36: ; X/L2,A/A0,C/C0,D/D0,B/B0
+;    37: 
+;    38: L2: X/L2 , M1 , M1 , X/1
 ; DEBUG: parsing address/label: L2
 ; DEBUG: parsed label L2
 ; DEBUG: parsing microcode: X/L2 , M1 , M1 , X/1
@@ -460,13 +466,13 @@ U,0000, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
 ;         "X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1"
 U,0001, 0000,0000,0000,0000,0000,0001
-;    36: ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
-;    37: 
-;    38: M4[]	"A/A0,B/@1"
+;    39: ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
+;    40: 
+;    41: M4[]	"A/A0,B/@1"
 ; DEBUG: parsing macro: M4[] "A/A0,B/@1"
 ; DEBUG: parsed macro: M4[] "A/A0,B/@1"
-;    39: 
-;    40: L3: C/C0,M4[B0]
+;    42: 
+;    43: L3: C/C0,M4[B0]
 ; DEBUG: parsing address/label: L3
 ; DEBUG: parsed label L3
 ; DEBUG: parsing microcode: C/C0,M4[B0]
@@ -475,9 +481,9 @@ U,0001, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : C/C0,A/A0,B/B0
 ;         "C/C0,A/A0,B/B0"
 U,0002, 0000,0000,0000,0000,0000,0000
-;    41: ; C/C0,A/A0,B/B0
-;    42: 
-;    43: L4: M4[B1]
+;    44: ; C/C0,A/A0,B/B0
+;    45: 
+;    46: L4: M4[B1]
 ; DEBUG: parsing address/label: L4
 ; DEBUG: parsed label L4
 ; DEBUG: parsing microcode: M4[B1]
@@ -486,13 +492,13 @@ U,0002, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/A0,B/B1
 ;         "A/A0,B/B1"
 U,0003, 0000,0000,0000,0000,0000,0001
-;    44: ; A/A0,B/B1
-;    45: 
-;    46: M5[a,a]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
+;    47: ; A/A0,B/B1
+;    48: 
+;    49: M5[a,a]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
 ; DEBUG: parsing macro: M5[A,A]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
 ; DEBUG: parsed macro: M5[,]AB[]C[] "A/@1,B/@2,C/@3,D/@4"
-;    47: 
-;    48: L5: M5[A1,B1]AB[C2]C[D3]
+;    50: 
+;    51: L5: M5[A1,B1]AB[C2]C[D3]
 ; DEBUG: parsing address/label: L5
 ; DEBUG: parsed label L5
 ; DEBUG: parsing microcode: M5[A1,B1]AB[C2]C[D3]
@@ -501,13 +507,13 @@ U,0003, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : A/A1,B/B1,C/C2,D/D3
 ;         "A/A1,B/B1,C/C2,D/D3"
 U,0004, 0000,0000,0000,0000,0000,0001
-;    49: ; A/A1,B/B1,C/C2,D/D3
-;    50: 
-;    51: SET ABC[] "A/@1,B/@1,C/@1"
+;    52: ; A/A1,B/B1,C/C2,D/D3
+;    53: 
+;    54: SET ABC[] "A/@1,B/@1,C/@1"
 ; DEBUG: parsing macro: SET ABC[] "A/@1,B/@1,C/@1"
 ; DEBUG: parsed macro: SET ABC[] "A/@1,B/@1,C/@1"
-;    52: 
-;    53: L6: SET	 ABC[0]
+;    55: 
+;    56: L6: SET	 ABC[0]
 ; DEBUG: parsing address/label: L6
 ; DEBUG: parsed label L6
 ; DEBUG: parsing microcode: SET  ABC[0]
@@ -516,21 +522,21 @@ U,0004, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : A/0,B/0,C/0
 ;         "A/0,B/0,C/0"
 U,0005, 0000,0000,0000,0000,0000,0000
-;    54: ; A/0,B/0,C/0
-;    55: 
-;    56: M5[,]  "A/@1,@2"
+;    57: ; A/0,B/0,C/0
+;    58: 
+;    59: M5[,]  "A/@1,@2"
 ; DEBUG: parsing macro: M5[,]  "A/@1,@2"
 ; DEBUG: parsed macro: M5[,] "A/@1,@2"
-;    57: M6      "B/B1"
+;    60: M6      "B/B1"
 ; DEBUG: parsing macro: M6      "B/B1"
 ; DEBUG: parsed macro: M6 "B/B1"
-;    58: M7[]+[] "C/@1,D/@2"
+;    61: M7[]+[] "C/@1,D/@2"
 ; DEBUG: parsing macro: M7[]+[] "C/@1,D/@2"
 ; DEBUG: parsed macro: M7[]+[] "C/@1,D/@2"
-;    59: 
-;    60: ;M5[,] "a" ; error
-;    61: 
-;    62: L7: M5[1,M6]
+;    62: 
+;    63: ;M5[,] "a" ; error
+;    64: 
+;    65: L7: M5[1,M6]
 ; DEBUG: parsing address/label: L7
 ; DEBUG: parsed label L7
 ; DEBUG: parsing microcode: M5[1,M6]
@@ -540,9 +546,9 @@ U,0005, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/1,B/B1
 ;         "A/1,B/B1"
 U,0006, 0000,0000,0000,0000,0000,0001
-;    63: ; A/1,B/B1
-;    64: 
-;    65: L8: M5[1,M7[C1]+[D1]]
+;    66: ; A/1,B/B1
+;    67: 
+;    68: L8: M5[1,M7[C1]+[D1]]
 ; DEBUG: parsing address/label: L8
 ; DEBUG: parsed label L8
 ; DEBUG: parsing microcode: M5[1,M7[C1]+[D1]]
@@ -552,31 +558,31 @@ U,0006, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : A/1,C/C1,D/D1
 ;         "A/1,C/C1,D/D1"
 U,0007, 0000,0000,0000,0000,0000,0001
-;    66: ; A/1,C/C1,D/D1
-;    67: 
-;    68: ; ---- tidied up from old a.mic test (made functional for expand)
-;    69: 
-;    70: MRF[]          "FOO[@1],@1"
+;    69: ; A/1,C/C1,D/D1
+;    70: 
+;    71: ; ---- tidied up from old a.mic test (made functional for expand)
+;    72: 
+;    73: MRF[]          "FOO[@1],@1"
 ; DEBUG: parsing macro: MRF[]          "FOO[@1],@1"
 ; DEBUG: parsed macro: MRF[] "FOO[@1],@1"
-;    71: MRF2[,]        "FOO[@1],@2"
+;    74: MRF2[,]        "FOO[@1],@2"
 ; DEBUG: parsing macro: MRF2[,]        "FOO[@1],@2"
 ; DEBUG: parsed macro: MRF2[,] "FOO[@1],@2"
-;    72: MRF2[]x[]      "FOO@1x@2"
+;    75: MRF2[]x[]      "FOO@1x@2"
 ; DEBUG: parsing macro: MRF2[]X[]      "FOO@1X@2"
 ; DEBUG: parsed macro: MRF2[]X[] "FOO@1X@2"
-;    73: MRF3[a,b[c,d]] "FOO@1x@2"
+;    76: MRF3[a,b[c,d]] "FOO@1x@2"
 ; DEBUG: parsing macro: MRF3[A,B[C,D]] "FOO@1X@2"
 ; DEBUG: parsed macro: MRF3[,] "FOO@1X@2"
-;    74: 
-;    75: FOO[]    "@1,@1"
+;    77: 
+;    78: FOO[]    "@1,@1"
 ; DEBUG: parsing macro: FOO[]    "@1,@1"
 ; DEBUG: parsed macro: FOO[] "@1,@1"
-;    76: FOO[]X   "@1,A"
+;    79: FOO[]X   "@1,A"
 ; DEBUG: parsing macro: FOO[]X   "@1,A"
 ; DEBUG: parsed macro: FOO[]X "@1,A"
-;    77: 
-;    78: MRF[A/0]
+;    80: 
+;    81: MRF[A/0]
 ; DEBUG: parsing microcode: MRF[A/0]
 ; DEBUG: expanding : MRF[A/0]
 ; DEBUG: expanding macro MRF[](A/0) to "FOO[A/0],A/0"
@@ -584,9 +590,9 @@ U,0007, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : A/0,A/0,A/0
 ;         "A/0,A/0,A/0"
 U,0008, 0000,0000,0000,0000,0000,0000
-;    79: ; A/0,A/0,A/0
-;    80: 
-;    81: MRF2[A/0,B/0]
+;    82: ; A/0,A/0,A/0
+;    83: 
+;    84: MRF2[A/0,B/0]
 ; DEBUG: parsing microcode: MRF2[A/0,B/0]
 ; DEBUG: expanding : MRF2[A/0,B/0]
 ; DEBUG: expanding macro MRF2[,](A/0,B/0) to "FOO[A/0],B/0"
@@ -594,9 +600,9 @@ U,0008, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/0,A/0,B/0
 ;         "A/0,A/0,B/0"
 U,0009, 0000,0000,0000,0000,0000,0000
-;    82: ; A/0,A/0,B/0
-;    83: 
-;    84: MRF2[[A/0]]x[/0]
+;    85: ; A/0,A/0,B/0
+;    86: 
+;    87: MRF2[[A/0]]x[/0]
 ; DEBUG: parsing microcode: MRF2[[A/0]]X[/0]
 ; DEBUG: expanding : MRF2[[A/0]]X[/0]
 ; DEBUG: expanding macro MRF2[]X[]([A/0],/0) to "FOO[A/0]X/0"
@@ -604,9 +610,9 @@ U,0009, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/0,A/0
 ;         "A/0,A/0"
 U,000A, 0000,0000,0000,0000,0000,0000
-;    85: ; A/0,A/0,B/0
-;    86: 
-;    87: MRF3[[A/0],/1]
+;    88: ; A/0,A/0,B/0
+;    89: 
+;    90: MRF3[[A/0],/1]
 ; DEBUG: parsing microcode: MRF3[[A/0],/1]
 ; DEBUG: expanding : MRF3[[A/0],/1]
 ; DEBUG: expanding macro MRF3[,]([A/0],/1) to "FOO[A/0]X/1"
@@ -614,66 +620,66 @@ U,000A, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/0,A/1
 ;         "A/0,A/1"
 U,000B, 0000,0000,0000,0000,0000,0001
-;    88: ; A/0,A/1
-;    89: 
-;    90: L1: X/L2,M1
+;    91: ; A/0,A/1
+;    92: 
+;    93: L1: X/L2,M1
 ; DEBUG: parsing address/label: L1
 ; DEBUG: parsed label L1
 ; ERROR: duplicate label: L1
-;    91: 
-;    92: ME         "A/0"
+;    94: 
+;    95: ME         "A/0"
 ; DEBUG: parsing macro: ME         "A/0"
 ; DEBUG: parsed macro: ME "A/0"
-;    93: ME[]       "A/0"
+;    96: ME[]       "A/0"
 ; DEBUG: parsing macro: ME[]       "A/0"
 ; DEBUG: parsed macro: ME[] "A/0"
-;    94: ME2[a,b]   "@1/1,@2/2"
+;    97: ME2[a,b]   "@1/1,@2/2"
 ; DEBUG: parsing macro: ME2[A,B]   "@1/1,@2/2"
 ; DEBUG: parsed macro: ME2[,] "@1/1,@2/2"
-;    95: ME2a[][]   "@1/1,@2/2"
+;    98: ME2a[][]   "@1/1,@2/2"
 ; DEBUG: parsing macro: ME2A[][]   "@1/1,@2/2"
 ; DEBUG: parsed macro: ME2A[][] "@1/1,@2/2"
-;    96: ME3[]      "MRF2[@1,@1]"
+;    99: ME3[]      "MRF2[@1,@1]"
 ; DEBUG: parsing macro: ME3[]      "MRF2[@1,@1]"
 ; DEBUG: parsed macro: ME3[] "MRF2[@1,@1]"
-;    97: 
-;    98: ME
+;   100: 
+;   101: ME
 ; DEBUG: parsing microcode: ME
 ; DEBUG: expanding : ME
 ; DEBUG: expanding macro ME to "A/0"
 ; DEBUG: expanded  : A/0
 ;         "A/0"
 U,000C, 0000,0000,0000,0000,0000,0000
-;    99: ; A/0
-;   100: 
-;   101: ME[hello]
+;   102: ; A/0
+;   103: 
+;   104: ME[hello]
 ; DEBUG: parsing microcode: ME[HELLO]
 ; DEBUG: expanding : ME[HELLO]
 ; DEBUG: expanding macro ME[](HELLO) to "A/0"
 ; DEBUG: expanded  : A/0
 ;         "A/0"
 U,000D, 0000,0000,0000,0000,0000,0000
-;   102: ; A/0
-;   103: 
-;   104: ME2[a,b]
+;   105: ; A/0
+;   106: 
+;   107: ME2[a,b]
 ; DEBUG: parsing microcode: ME2[A,B]
 ; DEBUG: expanding : ME2[A,B]
 ; DEBUG: expanding macro ME2[,](A,B) to "A/1,B/2"
 ; DEBUG: expanded  : A/1,B/2
 ;         "A/1,B/2"
 U,000E, 0000,0000,0000,0000,0000,0001
-;   105: ; A/1,B/2
-;   106: 
-;   107: ME2A[a][b]
+;   108: ; A/1,B/2
+;   109: 
+;   110: ME2A[a][b]
 ; DEBUG: parsing microcode: ME2A[A][B]
 ; DEBUG: expanding : ME2A[A][B]
 ; DEBUG: expanding macro ME2A[][](A,B) to "A/1,B/2"
 ; DEBUG: expanded  : A/1,B/2
 ;         "A/1,B/2"
 U,000F, 0000,0000,0000,0000,0000,0001
-;   108: ; A/1,B/2
-;   109: 
-;   110: ME3[MRF[A/0]]
+;   111: ; A/1,B/2
+;   112: 
+;   113: ME3[MRF[A/0]]
 ; DEBUG: parsing microcode: ME3[MRF[A/0]]
 ; DEBUG: expanding : ME3[MRF[A/0]]
 ; DEBUG: expanding macro ME3[](MRF[A/0]) to "MRF2[MRF[A/0],MRF[A/0]]"
@@ -688,9 +694,9 @@ U,000F, 0000,0000,0000,0000,0000,0001
 ; DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ;         "A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0"
 U,0010, 0000,0000,0000,0000,0000,0000
-;   111: ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
+;   114: ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ;
-; ---- end file "test_macro.mic", 111 lines, 2 errors ----
+; ---- end file "test_macro.mic", 114 lines, 2 errors ----
 ; ---- begin symbol table ----
 ; 8 symbols
 ;   L1       : 0x0000

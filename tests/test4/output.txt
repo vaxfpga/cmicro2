@@ -1,0 +1,378 @@
++ ./cmicro2 -d 0xf -l runs/test4/a.lst -o /dev/null test_constraint.mic
+DEBUG: opening listing file runs/test4/a.lst
+DEBUG: begin processing file test_constraint.mic
+DEBUG: line 1    : ; SPDX-License-Identifier: MIT
+DEBUG: line 2    : ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+DEBUG: line 3    : 
+DEBUG: line 4    : .REGION/0200,02ff
+DEBUG: normalized: .REGION/0200,02FF
+DEBUG: parsing directive: .REGION /0200,02FF
+DEBUG: parsed region directive: 0x0200, 0x02ff
+DEBUG: line 5    : 
+DEBUG: line 6    : X/=<23:16>
+DEBUG: normalized: X/=<23:16>
+DEBUG: parsing field def: X /= <23:16>
+DEBUG: parsed field def X: li=23, ri=16 def=0x0 flags=0b000
+DEBUG: line 7    : J/=<11:0>,.NEXTADDRESS
+DEBUG: normalized: J/=<11:0>,.NEXTADDRESS
+DEBUG: parsing field def: J /= <11:0>,.NEXTADDRESS
+DEBUG: parsed field def J: li=11, ri=0 def=0x0 flags=0b011
+DEBUG: line 8    : 
+DEBUG: line 9    : =0101
+DEBUG: normalized: =0101
+DEBUG: parsing constraint: 0101
+DEBUG: parsed constraint: i=00000010 v=00000101 m=00001111 c=00000101
+DEBUG: line 10   : L00: X/0
+DEBUG: normalized: L00: X/0
+DEBUG: parsing address/label: L00
+DEBUG: parsed label L00
+DEBUG: parsing microcode: X/0
+DEBUG: expanding : X/0
+DEBUG: expanded  : X/0
+DEBUG: line 11   : L01: X/1
+DEBUG: normalized: L01: X/1
+DEBUG: parsing address/label: L01
+DEBUG: parsed label L01
+DEBUG: parsing microcode: X/1
+DEBUG: expanding : X/1
+DEBUG: expanded  : X/1
+DEBUG: line 12   : L02: X/2
+DEBUG: normalized: L02: X/2
+DEBUG: parsing address/label: L02
+DEBUG: parsed label L02
+DEBUG: parsing microcode: X/2
+DEBUG: expanding : X/2
+DEBUG: expanded  : X/2
+DEBUG: line 13   : L03: X/3
+DEBUG: normalized: L03: X/3
+DEBUG: parsing address/label: L03
+DEBUG: parsed label L03
+DEBUG: parsing microcode: X/3
+DEBUG: expanding : X/3
+DEBUG: expanded  : X/3
+DEBUG: line 14   : 
+DEBUG: line 15   : =000
+DEBUG: normalized: =000
+DEBUG: parsing constraint: 000
+DEBUG: parsed constraint: i=00000001 v=00000000 m=00000111 c=00000000
+DEBUG: line 16   : L10: X/0
+DEBUG: normalized: L10: X/0
+DEBUG: parsing address/label: L10
+DEBUG: parsed label L10
+DEBUG: parsing microcode: X/0
+DEBUG: expanding : X/0
+DEBUG: expanded  : X/0
+DEBUG: line 17   : L11: X/1
+DEBUG: normalized: L11: X/1
+DEBUG: parsing address/label: L11
+DEBUG: parsed label L11
+DEBUG: parsing microcode: X/1
+DEBUG: expanding : X/1
+DEBUG: expanded  : X/1
+DEBUG: line 18   : L12: X/2
+DEBUG: normalized: L12: X/2
+DEBUG: parsing address/label: L12
+DEBUG: parsed label L12
+DEBUG: parsing microcode: X/2
+DEBUG: expanding : X/2
+DEBUG: expanded  : X/2
+DEBUG: line 19   : L13: X/3
+DEBUG: normalized: L13: X/3
+DEBUG: parsing address/label: L13
+DEBUG: parsed label L13
+DEBUG: parsing microcode: X/3
+DEBUG: expanding : X/3
+DEBUG: expanded  : X/3
+DEBUG: line 20   : L14: X/4
+DEBUG: normalized: L14: X/4
+DEBUG: parsing address/label: L14
+DEBUG: parsed label L14
+DEBUG: parsing microcode: X/4
+DEBUG: expanding : X/4
+DEBUG: expanded  : X/4
+DEBUG: line 21   : L15: X/5
+DEBUG: normalized: L15: X/5
+DEBUG: parsing address/label: L15
+DEBUG: parsed label L15
+DEBUG: parsing microcode: X/5
+DEBUG: expanding : X/5
+DEBUG: expanded  : X/5
+DEBUG: line 22   : L16: X/6
+DEBUG: normalized: L16: X/6
+DEBUG: parsing address/label: L16
+DEBUG: parsed label L16
+DEBUG: parsing microcode: X/6
+DEBUG: expanding : X/6
+DEBUG: expanded  : X/6
+DEBUG: line 23   : L17: X/7
+DEBUG: normalized: L17: X/7
+DEBUG: parsing address/label: L17
+DEBUG: parsed label L17
+DEBUG: parsing microcode: X/7
+DEBUG: expanding : X/7
+DEBUG: expanded  : X/7
+DEBUG: line 24   : 
+DEBUG: line 25   : = 000
+DEBUG: normalized: = 000
+DEBUG: parsing constraint: 000
+DEBUG: parsed constraint: i=00000001 v=00000000 m=00000111 c=00000000
+DEBUG: line 26   : L20: X/0
+DEBUG: normalized: L20: X/0
+DEBUG: parsing address/label: L20
+DEBUG: parsed label L20
+DEBUG: parsing microcode: X/0
+DEBUG: expanding : X/0
+DEBUG: expanded  : X/0
+DEBUG: line 27   : L21: X/1
+DEBUG: normalized: L21: X/1
+DEBUG: parsing address/label: L21
+DEBUG: parsed label L21
+DEBUG: parsing microcode: X/1
+DEBUG: expanding : X/1
+DEBUG: expanded  : X/1
+DEBUG: line 28   : =	011
+DEBUG: normalized: = 011
+DEBUG: parsing constraint: 011
+DEBUG: parsed constraint: i=00000100 v=00000011 m=00000111 c=00000011
+DEBUG: line 29   : L22: X/2
+DEBUG: normalized: L22: X/2
+DEBUG: parsing address/label: L22
+DEBUG: parsed label L22
+DEBUG: parsing microcode: X/2
+DEBUG: expanding : X/2
+DEBUG: expanded  : X/2
+DEBUG: line 30   : L23: X/3
+DEBUG: normalized: L23: X/3
+DEBUG: parsing address/label: L23
+DEBUG: parsed label L23
+DEBUG: parsing microcode: X/3
+DEBUG: expanding : X/3
+DEBUG: expanded  : X/3
+DEBUG: line 31   : L24: X/4
+DEBUG: normalized: L24: X/4
+DEBUG: parsing address/label: L24
+DEBUG: parsed label L24
+DEBUG: parsing microcode: X/4
+DEBUG: expanding : X/4
+DEBUG: expanded  : X/4
+DEBUG: line 32   : L25: X/5
+DEBUG: normalized: L25: X/5
+DEBUG: parsing address/label: L25
+DEBUG: parsed label L25
+DEBUG: parsing microcode: X/5
+DEBUG: expanding : X/5
+DEBUG: expanded  : X/5
+DEBUG: line 33   : L26: X/6
+DEBUG: normalized: L26: X/6
+DEBUG: parsing address/label: L26
+DEBUG: parsed label L26
+DEBUG: parsing microcode: X/6
+DEBUG: expanding : X/6
+DEBUG: expanded  : X/6
+DEBUG: line 34   : L27: X/7
+DEBUG: normalized: L27: X/7
+DEBUG: parsing address/label: L27
+DEBUG: parsed label L27
+DEBUG: parsing microcode: X/7
+DEBUG: expanding : X/7
+DEBUG: expanded  : X/7
+DEBUG: line 35   : 
+DEBUG: line 36   : =000
+DEBUG: normalized: =000
+DEBUG: parsing constraint: 000
+DEBUG: parsed constraint: i=00000001 v=00000000 m=00000111 c=00000000
+DEBUG: line 37   : L30: X/0,J/L10
+DEBUG: normalized: L30: X/0,J/L10
+DEBUG: parsing address/label: L30
+DEBUG: parsed label L30
+DEBUG: parsing microcode: X/0,J/L10
+DEBUG: expanding : X/0,J/L10
+DEBUG: expanded  : X/0,J/L10
+DEBUG: line 38   : L31: X/1
+DEBUG: normalized: L31: X/1
+DEBUG: parsing address/label: L31
+DEBUG: parsed label L31
+DEBUG: parsing microcode: X/1
+DEBUG: expanding : X/1
+DEBUG: expanded  : X/1
+DEBUG: line 39   : =
+DEBUG: normalized: =
+DEBUG: parsing constraint: 
+DEBUG: parsed constraint: i=00000000 v=00000000 m=00000000 c=00000000
+DEBUG: line 40   : =011
+DEBUG: normalized: =011
+DEBUG: parsing constraint: 011
+DEBUG: parsed constraint: i=00000100 v=00000011 m=00000111 c=00000011
+DEBUG: line 41   : L32:X/0
+DEBUG: normalized: L32:X/0
+DEBUG: parsing address/label: L32
+DEBUG: parsed label L32
+DEBUG: parsing microcode: X/0
+DEBUG: expanding : X/0
+DEBUG: expanded  : X/0
+DEBUG: line 42   : L33:X/1
+DEBUG: normalized: L33:X/1
+DEBUG: parsing address/label: L33
+DEBUG: parsed label L33
+DEBUG: parsing microcode: X/1
+DEBUG: expanding : X/1
+DEBUG: expanded  : X/1
+DEBUG: line 43   : L34:X/2
+DEBUG: normalized: L34:X/2
+DEBUG: parsing address/label: L34
+DEBUG: parsed label L34
+DEBUG: parsing microcode: X/2
+DEBUG: expanding : X/2
+DEBUG: expanded  : X/2
+DEBUG: line 44   : L35:X/3
+DEBUG: normalized: L35:X/3
+DEBUG: parsing address/label: L35
+DEBUG: parsed label L35
+DEBUG: parsing microcode: X/3
+DEBUG: expanding : X/3
+DEBUG: expanded  : X/3
+DEBUG: line 45   : L36:X/4
+DEBUG: normalized: L36:X/4
+DEBUG: parsing address/label: L36
+DEBUG: parsed label L36
+DEBUG: parsing microcode: X/4
+DEBUG: expanding : X/4
+DEBUG: expanded  : X/4
+DEBUG: line 46   : L37:X/5,J/<.>
+DEBUG: normalized: L37:X/5,J/<.>
+DEBUG: parsing address/label: L37
+DEBUG: parsed label L37
+DEBUG: parsing microcode: X/5,J/<.>
+DEBUG: expanding : X/5,J/<.>
+DEBUG: expanded  : X/5,J/<.>
+DEBUG: line 47   : 
+DEBUG: line 48   : =0
+DEBUG: normalized: =0
+DEBUG: parsing constraint: 0
+DEBUG: parsed constraint: i=00000001 v=00000000 m=00000001 c=00000000
+DEBUG: line 49   : =*
+DEBUG: normalized: =*
+DEBUG: parsing constraint: *
+DEBUG: parsed constraint: i=00000000 v=00000000 m=00000000 c=00000001
+DEBUG: line 50   : =1
+DEBUG: normalized: =1
+DEBUG: parsing constraint: 1
+DEBUG: parsed constraint: i=00000000 v=00000001 m=00000001 c=00000001
+DEBUG: end processing file test_constraint.mic
+DEBUG: begin writing output file /dev/null
+DEBUG: end writing output file /dev/null
++ ./cmicro2 -l runs/test4/a.lst -o /dev/null test_constraint.mic
+; ---- begin file "test_constraint.mic" ----
+;
+;     1: ; SPDX-License-Identifier: MIT
+;     2: ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+;     3: 
+;     4: .REGION/0200,02ff
+;     5: 
+;     6: X/=<23:16>
+;     7: J/=<11:0>,.NEXTADDRESS
+;     8: 
+;     9: =0101
+;    10: L00: X/0
+U,0205, 0000,0000,0000,0000,0000,0207
+;    11: L01: X/1
+U,0207, 0000,0000,0000,0000,0001,020D
+;    12: L02: X/2
+U,020D, 0000,0000,0000,0000,0002,020F
+;    13: L03: X/3
+U,020F, 0000,0000,0000,0000,0003,0210
+;    14: 
+;    15: =000
+;    16: L10: X/0
+U,0210, 0000,0000,0000,0000,0000,0211
+;    17: L11: X/1
+U,0211, 0000,0000,0000,0000,0001,0212
+;    18: L12: X/2
+U,0212, 0000,0000,0000,0000,0002,0213
+;    19: L13: X/3
+U,0213, 0000,0000,0000,0000,0003,0214
+;    20: L14: X/4
+U,0214, 0000,0000,0000,0000,0004,0215
+;    21: L15: X/5
+U,0215, 0000,0000,0000,0000,0005,0216
+;    22: L16: X/6
+U,0216, 0000,0000,0000,0000,0006,0217
+;    23: L17: X/7
+U,0217, 0000,0000,0000,0000,0007,0218
+;    24: 
+;    25: = 000
+;    26: L20: X/0
+U,0218, 0000,0000,0000,0000,0000,0219
+;    27: L21: X/1
+U,0219, 0000,0000,0000,0000,0001,021B
+;    28: =	011
+;    29: L22: X/2
+U,021B, 0000,0000,0000,0000,0002,021C
+;    30: L23: X/3
+U,021C, 0000,0000,0000,0000,0003,021D
+;    31: L24: X/4
+U,021D, 0000,0000,0000,0000,0004,021E
+;    32: L25: X/5
+U,021E, 0000,0000,0000,0000,0005,021F
+;    33: L26: X/6
+U,021F, 0000,0000,0000,0000,0006,0200
+;    34: L27: X/7
+U,0200, 0000,0000,0000,0000,0007,0220
+;    35: 
+;    36: =000
+;    37: L30: X/0,J/L10
+U,0220, 0000,0000,0000,0000,0000,0210
+;    38: L31: X/1
+U,0221, 0000,0000,0000,0000,0001,0223
+;    39: =
+;    40: =011
+;    41: L32:X/0
+U,0223, 0000,0000,0000,0000,0000,0227
+;    42: L33:X/1
+U,0227, 0000,0000,0000,0000,0001,0201
+;    43: L34:X/2
+U,0201, 0000,0000,0000,0000,0002,0202
+;    44: L35:X/3
+U,0202, 0000,0000,0000,0000,0003,0203
+;    45: L36:X/4
+U,0203, 0000,0000,0000,0000,0004,0204
+;    46: L37:X/5,J/<.>
+U,0204, 0000,0000,0000,0000,0005,0204
+;    47: 
+;    48: =0
+;    49: =*
+;    50: =1
+;
+; ---- end file "test_constraint.mic", 50 lines, 0 errors ----
+; ---- begin symbol table ----
+; 28 symbols
+;   L00      : 0x0205
+;   L01      : 0x0207
+;   L02      : 0x020d
+;   L03      : 0x020f
+;   L10      : 0x0210
+;   L11      : 0x0211
+;   L12      : 0x0212
+;   L13      : 0x0213
+;   L14      : 0x0214
+;   L15      : 0x0215
+;   L16      : 0x0216
+;   L17      : 0x0217
+;   L20      : 0x0218
+;   L21      : 0x0219
+;   L22      : 0x021b
+;   L23      : 0x021c
+;   L24      : 0x021d
+;   L25      : 0x021e
+;   L26      : 0x021f
+;   L27      : 0x0200
+;   L30      : 0x0220
+;   L31      : 0x0221
+;   L32      : 0x0223
+;   L33      : 0x0227
+;   L34      : 0x0201
+;   L35      : 0x0202
+;   L36      : 0x0203
+;   L37      : 0x0204
+;
+; ---- end symbol table ----

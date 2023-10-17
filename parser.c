@@ -248,7 +248,7 @@ bool parse_constraint(const char *str)
 
     const char *p = skip_ws(str);
 
-    if (*p != '0' && *p != '1' && *p != '*')
+    if (*p && *p != '0' && *p != '1' && *p != '*')
     {
         ERROR_LINE("constraint syntax in =%s: bad char %c after '='\n", str, *p);
         return false;
