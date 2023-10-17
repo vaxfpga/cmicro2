@@ -36,14 +36,16 @@ ERROR: line 74, ucode syntax: number format bad: 0X
 ERROR: line 75, ucode syntax: expected ',' after 0
 ERROR: line 76, ucode syntax: expected '/' after X
 ERROR: line 77, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 78, macro expansion syntax: separator must be '/' or ','
-ERROR: line 80, macro expansion bad arg: @:
-ERROR: line 82, macro expansion bad arg: @/
-ERROR: line 84, macro expansion not enough arguments for @2
-ERROR: line 87, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 88, macro expansion syntax: empty token
-ERROR: line 93, ucode too many fields
-ERROR: 44 errors found in file test_parser.mic
+ERROR: line 78, ucode syntax: expected '/' after X
+ERROR: line 81, macro expansion bad arg: @:
+ERROR: line 84, macro expansion bad arg: @/
+ERROR: line 87, macro expansion not enough arguments for @2
+ERROR: line 88, argument list overflow
+ERROR: line 91, macro expansion recursion limit hit
+ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
+ERROR: line 100, ucode too many fields
+ERROR: 46 errors found in file test_parser.mic
 + ./cmicro2 -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
 DEBUG: opening listing file runs/test2/b.lst
 DEBUG: begin processing file test_parser.mic
@@ -328,46 +330,76 @@ DEBUG: line 78   : X]
 DEBUG: normalized: X]
 DEBUG: parsing microcode: X]
 DEBUG: expanding : X]
-ERROR: line 78, macro expansion syntax: separator must be '/' or ','
-DEBUG: line 79   : MB2[] "@:"
+DEBUG: expanded  : X]
+ERROR: line 78, ucode syntax: expected '/' after X
+DEBUG: line 79   : 
+DEBUG: line 80   : MB2[] "@:"
 DEBUG: normalized: MB2[] "@:"
 DEBUG: parsing macro: MB2[] "@:"
 DEBUG: parsed macro: MB2[] "@:"
-DEBUG: line 80   : MB2[A/0]
+DEBUG: line 81   : MB2[A/0]
 DEBUG: normalized: MB2[A/0]
 DEBUG: parsing microcode: MB2[A/0]
 DEBUG: expanding : MB2[A/0]
-ERROR: line 80, macro expansion bad arg: @:
-DEBUG: line 81   : MB3[] "@/"
+ERROR: line 81, macro expansion bad arg: @:
+DEBUG: line 82   : 
+DEBUG: line 83   : MB3[] "@/"
 DEBUG: normalized: MB3[] "@/"
 DEBUG: parsing macro: MB3[] "@/"
 DEBUG: parsed macro: MB3[] "@/"
-DEBUG: line 82   : MB3[A/0]
+DEBUG: line 84   : MB3[A/0]
 DEBUG: normalized: MB3[A/0]
 DEBUG: parsing microcode: MB3[A/0]
 DEBUG: expanding : MB3[A/0]
-ERROR: line 82, macro expansion bad arg: @/
-DEBUG: line 83   : MB4[] "@2"
+ERROR: line 84, macro expansion bad arg: @/
+DEBUG: line 85   : 
+DEBUG: line 86   : MB4[] "@2"
 DEBUG: normalized: MB4[] "@2"
 DEBUG: parsing macro: MB4[] "@2"
 DEBUG: parsed macro: MB4[] "@2"
-DEBUG: line 84   : MB4[A/0]
+DEBUG: line 87   : MB4[A/0]
 DEBUG: normalized: MB4[A/0]
 DEBUG: parsing microcode: MB4[A/0]
 DEBUG: expanding : MB4[A/0]
-ERROR: line 84, macro expansion not enough arguments for @2
-DEBUG: line 85   : 
-DEBUG: line 86   : ; 127 max name
-DEBUG: line 87   : 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
+ERROR: line 87, macro expansion not enough arguments for @2
+DEBUG: line 88   : MB4[@
+DEBUG: normalized: MB4[@
+DEBUG: parsing microcode: MB4[@
+DEBUG: expanding : MB4[@
+ERROR: line 88, argument list overflow
+DEBUG: line 89   : 
+DEBUG: line 90   : MB5 "A/0,MB5"
+DEBUG: normalized: MB5 "A/0,MB5"
+DEBUG: parsing macro: MB5 "A/0,MB5"
+DEBUG: parsed macro: MB5 "A/0,MB5"
+DEBUG: line 91   : MB5
+DEBUG: normalized: MB5
+DEBUG: parsing microcode: MB5
+DEBUG: expanding : MB5
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+DEBUG: expanding macro MB5 to "A/0,MB5"
+ERROR: line 91, macro expansion recursion limit hit
+DEBUG: line 92   : 
+DEBUG: line 93   : ; 127 max name
+DEBUG: line 94   : 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
 DEBUG: normalized: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
-ERROR: line 87, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-DEBUG: line 88   : /0
+ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+DEBUG: line 95   : /0
 DEBUG: normalized: /0
 DEBUG: parsing microcode: /0
 DEBUG: expanding : /0
-ERROR: line 88, macro expansion syntax: empty token
-DEBUG: line 89   : 
-DEBUG: line 90   : MG2[A/0,MG2[MG1,MG1]]
+DEBUG: expanded  : /0
+ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
+DEBUG: line 96   : 
+DEBUG: line 97   : MG2[A/0,MG2[MG1,MG1]]
 DEBUG: normalized: MG2[A/0,MG2[MG1,MG1]]
 DEBUG: parsing microcode: MG2[A/0,MG2[MG1,MG1]]
 DEBUG: expanding : MG2[A/0,MG2[MG1,MG1]]
@@ -376,16 +408,17 @@ DEBUG: expanding macro MG2[,](MG1,MG1) to "MG1,MG1"
 DEBUG: expanding macro MG1 to "A/FDG1"
 DEBUG: expanding macro MG1 to "A/FDG1"
 DEBUG: expanded  : A/0,A/FDG1,A/FDG1
-DEBUG: line 91   : 
-DEBUG: line 92   : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
-DEBUG: line 93   : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
+DEBUG: line 98   : 
+DEBUG: line 99   : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
+DEBUG: line 100  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: normalized: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: parsing microcode: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: expanding : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
-ERROR: line 93, ucode too many fields
+ERROR: line 100, ucode too many fields
+DEBUG: line 101  : 
 DEBUG: end processing file test_parser.mic
-ERROR: 44 errors found in file test_parser.mic
+ERROR: 46 errors found in file test_parser.mic
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
 ; ---- begin file "test_parser.mic" ----
@@ -507,32 +540,42 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    77: X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 ; ERROR: token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 ;    78: X]
-; ERROR: macro expansion syntax: separator must be '/' or ','
-;    79: MB2[] "@:"
-;    80: MB2[A/0]
+; ERROR: ucode syntax: expected '/' after X
+;    79: 
+;    80: MB2[] "@:"
+;    81: MB2[A/0]
 ; ERROR: macro expansion bad arg: @:
-;    81: MB3[] "@/"
-;    82: MB3[A/0]
+;    82: 
+;    83: MB3[] "@/"
+;    84: MB3[A/0]
 ; ERROR: macro expansion bad arg: @/
-;    83: MB4[] "@2"
-;    84: MB4[A/0]
-; ERROR: macro expansion not enough arguments for @2
 ;    85: 
-;    86: ; 127 max name
-;    87: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
-; ERROR: token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-;    88: /0
-; ERROR: macro expansion syntax: empty token
+;    86: MB4[] "@2"
+;    87: MB4[A/0]
+; ERROR: macro expansion not enough arguments for @2
+;    88: MB4[@
+; ERROR: argument list overflow
 ;    89: 
-;    90: MG2[A/0,MG2[MG1,MG1]]
+;    90: MB5 "A/0,MB5"
+;    91: MB5
+; ERROR: macro expansion recursion limit hit
+;    92: 
+;    93: ; 127 max name
+;    94: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
+; ERROR: token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+;    95: /0
+; ERROR: ucode syntax: empty token at start or after '/' zor ','
+;    96: 
+;    97: MG2[A/0,MG2[MG1,MG1]]
 ;         "A/0,A/FDG1,A/FDG1"
 U,0201, 0000,0000,0000,0000,0000,0000
-;    91: 
-;    92: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
-;    93: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
+;    98: 
+;    99: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
+;   100: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; ERROR: ucode too many fields
+;   101: 
 ;
-; ---- end file "test_parser.mic", 93 lines, 44 errors ----
+; ---- end file "test_parser.mic", 101 lines, 46 errors ----
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200
@@ -764,38 +807,65 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    78: X]
 ; DEBUG: parsing microcode: X]
 ; DEBUG: expanding : X]
-; ERROR: macro expansion syntax: separator must be '/' or ','
-;    79: MB2[] "@:"
+; DEBUG: expanded  : X]
+; ERROR: ucode syntax: expected '/' after X
+;    79: 
+;    80: MB2[] "@:"
 ; DEBUG: parsing macro: MB2[] "@:"
 ; DEBUG: parsed macro: MB2[] "@:"
-;    80: MB2[A/0]
+;    81: MB2[A/0]
 ; DEBUG: parsing microcode: MB2[A/0]
 ; DEBUG: expanding : MB2[A/0]
 ; ERROR: macro expansion bad arg: @:
-;    81: MB3[] "@/"
+;    82: 
+;    83: MB3[] "@/"
 ; DEBUG: parsing macro: MB3[] "@/"
 ; DEBUG: parsed macro: MB3[] "@/"
-;    82: MB3[A/0]
+;    84: MB3[A/0]
 ; DEBUG: parsing microcode: MB3[A/0]
 ; DEBUG: expanding : MB3[A/0]
 ; ERROR: macro expansion bad arg: @/
-;    83: MB4[] "@2"
+;    85: 
+;    86: MB4[] "@2"
 ; DEBUG: parsing macro: MB4[] "@2"
 ; DEBUG: parsed macro: MB4[] "@2"
-;    84: MB4[A/0]
+;    87: MB4[A/0]
 ; DEBUG: parsing microcode: MB4[A/0]
 ; DEBUG: expanding : MB4[A/0]
 ; ERROR: macro expansion not enough arguments for @2
-;    85: 
-;    86: ; 127 max name
-;    87: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
+;    88: MB4[@
+; DEBUG: parsing microcode: MB4[@
+; DEBUG: expanding : MB4[@
+; ERROR: argument list overflow
+;    89: 
+;    90: MB5 "A/0,MB5"
+; DEBUG: parsing macro: MB5 "A/0,MB5"
+; DEBUG: parsed macro: MB5 "A/0,MB5"
+;    91: MB5
+; DEBUG: parsing microcode: MB5
+; DEBUG: expanding : MB5
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; DEBUG: expanding macro MB5 to "A/0,MB5"
+; ERROR: macro expansion recursion limit hit
+;    92: 
+;    93: ; 127 max name
+;    94: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
 ; ERROR: token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-;    88: /0
+;    95: /0
 ; DEBUG: parsing microcode: /0
 ; DEBUG: expanding : /0
-; ERROR: macro expansion syntax: empty token
-;    89: 
-;    90: MG2[A/0,MG2[MG1,MG1]]
+; DEBUG: expanded  : /0
+; ERROR: ucode syntax: empty token at start or after '/' zor ','
+;    96: 
+;    97: MG2[A/0,MG2[MG1,MG1]]
 ; DEBUG: parsing microcode: MG2[A/0,MG2[MG1,MG1]]
 ; DEBUG: expanding : MG2[A/0,MG2[MG1,MG1]]
 ; DEBUG: expanding macro MG2[,](A/0,MG2[MG1,MG1]) to "A/0,MG2[MG1,MG1]"
@@ -805,15 +875,16 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/0,A/FDG1,A/FDG1
 ;         "A/0,A/FDG1,A/FDG1"
 U,0201, 0000,0000,0000,0000,0000,0000
-;    91: 
-;    92: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
-;    93: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
+;    98: 
+;    99: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
+;   100: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; DEBUG: parsing microcode: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; DEBUG: expanding : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; ERROR: ucode too many fields
+;   101: 
 ;
-; ---- end file "test_parser.mic", 93 lines, 44 errors ----
+; ---- end file "test_parser.mic", 101 lines, 46 errors ----
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200

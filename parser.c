@@ -435,27 +435,10 @@ bool parse_field_def(const char *name, const char *str)
     return true;
 }
 
-static char *expand_macro(char *xline, uint max, const char *macro_name, const args_t *args, bool *expanded)
+static char *expand_macro(char *xline, uint max, const char *macro_name, const char *macro, const args_t *args)
 {
-    const char *p = macro_get(macro_name);
+    const char *p = macro;
     char *q = xline;
-
-    if (!p)
-    {
-        uint len = strlen(macro_name);
-        if (len+1 > max)
-        {
-            ERROR_LINE("macro expansion buffer overflow\n");
-            return 0;
-        }
-        strncpy(q, macro_name, max);
-        q += len;
-        max -= len;
-        q = remove_trailing_ws(xline, q);
-        if (expanded)
-            *expanded = false;
-        return q;
-    }
 
     while (max > 1 && *p)
     {
@@ -491,9 +474,6 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const a
     *q = 0;
     q = remove_trailing_ws(xline, q);
 
-    if (expanded)
-        *expanded = true;
-
 #if defined(ENABLE_DEBUG)
     DEBUG_MACROS("expanding macro %s%s", macro_name, args->nargs > 0 ? "(" : "");
     if ((debug_flags & 8) != 0)
@@ -526,25 +506,41 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
     char *q = xline;
     while(*p && max > 1)
     {
-        p = parse_token(p, name, sizeof(name), &args, true);
-        if (!p)
+        const char *pp = parse_token(p, name, sizeof(name), &args, true);
+        if (!pp)
             return false;
 
-        if (!name[0])
+        if (name[0])
         {
-            ERROR_LINE("macro expansion syntax: empty token\n");
-            return false;
+            const char *macro = macro_get(name);
+            if (macro)
+            {
+                // expand the macro and args if found
+                char *r = expand_macro(q, max, name, macro, &args);
+                if (!r)
+                    return false;
+                max -= (r-q);
+                q = r;
+
+                if (num_expanded)
+                    ++*num_expanded;
+            }
+            else
+            {
+                // otherwise copy original contents
+                uint len = (pp - p);
+                if (len+1 > max)
+                {
+                    ERROR_LINE("macro expansion buffer overflow\n");
+                    return 0;
+                }
+                strncpy(q, p, len);
+                q += len, max -= len;
+                q = remove_trailing_ws(xline, q);
+            }
         }
 
-        bool expanded = false;
-        char *r = expand_macro(q, max, name, &args, &expanded);
-        if (!r)
-            return false;
-        max -= (r-q);
-        q = r;
-
-        if (num_expanded && expanded)
-            ++*num_expanded;
+        p = pp;
 
         if (max <= 1)
         {
@@ -552,15 +548,10 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
             return false;
         }
 
-        if (*p == ',' || *p == '/')
+        if (*p)
         {
             *q++ = *p++, --max;
             p = skip_ws(p);
-        }
-        else if (*p != 0)
-        {
-            ERROR_LINE("macro expansion syntax: separator must be '/' or ','\n");
-            return false;
         }
     }
 
@@ -628,7 +619,7 @@ bool parse_microcode(const char *line)
             return false;
         if (!name[0])
         {
-            ERROR_LINE("ucode syntax: line truncated after ',' or start\n");
+            ERROR_LINE("ucode syntax: empty token at start or after '/' zor ','\n");
             return false;
         }
 
