@@ -1,6 +1,7 @@
 ; SPDX-License-Identifier: MIT
 ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
+; ---- allow macros to generate syntactically correct ucode ----
 A/=<0>
   A0=0
   A1=1
@@ -13,7 +14,7 @@ C/=<0>
   C0=0
   C1=1
   C2=2
-  
+
 D/=<0>
   D0=0
   D1=1
@@ -25,6 +26,8 @@ X/=<0>
 
 J/=<7:0>,.NEXTADDRESS
 
+; ---- from AA-H531A Micro Users Guide macros chapter examples: ----
+
 M1 "A/A0,M2 ,B/B0"
 M2 "C/C0, M3"
 M3 "D/D0"	
@@ -35,10 +38,10 @@ L1: X/L2 , M1
 L2: X/L2 , M1 , M1 , X/1
 ; X/L2,A/A0,C/C0,D/D0,B/B0,A/A0,C/C0,D/D0,B/B0,X/1
 
-M4[]	"A/A0,B/@1"   
+M4[]	"A/A0,B/@1"
 
 L3: C/C0,M4[B0]
-; C/C0,A/A0,B/B0 
+; C/C0,A/A0,B/B0
 
 L4: M4[B1]
 ; A/A0,B/B1
@@ -65,21 +68,27 @@ L7: M5[1,M6]
 L8: M5[1,M7[C1]+[D1]]
 ; A/1,C/C1,D/D1
 
-; from old a.mic test (made functional for expand)
+; ---- tidied up from old a.mic test (made functional for expand)
 
-MRF[]   "FOO[@1],@1"
-MRF2[,] "FOO[@1],@2"
-MRF2[]x[] "FOO@1x@2"
+MRF[]          "FOO[@1],@1"
+MRF2[,]        "FOO[@1],@2"
+MRF2[]x[]      "FOO@1x@2"
 MRF3[a,b[c,d]] "FOO@1x@2"
 
-;m1      "X/L3"
-foo[]    "@1,@1"
-fooaxb   "A/0"
+FOO[]    "@1,@1"
+FOO[]X   "@1,A"
 
-mrf[A/0]
-mrf2[A/0,B/0]
-mrf2[A]x[B]
-mrf3[A,B]
+MRF[A/0]
+; A/0,A/0,A/0
+
+MRF2[A/0,B/0]
+; A/0,A/0,B/0
+
+MRF2[[A/0]]x[/0]
+; A/0,A/0,B/0
+
+MRF3[[A/0],/1]
+; A/0,A/1
 
 L1: X/L2,M1
 
@@ -87,11 +96,19 @@ ME         "A/0"
 ME[]       "A/0"
 ME2[a,b]   "@1/1,@2/2"
 ME2a[][]   "@1/1,@2/2"
-ME3[]      "ME2[@1]"
+ME3[]      "MRF2[@1,@1]"
 
-ME: ME[hi]
-ME2: ME2[a,b]
-;ME2a: ME2[a][b] ; fails?
-;ME3: ME3[a[b],c]
-;ME33: ME3[a,b[c,d]]/blat
-;ME4: ME4[a.x,b[3,40[]]]XX
+ME
+; A/0
+
+ME[hello]
+; A/0
+
+ME2[a,b]
+; A/1,B/2
+
+ME2A[a][b]
+; A/1,B/2
+
+ME3[MRF[A/0]]
+; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0

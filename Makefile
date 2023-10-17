@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
 
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
-
 all: cmicro2
 
 #coverage: gcov/coverage.html
@@ -13,7 +10,7 @@ clean:
 	$(RM) -fr gcov/
 	$(RM) -fr runs/
 
-.PHONY: all clean coverage
+.PHONY: all clean coverage tests
 
 CFLAGS += -Wall
 

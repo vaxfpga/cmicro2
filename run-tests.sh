@@ -5,9 +5,6 @@
 
 cmd="${1:-./cmicro2}"
 
-mkdir -p "./runs/test1"
-mkdir -p "./runs/test2"
-
 check() {
     sed -Ei -e 's/(\+ \.\/cmicro2)(-\w+)?/\1/' "runs/$1/output.txt"
 
@@ -18,6 +15,7 @@ check() {
     fi
 }
 
+mkdir -p "./runs/test1"
 # command line parsing
 (
     set -x
@@ -41,12 +39,21 @@ check() {
 ) >runs/test1/output.txt 2>&1
 check "test1"
 
+mkdir -p "./runs/test2"
 # parsing
 (
     set -x
     "${cmd}" -l runs/test2/a.lst -o /dev/null test_parser.mic
     "${cmd}" -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
-) >runs/test2/output0.txt 2>&1
-rm -f runs/test2/output.txt
-cat runs/test2/a.lst runs/test2/b.lst runs/test2/output0.txt > runs/test2/output.txt
+) >runs/test2/output.txt 2>&1
+cat runs/test2/*.lst >> runs/test2/output.txt
 check "test2"
+
+mkdir -p "./runs/test3"
+# macros
+(
+    set -x
+    "${cmd}" -d 0xf -l runs/test3/a.lst -o /dev/null test_macro.mic
+) >runs/test3/output.txt 2>&1
+cat runs/test3/*.lst >> runs/test3/output.txt
+check "test3"
