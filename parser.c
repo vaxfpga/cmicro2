@@ -714,13 +714,7 @@ bool parse_line(const char *line)
     if (!p)
         return false;
 
-    if (name[0] == '.') // directive
-    {
-        handle_field_def(0, 0);
-        if (!parse_directive(name, p))
-            return false;
-    }
-    else if (*p == '/' && p[1] == '=') // field def
+    if (*p == '/' && p[1] == '=') // field def
     {
         p += 2; // '/='
 
@@ -762,24 +756,6 @@ bool parse_line(const char *line)
             if (!parse_constraint(p))
                 return false;
         }
-    }
-    else if (*p == '"') // macro
-    {
-        handle_field_def(0, 0);
-        DEBUG_PARSING("parsing macro: %s\n", line);
-
-        // check trailing '"'
-        const char *q = &p[strlen(p)-1];
-        if (*q != '"')
-        {
-            ERROR_LINE("macro def syntax: expected trailing '\"'\n");
-            return false;
-        }
-
-        DEBUG_PARSING("parsed macro: %s %s\n", name, p);
-
-        if (!handle_macro_def(name, p))
-            return false;
     }
     else if (*p == ':') // addr or label
     {
@@ -830,6 +806,30 @@ bool parse_line(const char *line)
             if (!parse_microcode(p))
                 return false;
         }
+    }
+    else if (name[0] == '.') // directive
+    {
+        handle_field_def(0, 0);
+        if (!parse_directive(name, p))
+            return false;
+    }
+    else if (*p == '"') // macro
+    {
+        handle_field_def(0, 0);
+        DEBUG_PARSING("parsing macro: %s\n", line);
+
+        // check trailing '"'
+        const char *q = &p[strlen(p)-1];
+        if (*q != '"')
+        {
+            ERROR_LINE("macro def syntax: expected trailing '\"'\n");
+            return false;
+        }
+
+        DEBUG_PARSING("parsed macro: %s %s\n", name, p);
+
+        if (!handle_macro_def(name, p))
+            return false;
     }
     else  // microcode
     {
