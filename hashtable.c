@@ -137,6 +137,6 @@ bool hashtable_add_entry(hashtable_t *ht, hashtable_entry_t entry)
 
 hashtable_entry_t *hashtable_get_entry(const hashtable_t *ht, const char *key)
 {
-    hashtable_entry_t *e = find_entry(ht, key);
+    hashtable_entry_t *e = (ht && key) ? find_entry(ht, key) : 0;
     return e && e->key ? e : 0;
 }

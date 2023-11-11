@@ -37,7 +37,13 @@ static inline const field_def_t *field_def_get(const char *fname)
 
 static inline uint32_t field_val_get(const field_def_t *fdef, const char *fval)
 {
-    return hashtable_geti(&fdef->vals, fval);
+    return fdef ? hashtable_geti(&fdef->vals, fval) : 0;
+}
+
+static inline bool field_val_exists(const char *fname, const char *vname)
+{
+    const field_def_t *fdef = field_def_get(fname);
+    return fdef ? hashtable_get_entry(&fdef->vals, vname) != 0 : false;
 }
 
 bool handle_field_def(const char *field, const field_def_t *fdef);
