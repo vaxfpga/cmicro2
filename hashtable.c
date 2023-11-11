@@ -51,6 +51,11 @@ bool hashtable_init(hashtable_t *ht, uint init_size)
     return ht->table != 0;
 }
 
+void hashtable_free(hashtable_t *ht)
+{
+    free(ht->table);
+}
+
 static hashtable_entry_t *find_entry(const hashtable_t *ht, const char *key)
 {
     uint32_t hash = fnv1a(key);
@@ -67,7 +72,7 @@ static hashtable_entry_t *find_entry(const hashtable_t *ht, const char *key)
     return 0;
 }
 
-static bool copy_ht(hashtable_t *nht, hashtable_t *ht)
+bool hashtable_copy(hashtable_t *nht, const hashtable_t *ht)
 {
     for (uint i=0; i<=ht->mask; ++i)
     {
@@ -105,12 +110,12 @@ bool hashtable_add_entry(hashtable_t *ht, hashtable_entry_t entry)
         if (!hashtable_init(&nht, new_size))
             return false;
 
-        if (copy_ht(&nht, ht))
+        if (hashtable_copy(&nht, ht))
         {
             e = find_entry(&nht, entry.key);
             if (e)
             {
-                free(ht->table);
+                hashtable_free(ht);
                 *ht = nht;
 
                 if(!e->key) // slot empty
@@ -123,7 +128,7 @@ bool hashtable_add_entry(hashtable_t *ht, hashtable_entry_t entry)
             }
         }
 
-        free(nht.table);
+        hashtable_free(&nht);
         new_size *= 2;
     }
 

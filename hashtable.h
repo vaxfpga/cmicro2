@@ -28,6 +28,10 @@ typedef struct hashtable_s
 
 bool hashtable_init(hashtable_t *ht, uint init_size);
 
+void hashtable_free(hashtable_t *ht);
+
+bool hashtable_copy(hashtable_t *nht, const hashtable_t *ht);
+
 bool hashtable_add_entry(hashtable_t *ht, hashtable_entry_t entry);
 hashtable_entry_t *hashtable_get_entry(const hashtable_t *ht, const char *key);
 
