@@ -441,6 +441,8 @@ bool parse_field_def(const char *name, const char *str)
     return true;
 }
 
+static hashtable_t blue_macros;
+
 static char *expand_macro(char *xline, uint max, const char *macro_name, const char *macro, const args_t *args)
 {
     const char *p = macro;
@@ -508,26 +510,37 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
     if (num_expanded)
         *num_expanded = 0;
 
+    hashtable_t local_macros;
+    hashtable_init(&local_macros, 16);
+
     const char *p = line;
     char *q = xline;
     while(*p && max > 1)
     {
         const char *pp = parse_token(p, name, sizeof(name), &args, true);
         if (!pp)
+        {
+            hashtable_free(&local_macros);
             return false;
+        }
 
         if (name[0])
         {
             const char *macro = macro_get(name);
-            if (macro)
+            uintptr_t isblue = hashtable_geti(&blue_macros, name) != HASHTABLE_ENTRY_NOT_FOUND;
+            if (macro && (!isblue || args.nargs > 0))
             {
                 // expand the macro and args if found
                 char *r = expand_macro(q, max, name, macro, &args);
                 if (!r)
+                {
+                    hashtable_free(&local_macros);
                     return false;
+                }
                 max -= (r-q);
                 q = r;
 
+                hashtable_addi(&local_macros, name,  1);
                 if (num_expanded)
                     ++*num_expanded;
             }
@@ -538,6 +551,7 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
                 if (len+1 > max)
                 {
                     ERROR_LINE("macro expansion buffer overflow\n");
+                    hashtable_free(&local_macros);
                     return 0;
                 }
                 strncpy(q, p, len);
@@ -551,6 +565,7 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
         if (max <= 1)
         {
             ERROR_LINE("macro expansion overflow\n");
+            hashtable_free(&local_macros);
             return false;
         }
 
@@ -564,12 +579,16 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
     *q = 0;
     remove_trailing_ws(xline, q);
 
+    hashtable_copy(&blue_macros, &local_macros);
+    hashtable_free(&local_macros);
     return true;
 }
 
 bool expand_line(char *xline, uint max, const char *line)
 {
     DEBUG_MACROS("expanding : %s\n", line);
+
+    hashtable_init(&blue_macros, 16);
 
     char tmp[MAXLINE];
     tmp[sizeof(tmp)-1] = 0;
@@ -579,24 +598,30 @@ bool expand_line(char *xline, uint max, const char *line)
         if (tmp[sizeof(tmp)-1] != 0)
         {
             ERROR_LINE("macro expansion tmp buffer overflow\n");
+            hashtable_free(&blue_macros);
             return false;
         }
 
         uint ne = 0;
         if (!expand_line_once(xline, max, tmp, &ne))
+        {
+            hashtable_free(&blue_macros);
             return false;
+        }
 
         if (ne <= 0)
         {
             DEBUG_MACROS("expanded  : %s\n", xline);
             if (i > 0)
                 io_write_expanded(xline);
+            hashtable_free(&blue_macros);
             return true;
         }
 
         line = xline;
     }
     ERROR_LINE("macro expansion recursion limit hit\n");
+    hashtable_free(&blue_macros);
     return false;
 }
 

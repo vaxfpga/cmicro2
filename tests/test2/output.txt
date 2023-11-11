@@ -41,7 +41,7 @@ ERROR: line 81, macro expansion bad arg: @:
 ERROR: line 84, macro expansion bad arg: @/
 ERROR: line 87, macro expansion not enough arguments for @2
 ERROR: line 88, ucode syntax: expected '/' after MB4
-ERROR: line 91, macro expansion recursion limit hit
+ERROR: line 91, ucode syntax: expected '/' after MB5
 ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
 ERROR: line 100, ucode too many fields
@@ -378,16 +378,8 @@ DEBUG: normalized: MB5
 DEBUG: parsing microcode: MB5
 DEBUG: expanding : MB5
 DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-DEBUG: expanding macro MB5 to "A/0,MB5"
-ERROR: line 91, macro expansion recursion limit hit
+DEBUG: expanded  : A/0,MB5
+ERROR: line 91, ucode syntax: expected '/' after MB5
 DEBUG: line 92   : 
 DEBUG: line 93   : ; 127 max name
 DEBUG: line 94   : 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
@@ -559,7 +551,8 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    89: 
 ;    90: MB5 "A/0,MB5"
 ;    91: MB5
-; ERROR: macro expansion recursion limit hit
+;         "A/0,MB5"
+; ERROR: ucode syntax: expected '/' after MB5
 ;    92: 
 ;    93: ; 127 max name
 ;    94: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
@@ -847,16 +840,9 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ; DEBUG: parsing microcode: MB5
 ; DEBUG: expanding : MB5
 ; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; DEBUG: expanding macro MB5 to "A/0,MB5"
-; ERROR: macro expansion recursion limit hit
+; DEBUG: expanded  : A/0,MB5
+;         "A/0,MB5"
+; ERROR: ucode syntax: expected '/' after MB5
 ;    92: 
 ;    93: ; 127 max name
 ;    94: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
