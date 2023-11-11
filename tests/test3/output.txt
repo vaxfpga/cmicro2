@@ -354,13 +354,18 @@ DEBUG: expanding macro FOO[](A/0) to "A/0,A/0"
 DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: line 114  : ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: line 115  : 
-DEBUG: line 116  : ; shortcut recursive macro blocker
+DEBUG: line 116  : ; ---- test case for LONG "DT/LONG" problem ----
 DEBUG: line 117  : A0 "A/A0"
 DEBUG: normalized: A0 "A/A0"
 DEBUG: parsing macro: A0 "A/A0"
 DEBUG: parsed macro: A0 "A/A0"
 DEBUG: line 118  : 
-DEBUG: line 119  : A0
+DEBUG: line 119  : A/A0
+DEBUG: normalized: A/A0
+DEBUG: parsing microcode: A/A0
+DEBUG: expanding : A/A0
+DEBUG: expanded  : A/A0
+DEBUG: line 120  : A0
 DEBUG: normalized: A0
 DEBUG: parsing microcode: A0
 DEBUG: expanding : A0
@@ -704,20 +709,25 @@ U,000F, 0000,0000,0000,0000,0000,0001
 U,0010, 0000,0000,0000,0000,0000,0000
 ;   114: ; A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ;   115: 
-;   116: ; shortcut recursive macro blocker
+;   116: ; ---- test case for LONG "DT/LONG" problem ----
 ;   117: A0 "A/A0"
 ; DEBUG: parsing macro: A0 "A/A0"
 ; DEBUG: parsed macro: A0 "A/A0"
 ;   118: 
-;   119: A0
+;   119: A/A0
+; DEBUG: parsing microcode: A/A0
+; DEBUG: expanding : A/A0
+; DEBUG: expanded  : A/A0
+U,0011, 0000,0000,0000,0000,0000,0000
+;   120: A0
 ; DEBUG: parsing microcode: A0
 ; DEBUG: expanding : A0
 ; DEBUG: expanding macro A0 to "A/A0"
 ; DEBUG: expanded  : A/A0
 ;         "A/A0"
-U,0011, 0000,0000,0000,0000,0000,0000
+U,0012, 0000,0000,0000,0000,0000,0000
 ;
-; ---- end file "test_macro.mic", 119 lines, 2 errors ----
+; ---- end file "test_macro.mic", 120 lines, 2 errors ----
 ; ---- begin symbol table ----
 ; 8 symbols
 ;   L1       : 0x0000

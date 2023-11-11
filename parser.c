@@ -505,10 +505,13 @@ static char *expand_macro(char *xline, uint max, const char *macro_name, const c
 static bool expand_line_once(char *xline, uint max, const char *line, uint *num_expanded)
 {
     char name[MAXLINE]; // could be entire line
+    char last_name[MAXLINE];
     args_t args;
 
     if (num_expanded)
         *num_expanded = 0;
+
+    last_name[sizeof(last_name)-1] = 0;
 
     hashtable_t local_macros;
     hashtable_init(&local_macros, 16);
@@ -527,8 +530,15 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
         if (name[0])
         {
             const char *macro = macro_get(name);
-            uintptr_t isblue = hashtable_geti(&blue_macros, name) != HASHTABLE_ENTRY_NOT_FOUND;
-            if (macro && (!isblue || args.nargs > 0))
+
+            // don't expand recursively, block all macros already seen
+            // allow recursing on parameterized macros for now - params could be different
+            bool isblue = hashtable_get_entry(&blue_macros, name) != 0;
+
+            // handle DT/LONG vs. LONG problem, block macros matching correct field value
+            bool isfval = field_val_exists(last_name, name);
+
+            if (macro && (!isblue || args.nargs > 0) && !isfval)
             {
                 // expand the macro and args if found
                 char *r = expand_macro(q, max, name, macro, &args);
@@ -569,8 +579,15 @@ static bool expand_line_once(char *xline, uint max, const char *line, uint *num_
             return false;
         }
 
+        // track whether this might be a field-name/val pair
+        if (*p == '/')
+            strncpy(last_name, name, sizeof(last_name)-1);
+        else
+            last_name[0] = 0;
+
         if (*p)
         {
+
             *q++ = *p++, --max;
             p = skip_ws(p);
         }
