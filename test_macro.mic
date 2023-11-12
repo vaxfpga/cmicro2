@@ -118,3 +118,16 @@ A0 "A/A0"
 
 A/A0
 A0
+
+; ---- test case for SUB/SPEC,J/C.FORK problem ----
+SUB/=<65:64>,.DEFAULT=0
+  NOP=0
+  CALL=1
+  RET=2
+  SPEC=3
+
+A.B "SUB/SPEC,J/A.B"
+TST "SUB/SPEC,J/A.B"
+
+A.B:
+TST

@@ -371,6 +371,48 @@ DEBUG: parsing microcode: A0
 DEBUG: expanding : A0
 DEBUG: expanding macro A0 to "A/A0"
 DEBUG: expanded  : A/A0
+DEBUG: line 121  : 
+DEBUG: line 122  : ; ---- test case for SUB/SPEC,J/C.FORK problem ----
+DEBUG: line 123  : SUB/=<65:64>,.DEFAULT=0
+DEBUG: normalized: SUB/=<65:64>,.DEFAULT=0
+DEBUG: parsing field def: SUB /= <65:64>,.DEFAULT=0
+DEBUG: parsed field def SUB: li=65, ri=64 def=0x0 flags=0b100
+DEBUG: line 124  :   NOP=0
+DEBUG: normalized:   NOP=0
+DEBUG: parsing field val: NOP = 0
+DEBUG: parsed field val: NOP 0x0
+DEBUG: line 125  :   CALL=1
+DEBUG: normalized:   CALL=1
+DEBUG: parsing field val: CALL = 1
+DEBUG: parsed field val: CALL 0x1
+DEBUG: line 126  :   RET=2
+DEBUG: normalized:   RET=2
+DEBUG: parsing field val: RET = 2
+DEBUG: parsed field val: RET 0x2
+DEBUG: line 127  :   SPEC=3
+DEBUG: normalized:   SPEC=3
+DEBUG: parsing field val: SPEC = 3
+DEBUG: parsed field val: SPEC 0x3
+DEBUG: line 128  : 
+DEBUG: line 129  : A.B "SUB/SPEC,J/A.B"
+DEBUG: normalized: A.B "SUB/SPEC,J/A.B"
+DEBUG: parsing macro: A.B "SUB/SPEC,J/A.B"
+DEBUG: parsed macro: A.B "SUB/SPEC,J/A.B"
+DEBUG: line 130  : TST "SUB/SPEC,J/A.B"
+DEBUG: normalized: TST "SUB/SPEC,J/A.B"
+DEBUG: parsing macro: TST "SUB/SPEC,J/A.B"
+DEBUG: parsed macro: TST "SUB/SPEC,J/A.B"
+DEBUG: line 131  : 
+DEBUG: line 132  : A.B:
+DEBUG: normalized: A.B:
+DEBUG: parsing address/label: A.B
+DEBUG: parsed label A.B
+DEBUG: line 133  : TST
+DEBUG: normalized: TST
+DEBUG: parsing microcode: TST
+DEBUG: expanding : TST
+DEBUG: expanding macro TST to "SUB/SPEC,J/A.B"
+DEBUG: expanded  : SUB/SPEC,J/A.B
 DEBUG: end processing file test_macro.mic
 ERROR: 2 errors found in file test_macro.mic
 DEBUG: begin writing output file /dev/null
@@ -726,10 +768,46 @@ U,0011, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/A0
 ;         "A/A0"
 U,0012, 0000,0000,0000,0000,0000,0000
+;   121: 
+;   122: ; ---- test case for SUB/SPEC,J/C.FORK problem ----
+;   123: SUB/=<65:64>,.DEFAULT=0
+; DEBUG: parsing field def: SUB /= <65:64>,.DEFAULT=0
+; DEBUG: parsed field def SUB: li=65, ri=64 def=0x0 flags=0b100
+;   124:   NOP=0
+; DEBUG: parsing field val: NOP = 0
+; DEBUG: parsed field val: NOP 0x0
+;   125:   CALL=1
+; DEBUG: parsing field val: CALL = 1
+; DEBUG: parsed field val: CALL 0x1
+;   126:   RET=2
+; DEBUG: parsing field val: RET = 2
+; DEBUG: parsed field val: RET 0x2
+;   127:   SPEC=3
+; DEBUG: parsing field val: SPEC = 3
+; DEBUG: parsed field val: SPEC 0x3
+;   128: 
+;   129: A.B "SUB/SPEC,J/A.B"
+; DEBUG: parsing macro: A.B "SUB/SPEC,J/A.B"
+; DEBUG: parsed macro: A.B "SUB/SPEC,J/A.B"
+;   130: TST "SUB/SPEC,J/A.B"
+; DEBUG: parsing macro: TST "SUB/SPEC,J/A.B"
+; DEBUG: parsed macro: TST "SUB/SPEC,J/A.B"
+;   131: 
+;   132: A.B:
+; DEBUG: parsing address/label: A.B
+; DEBUG: parsed label A.B
+;   133: TST
+; DEBUG: parsing microcode: TST
+; DEBUG: expanding : TST
+; DEBUG: expanding macro TST to "SUB/SPEC,J/A.B"
+; DEBUG: expanded  : SUB/SPEC,J/A.B
+;         "SUB/SPEC,J/A.B"
+U,0013, 0000,0003,0000,0000,0000,0013
 ;
-; ---- end file "test_macro.mic", 120 lines, 2 errors ----
+; ---- end file "test_macro.mic", 133 lines, 2 errors ----
 ; ---- begin symbol table ----
-; 8 symbols
+; 9 symbols
+;   A.B      : 0x0013
 ;   L1       : 0x0000
 ;   L2       : 0x0001
 ;   L3       : 0x0002
