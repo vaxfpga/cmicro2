@@ -662,7 +662,7 @@ bool parse_microcode(const char *line)
             return false;
         if (!name[0])
         {
-            ERROR_LINE("ucode syntax: empty token at start or after '/' zor ','\n");
+            ERROR_LINE("ucode syntax: empty token at start or after '/' or ','\n");
             return false;
         }
 
@@ -870,8 +870,9 @@ bool parse_line(const char *line)
     }
     else  // microcode
     {
-        handle_field_def(0, 0);
-        if (!parse_microcode(line))
+        handle_field_def(0, 0); // no longer added fields
+        p = skip_ws(line); // reset to beginning of line, skipping whitespace
+        if (!parse_microcode(p))
             return false;
     }
 

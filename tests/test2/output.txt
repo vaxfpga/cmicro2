@@ -43,7 +43,7 @@ ERROR: line 87, macro expansion not enough arguments for @2
 ERROR: line 88, ucode syntax: expected '/' after MB4
 ERROR: line 91, ucode syntax: expected '/' after MB5
 ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
+ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
 ERROR: line 100, ucode too many fields
 ERROR: 46 errors found in file test_parser.mic
 + ./cmicro2 -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
@@ -390,7 +390,7 @@ DEBUG: normalized: /0
 DEBUG: parsing microcode: /0
 DEBUG: expanding : /0
 DEBUG: expanded  : /0
-ERROR: line 95, ucode syntax: empty token at start or after '/' zor ','
+ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
 DEBUG: line 96   : 
 DEBUG: line 97   : MG2[A/0,MG2[MG1,MG1]]
 DEBUG: normalized: MG2[A/0,MG2[MG1,MG1]]
@@ -558,7 +558,7 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ;    94: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
 ; ERROR: token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 ;    95: /0
-; ERROR: ucode syntax: empty token at start or after '/' zor ','
+; ERROR: ucode syntax: empty token at start or after '/' or ','
 ;    96: 
 ;    97: MG2[A/0,MG2[MG1,MG1]]
 ;         "A/0,A/FDG1,A/FDG1"
@@ -851,7 +851,7 @@ U,0CAB, 0000,0000,0000,0000,0000,0000
 ; DEBUG: parsing microcode: /0
 ; DEBUG: expanding : /0
 ; DEBUG: expanded  : /0
-; ERROR: ucode syntax: empty token at start or after '/' zor ','
+; ERROR: ucode syntax: empty token at start or after '/' or ','
 ;    96: 
 ;    97: MG2[A/0,MG2[MG1,MG1]]
 ; DEBUG: parsing microcode: MG2[A/0,MG2[MG1,MG1]]
