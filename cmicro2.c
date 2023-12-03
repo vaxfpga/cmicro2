@@ -142,12 +142,12 @@ int main(int argc, char *argv[])
     {
         if (strcmp(*argv, "--") == 0)
         {
-            ++argv;
+            get_arg(&argv);
             break;
         }
         else if (**argv == '-')
         {
-            ++argv;
+            get_arg(&argv);
             continue;
         }
 
