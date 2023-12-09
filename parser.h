@@ -35,7 +35,7 @@ bool get_logical_line(char *line, uint max);
 
 // parses logical lines
 bool parse_directive(const char *name, const char *str);
-bool parse_constraint(const char *str);
+const char *parse_constraint(const char *str);
 bool parse_field_def(const char *name, const char *str);
 bool expand_line(char *xline, uint max, const char *line);
 bool parse_microcode(const char *line);
