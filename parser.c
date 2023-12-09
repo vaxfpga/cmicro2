@@ -113,7 +113,7 @@ static const char *parse_token(const char *str, char *name, uint max, args_t *ar
     }
 
     uint bracket = 0;
-    while (max > 1 && maxa > 1 && numa < MAXARGS)
+    while (max > 1 && *str && maxa > 1 && numa < MAXARGS)
     {
         bool escape = false;
         if (!is_token(*str))
