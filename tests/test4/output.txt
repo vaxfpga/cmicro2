@@ -258,6 +258,28 @@ DEBUG: line 50   : =1
 DEBUG: normalized: =1
 DEBUG: parsing constraint: 1
 DEBUG: parsed constraint: i=00000000 v=00000001 m=00000001 c=00000001
+DEBUG: line 51   : =
+DEBUG: normalized: =
+DEBUG: parsing constraint: 
+DEBUG: parsed constraint: i=00000000 v=00000000 m=00000000 c=00000000
+DEBUG: line 52   : 
+DEBUG: line 53   : =1**00
+DEBUG: normalized: =1**00
+DEBUG: parsing constraint: 1**00
+DEBUG: parsed constraint: i=00000001 v=00010000 m=00010011 c=00011100
+DEBUG: line 54   : DUMB:
+DEBUG: normalized: DUMB:
+DEBUG: parsing address/label: DUMB
+DEBUG: parsed label DUMB
+DEBUG: line 55   : =**
+DEBUG: normalized: =**
+DEBUG: parsing constraint: **
+DEBUG: parsed constraint: i=00000000 v=00000000 m=00000000 c=00000011
+DEBUG: line 56   :     J/DUMB
+DEBUG: normalized:     J/DUMB
+DEBUG: parsing microcode: J/DUMB
+DEBUG: expanding : J/DUMB
+DEBUG: expanded  : J/DUMB
 DEBUG: end processing file test_constraint.mic
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
@@ -342,10 +364,18 @@ U,0204, 0000,0000,0000,0000,0005,0204
 ;    48: =0
 ;    49: =*
 ;    50: =1
+;    51: =
+;    52: 
+;    53: =1**00
+;    54: DUMB:
+;    55: =**
+;    56:     J/DUMB
+U,0230, 0000,0000,0000,0000,0000,0230
 ;
-; ---- end file "test_constraint.mic", 50 lines, 0 errors ----
+; ---- end file "test_constraint.mic", 56 lines, 0 errors ----
 ; ---- begin symbol table ----
-; 28 symbols
+; 29 symbols
+;   DUMB     : 0x0230
 ;   L00      : 0x0205
 ;   L01      : 0x0207
 ;   L02      : 0x020d
