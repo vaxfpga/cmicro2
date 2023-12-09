@@ -67,7 +67,8 @@ bool handle_constraint(const constraint_t *cst)
     ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
         .cst         = c,
-        .target_addr = 0
+        .target_addr = 0,
+        .line        = line_number,
     };
 
     ucode_addr = UCODE_UNALLOCATED;
@@ -192,7 +193,8 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
         .cst         = 0,
-        .target_addr = 0
+        .target_addr = 0,
+        .line        = line_number,
     };
 
     uint32_t def[3] = { };
@@ -268,7 +270,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     return true;
 }
 
-static uint32_t get_cst_base(const constraint_t *cst)
+static uint32_t get_cst_base(const constraint_t *cst, uint line_number)
 {
     for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
     {
@@ -282,7 +284,7 @@ static uint32_t get_cst_base(const constraint_t *cst)
                 return a;
         }
     }
-    ERROR("can't satisfy constraint\n");
+    ERROR_LINE("unable to satisfy base constraint\n");
     return CONSTRAINT_SET_FINISHED;
 }
 
@@ -317,7 +319,8 @@ bool ucode_allocate(void)
 
         if (ucode_alloc[ucode[i].addr])
         {
-            ERROR("duplicate address 0x%04x\n", ucode[i].addr);
+            uint line_number = ucode[i].line;
+            ERROR_LINE("duplicate address 0x%04x\n", ucode[i].addr);
             //return false;
             continue;
         }
@@ -342,7 +345,7 @@ bool ucode_allocate(void)
             else if (!cst)
             {
                 cst = ucode[i].cst;
-                cur = base = get_cst_base(cst);
+                cur = base = get_cst_base(cst, ucode[i].line);
                 if (base == CONSTRAINT_SET_FINISHED)
                 {
                     //return false;
@@ -363,7 +366,8 @@ bool ucode_allocate(void)
 
         if (base == CONSTRAINT_SET_FINISHED || cur == CONSTRAINT_SET_FINISHED)
         {
-            ERROR("unable to satisfy constraint\n");
+            uint line_number = ucode[i].line;
+            ERROR_LINE("unable to satisfy constraint\n");
             continue;
         }
 
@@ -397,7 +401,8 @@ bool ucode_allocate(void)
 
         if (addr == UCODE_UNALLOCATED)
         {
-            ERROR("can't allocate, no free address\n");
+            uint line_number = ucode[i].line;
+            ERROR_LINE("can't allocate, no free address\n");
             //return false;
             continue;
         }
@@ -438,6 +443,7 @@ bool ucode_resolve(void)
 
     for (uint i=0; i<ucode_num; ++i)
     {
+        uint line_number = ucode[i].line;
         if (!ucode[i].target_addr)
             continue;
 
@@ -447,7 +453,7 @@ bool ucode_resolve(void)
         {
             if (i+1 >= ucode_num)
             {
-                ERROR("can't use address of next instruction on last instruction\n");
+                ERROR_LINE("can't use address of next instruction on last instruction\n");
                 apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr); // substitute with <.>
                 //return false;
                 continue;
@@ -459,9 +465,14 @@ bool ucode_resolve(void)
         else
         {
             ucode_inst_t *inst = hashtable_get(&symbols, ucode[i].target_addr);
+
+            // skip constraints after labels, label will apply to next actual ucode
+            while (inst && inst->addr == UCODE_UNALLOCATED && inst->cst)
+                ++inst;
+
             if (!inst || inst->addr == UCODE_UNALLOCATED)
             {
-                ERROR("unresolved symbol %s\n", ucode[i].target_addr);
+                ERROR_LINE("unresolved symbol %s\n", ucode[i].target_addr);
                 apply_val(ucode[i].uc, fdef->li, fdef->ri, ucode[i].addr); // substitute with <.>
                 //return false;
                 continue;

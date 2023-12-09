@@ -19,6 +19,7 @@ typedef struct ucode_inst_s
     uint32_t addr;
     const constraint_t *cst;
     const char *target_addr;
+    uint line;
     uint32_t uc[3];
 } ucode_inst_t;
 

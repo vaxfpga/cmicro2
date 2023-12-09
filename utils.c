@@ -33,6 +33,11 @@ sym_pair_t *util_get_symbols(uint *num)
         if (!symbols.table[i].key)
             continue;
         ucode_inst_t *inst = symbols.table[i].value_ptr;
+
+        // skip constraints after labels, label will apply to next actual ucode
+        while (inst && inst->addr == UCODE_UNALLOCATED && inst->cst)
+        	++inst;
+
         uint32_t addr = inst ? inst->addr : UCODE_UNALLOCATED;
         syms[n++] = (sym_pair_t){ symbols.table[i].key, addr };
     }
