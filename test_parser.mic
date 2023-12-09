@@ -99,3 +99,5 @@ MG2[A/0,MG2[MG1,MG1]]
 A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,
 A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 
+; smashing microcode on same line as constraint
+=100 A/0

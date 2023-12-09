@@ -410,6 +410,14 @@ DEBUG: expanding : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A
 DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ERROR: line 100, ucode too many fields
 DEBUG: line 101  : 
+DEBUG: line 102  : ; smashing microcode on same line as constraint
+DEBUG: line 103  : =100 A/0
+DEBUG: normalized: =100 A/0
+DEBUG: parsing constraint: 100 A/0
+DEBUG: parsed constraint: i=00000001 v=00000100 m=00000111 c=00000100
+DEBUG: parsing microcode: A/0
+DEBUG: expanding : A/0
+DEBUG: expanded  : A/0
 DEBUG: end processing file test_parser.mic
 ERROR: 46 errors found in file test_parser.mic
 DEBUG: begin writing output file /dev/null
@@ -568,8 +576,11 @@ U,0201, 0000,0000,0000,0000,0000,0000
 ;   100: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; ERROR: ucode too many fields
 ;   101: 
+;   102: ; smashing microcode on same line as constraint
+;   103: =100 A/0
+U,0204, 0000,0000,0000,0000,0000,0000
 ;
-; ---- end file "test_parser.mic", 101 lines, 46 errors ----
+; ---- end file "test_parser.mic", 103 lines, 46 errors ----
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200
@@ -871,8 +882,16 @@ U,0201, 0000,0000,0000,0000,0000,0000
 ; DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 ; ERROR: ucode too many fields
 ;   101: 
+;   102: ; smashing microcode on same line as constraint
+;   103: =100 A/0
+; DEBUG: parsing constraint: 100 A/0
+; DEBUG: parsed constraint: i=00000001 v=00000100 m=00000111 c=00000100
+; DEBUG: parsing microcode: A/0
+; DEBUG: expanding : A/0
+; DEBUG: expanded  : A/0
+U,0204, 0000,0000,0000,0000,0000,0000
 ;
-; ---- end file "test_parser.mic", 101 lines, 46 errors ----
+; ---- end file "test_parser.mic", 103 lines, 46 errors ----
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200

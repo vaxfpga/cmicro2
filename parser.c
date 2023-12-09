@@ -246,7 +246,7 @@ bool parse_directive(const char *name, const char *str)
     return true;
 }
 
-bool parse_constraint(const char *str)
+const char *parse_constraint(const char *str)
 {
     DEBUG_PARSING("parsing constraint: %s\n", str);
 
@@ -257,7 +257,7 @@ bool parse_constraint(const char *str)
     if (*p && *p != '0' && *p != '1' && *p != '*')
     {
         ERROR_LINE("constraint syntax in =%s: bad char %c after '='\n", str, *p);
-        return false;
+        return 0;
     }
 
     while (*p == '0' || *p == '1' || *p == '*')
@@ -284,8 +284,7 @@ bool parse_constraint(const char *str)
         ++p;
     }
 
-    p = skip_ws(p);
-    if (*p)
+    if (*p && !isspace(*p))
     {
         ERROR_LINE("constraint syntax in =%s: bad char %c after constraint\n", str, *p);
         return false;
@@ -297,9 +296,9 @@ bool parse_constraint(const char *str)
           cst.incr, cst.vmask, cst.mmask, cst.cmask);
 
     if (!handle_constraint(&cst))
-        return false;
+        return 0;
 
-    return true;
+    return p;
 }
 
 bool parse_field_def(const char *name, const char *str)
@@ -789,14 +788,23 @@ bool parse_line(const char *line)
         }
         else // constraint
         {
-            handle_field_def(0, 0);
-            if (!parse_constraint(p))
+            handle_field_def(0, 0); // no longer added fields
+            p = parse_constraint(p);
+            if (!p)
                 return false;
+
+            // microcode can follow address/label on same line
+            p = skip_ws(p);
+            if (*p)
+            {
+                if (!parse_microcode(p))
+                    return false;
+            }
         }
     }
     else if (*p == ':') // addr or label
     {
-        handle_field_def(0, 0);
+        handle_field_def(0, 0); // no longer added fields
         DEBUG_PARSING("parsing address/label: %s\n", name);
 
         if (!name[0])
@@ -846,13 +854,13 @@ bool parse_line(const char *line)
     }
     else if (name[0] == '.') // directive
     {
-        handle_field_def(0, 0);
+        handle_field_def(0, 0); // no longer added fields
         if (!parse_directive(name, p))
             return false;
     }
     else if (*p == '"') // macro
     {
-        handle_field_def(0, 0);
+        handle_field_def(0, 0); // no longer added fields
         DEBUG_PARSING("parsing macro: %s\n", line);
 
         // check trailing '"'
