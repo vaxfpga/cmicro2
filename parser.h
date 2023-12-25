@@ -33,6 +33,8 @@ extern bool handle_ucode     (const ucode_field_t *field, uint numf);
 extern bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv);
 extern bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
 
+extern bool handle_xhint(uint32_t hint);
+
 // normalizes, removes comments, and splices
 bool get_logical_line(char *line, uint max);
 
