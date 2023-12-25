@@ -206,14 +206,14 @@ bool parse_directive(const char *name, const char *str)
         uint32_t low = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR_LINE("region syntax in  %s %s: number expected after '/'\n", name, str);
+            ERROR_LINE("region syntax in %s %s: number expected after '/'\n", name, str);
             return false;
         }
 
         p = skip_ws(q);
         if (*p != ',')
         {
-            ERROR_LINE("region syntax in  %s %s: ',' expected after low address\n", name, str);
+            ERROR_LINE("region syntax in %s %s: ',' expected after low address\n", name, str);
             return false;
         }
 
