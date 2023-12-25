@@ -350,9 +350,17 @@ const char *parse_constraint(const char *str, constraint_t *cst)
 
     cst->vmask = cst->mmask & cst->cmask;
 
-    DEBUG_PARSING("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
-          cst->incr, cst->vmask, cst->mmask, cst->cmask);
+    uint i = 0;
+    //for (uint32_t v=(cst->cmask|cst->mmask); v != 0; v>>=1, ++i);
+    for (uint32_t v=cst->mmask; v != 0; v>>=1)
+    {
+        if (v & 1)
+            ++i;
+    }
+    cst->rank = i;
 
+    DEBUG_PARSING("parsed constraint: i=%08b v=%08b m=%08b c=%08b r=%u\n",
+          cst->incr, cst->vmask, cst->mmask, cst->cmask, cst->rank);
 
     return p;
 }

@@ -22,6 +22,8 @@ ucode_inst_t *ucode_alloc[MAXPC+1];
 bool ucode_xresv_cst[MAXPC+1];
 bool ucode_xresv_seq[MAXPC+1];
 
+static uint ucode_max_cst_rank;
+
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 
 static uint32_t ucode_region_low  = 0;
@@ -64,6 +66,9 @@ bool handle_constraint(const constraint_t *cst)
         ERROR_LINE("allocation failed (cst)\n");
         return false;
     }
+
+    if (cst->rank > ucode_max_cst_rank)
+        ucode_max_cst_rank = cst->rank;
 
     *c = *cst;
 
@@ -330,11 +335,15 @@ bool ucode_allocate(void)
         ucode_alloc[ucode[i].addr] = &ucode[i];
     }
 
-    const constraint_t *cst = 0;
-    uint32_t base = 0;
-    uint32_t cur = 0;
-
     // allocate constrained
+    //for (uint32_t csttop = ucode_max_cst & ~(ucode_max_cst>>1); csttop != 0; csttop >>= 1)
+    //uint32_t csttop = 0xfffff;
+    for(uint r=ucode_max_cst_rank; r > 0; --r)
+    {
+        const constraint_t *cst = 0;
+        uint32_t base = 0;
+        uint32_t cur = 0;
+
     for (uint i=0; i<ucode_num; ++i)
     {
         // process constraint
@@ -364,7 +373,7 @@ bool ucode_allocate(void)
 
             continue;
         }
-        else if (!cst || ucode[i].addr != UCODE_UNALLOCATED)
+        else if (!cst)
             continue; // skip outside constraint or allocated
 
         if (base == CONSTRAINT_SET_FINISHED || cur == CONSTRAINT_SET_FINISHED)
@@ -375,8 +384,18 @@ bool ucode_allocate(void)
         }
 
         // allocate ucode!
-        ucode_alloc[cur] = &ucode[i];
-        ucode[i].addr = cur;
+        //if (((cst->cmask|cst->mmask) & csttop) != 0)
+        if (r == cst->rank)
+        {
+            if (ucode[i].addr != UCODE_UNALLOCATED)
+            {
+                ERROR_LINE("error in constraint handling\n");
+                continue;
+            }
+
+            ucode_alloc[cur] = &ucode[i];
+            ucode[i].addr = cur;
+        }
 
         cur = constraint_next(cst, 0, base, cur);
         if (cur == CONSTRAINT_SET_FINISHED)
@@ -384,6 +403,7 @@ bool ucode_allocate(void)
             cst = 0;
             cur = base = 0;
         }
+    }
     }
 
     // allocate rest

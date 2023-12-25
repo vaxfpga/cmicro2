@@ -7,12 +7,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "utils.h"
+
 typedef struct constraint_s
 {
     uint32_t incr;  // increment: (1 << n) where n is first 0 bit
     uint32_t vmask; // value mask: true for 1, false for 0/*
     uint32_t mmask; // match mask: true for 0/1, false for *
     uint32_t cmask; // carry mask: true for 1/*, false for 0
+    uint rank;      // number of bits used
 } constraint_t;
 
 #define CONSTRAINT_SET_FINISHED (~(uint32_t)0)
