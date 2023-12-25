@@ -23,6 +23,7 @@ bool ucode_xresv_cst[MAXPC+1];
 bool ucode_xresv_seq[MAXPC+1];
 
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
+static uint32_t ucode_hint = UCODE_UNALLOCATED;
 
 static uint32_t ucode_region_low  = 0;
 static uint32_t ucode_region_high = MAXPC;
@@ -35,6 +36,7 @@ bool ucode_init(void)
 {
     ucode_num         = 0;
     ucode_addr        = UCODE_UNALLOCATED;
+    ucode_hint        = UCODE_UNALLOCATED;
     ucode_region_low  = 0;
     ucode_region_high = MAXPC;
 
@@ -69,12 +71,14 @@ bool handle_constraint(const constraint_t *cst)
 
     ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
+        .hint        = ucode_hint,
         .cst         = c,
         .target_addr = 0,
         .line        = line_number,
     };
 
     ucode_addr = UCODE_UNALLOCATED;
+    ucode_hint = UCODE_UNALLOCATED;
     ++ucode_num;
     return true;
 }
@@ -195,6 +199,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
 
     ucode[ucode_num] = (ucode_inst_t) {
         .addr        = ucode_addr,
+        .hint        = ucode_hint,
         .cst         = 0,
         .target_addr = 0,
         .line        = line_number,
@@ -269,13 +274,17 @@ bool handle_ucode(const ucode_field_t *field, uint num)
 
     io_write_uc_placeholder(ucode_num);
     ucode_addr = UCODE_UNALLOCATED;
+    ucode_hint = UCODE_UNALLOCATED;
     ++ucode_num;
     return true;
 }
 
-static uint32_t get_cst_base(const constraint_t *cst, uint line_number)
+static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint line_number)
 {
-    for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
+    if (hint == UCODE_UNALLOCATED)
+        hint = ucode_region_low;
+
+    for (uint32_t a=hint; a <= ucode_region_high; ++a)
     {
         if (constraint_matches(cst, a))
         {
@@ -348,7 +357,7 @@ bool ucode_allocate(void)
             else if (!cst)
             {
                 cst = ucode[i].cst;
-                cur = base = get_cst_base(cst, ucode[i].line);
+                cur = base = get_cst_base(cst, ucode[i].addr, ucode[i].line);
                 if (base == CONSTRAINT_SET_FINISHED)
                 {
                     //return false;
@@ -391,6 +400,15 @@ bool ucode_allocate(void)
     {
         if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
             continue; // skip constraints and allocated
+
+        if (ucode[i].hint != UCODE_UNALLOCATED)
+            if (!ucode_alloc[ucode[i].hint ])
+        {
+            uint32_t addr = ucode[i].hint;
+            ucode_alloc[addr] = &ucode[i];
+            ucode[i].addr = addr;
+            continue;
+        }
 
         uint32_t addr = UCODE_UNALLOCATED;
         for (uint32_t a = ucode_region_low; a <= ucode_region_high; ++a)
@@ -516,3 +534,10 @@ bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv)
     }
     return true;
 }
+
+bool handle_xhint(uint32_t hint)
+{
+    ucode_hint = hint;
+    return true;
+}
+

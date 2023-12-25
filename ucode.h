@@ -17,6 +17,7 @@ typedef struct constraint_s constraint_t;
 typedef struct ucode_inst_s
 {
     uint32_t addr;
+    uint32_t hint;
     const constraint_t *cst;
     const char *target_addr;
     uint line;
@@ -51,5 +52,7 @@ bool handle_ucode(const ucode_field_t *field, uint num);
 
 bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv);
 bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
+
+bool handle_xhint(uint32_t hint);
 
 #endif // INCLUDED_UCODE_H

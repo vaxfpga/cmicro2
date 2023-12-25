@@ -297,11 +297,31 @@ bool parse_directive(const char *name, const char *str)
             DEBUG_PARSING("parsed xreserve sequential directive\n");
         }
     }
+    else if (strcmp(name, ".XHINT") == 0)
+    {
+        if (*p != '/')
+        {
+            ERROR_LINE("xreserve syntax in %s %s: '/' expected after .XHINT\n", name, str);
+            return false;
+        }
+
+        p = skip_ws(p+1); // '/'
+
+        char *q = 0;
+        uint32_t hint = strtoul(p, &q, 16);
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR_LINE("xhint syntax in %s %s: number expected after .XHINT\n", name, str);
+            return false;
+        }
+
+        if (!handle_xhint(hint))
+            return false;
+
+        DEBUG_PARSING("parsed xhint directive\n");
+    }
 
     DEBUG_PARSING("parsed directive: %s %s\n", name, str);
-
-//    if (!handle_directive(name, str))
-//        return false;
 
     return true;
 }
