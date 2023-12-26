@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "utils.h"
+
 typedef struct constraint_s
 {
     uint32_t incr;  // increment: (1 << n) where n is first 0 bit
@@ -30,5 +32,6 @@ static inline bool constraint_is_terminator(const constraint_t *cst)
 }
 
 uint32_t constraint_next(const constraint_t *cst, const constraint_t *inner_cst, uint32_t base, uint32_t cur_addr);
+const char *constraint_text(char *str, uint max, const constraint_t *cst);
 
 #endif // INCLUDED_CONSTRAINTS_H

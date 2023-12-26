@@ -46,6 +46,7 @@ bool expand_line(char *xline, uint max, const char *line);
 bool parse_microcode(const char *line);
 
 bool parse_line(const char *line);
+bool parse_hints_line(const char *line);
 
 
 #endif // INCLUDED_PARSER_H

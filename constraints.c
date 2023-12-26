@@ -21,3 +21,24 @@ uint32_t constraint_next(const constraint_t *cst, const constraint_t *inner_cst,
             return next_addr;
     }
 }
+
+const char *constraint_text(char *str, uint max, const constraint_t *cst)
+{
+    char *p = str;
+    if (max < 2)
+        return 0;
+
+    *p++ = '=', --max;
+    uint i=32;
+    while (max >= 2 && i-- > 0)
+    {
+        if ((cst->vmask & (1<<i)) != 0)
+            *p++ = '1', --max;
+        else if ((cst->mmask & (1<<i)) != 0)
+            *p++ = '0', --max;
+        else if ((cst->cmask & (1<<i)) != 0)
+            *p++ = '*', --max;
+    }
+    *p++ = 0;
+    return str;
+}

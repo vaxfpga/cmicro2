@@ -15,6 +15,8 @@ options:
     -d, --debug 0xNN              set debug flags to hex or decimal arg
     -l, --listing <listfile.lst>  specify listing file (optional)
     -o, --output <outfile.bin>    specify output bin file (mandatory)
+        --use-hints               use hint files, if they exist
+        --create-hints            create hint files with current map
 
 + ./cmicro2 --listing /dev/null --debug 0xf --output runs/x/a.bin --help
 usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...
@@ -24,6 +26,8 @@ options:
     -d, --debug 0xNN              set debug flags to hex or decimal arg
     -l, --listing <listfile.lst>  specify listing file (optional)
     -o, --output <outfile.bin>    specify output bin file (mandatory)
+        --use-hints               use hint files, if they exist
+        --create-hints            create hint files with current map
 
 + ./cmicro2 -d
 ERROR: cmicro2 -d option requires an argument

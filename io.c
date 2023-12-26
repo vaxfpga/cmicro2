@@ -3,11 +3,16 @@
 
 #include "io.h"
 
+#include "constraints.h"
 #include "ucode.h"
 #include "parser.h"
 
+#include <ctype.h>
+#include <libgen.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static FILE *fin;
@@ -50,6 +55,48 @@ bool io_get_line(char *buf, uint max)
         fprintf(flist, "; %5u: %s%s", line_number, buf, nl);
     }
 
+    return true;
+}
+
+bool io_process_hints(const char *fname)
+{
+    ucode_num_hints = 0; // reset new file
+
+    char *ext = "hnt";
+    char *hfn = strdup(fname);
+    char *p = strrchr(hfn, '.');
+    if (p)
+    {
+        if (isupper(p[1]))
+            ext = "HNT";
+        *p = 0;
+    }
+
+    char hpath[PATH_MAX];
+    snprintf(hpath, PATH_MAX, "%s.%s", hfn, ext);
+    free(hfn);
+
+    DEBUG_FILES("begin processing hints file %s\n", hpath);
+
+    line_number = 0;
+    num_errors = 0;
+
+    FILE *fin = fopen(hpath, "r");
+    if (!fin)
+    {
+        WARNING("failed to open hints file \"%s\"\n", hpath);
+        return false;
+    }
+
+    char line[4096];
+    while (get_logical_line(line, sizeof(line)))
+    {
+        parse_hints_line(line);
+    }
+
+    DEBUG_FILES("end processing hints file %s\n", fname);
+
+    fclose(fin);
     return true;
 }
 
@@ -196,6 +243,70 @@ bool io_write_symbol_list(void)
     }
 
     fprintf(flist, ";\n; ---- end symbol table ----\n");
+    return true;
+}
+
+bool io_write_hints(const char *output_fname, const file_info_t file_info[], uint num_files)
+{
+    char *outfn  = strdup(output_fname);
+    char *outdir = dirname(outfn);
+
+    for (uint i=0, j=0; i<num_files; ++i)
+    {
+        char *ext = "hnt";
+        char *hfn = strdup(file_info[i].filename);
+        char *p = strrchr(hfn, '.');
+        if (p)
+        {
+            if (isupper(p[1]))
+                ext = "HNT";
+            *p = 0;
+        }
+
+        char hpath[PATH_MAX];
+        snprintf(hpath, PATH_MAX, "%s/%s.%s", outdir, hfn, ext);
+        free(hfn);
+
+        FILE *f = fopen(hpath, "w");
+        if (!f)
+        {
+            free(outfn);
+            return false;
+        }
+
+        fprintf(f, "; address hints for %s\n\n", file_info[i].filename);
+
+        for (;j < file_info[i].ucode_num; ++j)
+        {
+            if (ucode[j].cst)
+            {
+                uint k=j;
+                for (; k<j+4 && k<file_info[i].ucode_num && ucode[k].cst; ++k);
+
+                char buf[33];
+                if (constraint_is_terminator(ucode[j].cst))
+                    fprintf(f, "E %04x ; line %u %s\n", ucode[k].addr, ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
+                else if (ucode[j].flags.inner_cst)
+                    fprintf(f, "I %04x ; line %u %s\n", ucode[k].addr, ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
+                else
+                    fprintf(f, "B %04x ; line %u %s\n", ucode[k].addr, ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
+            }
+            else
+            {
+                if (ucode[j].flags.assigned)
+                    fprintf(f, "A %04x ; line %u\n", ucode[j].addr, ucode[j].line);
+                else if (ucode[j].flags.constrained)
+                    fprintf(f, "C %04x ; line %u\n", ucode[j].addr, ucode[j].line);
+                else
+                    fprintf(f, "H %04x ; line %u\n", ucode[j].addr, ucode[j].line);
+            }
+        }
+
+        fclose(f);
+
+    }
+
+    free(outfn);
     return true;
 }
 

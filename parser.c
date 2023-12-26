@@ -968,3 +968,33 @@ bool parse_line(const char *line)
 
     return true;
 }
+
+bool parse_hints_line(const char *line)
+{
+    const char *p = skip_ws(line);
+
+    if (*p == 'H' || *p == 'B')
+    {
+        p = skip_ws(p+1); // 'H/B'
+
+        char *q = 0;
+        uint32_t hint = strtoul(p, &q, 16);
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR_LINE("number syntax");
+            return false;
+        }
+
+        ucode_hints[ucode_num_hints++] = hint;
+        return true;
+    }
+    else if (*p == 'A' || *p == 'C' || *p == 'E' || *p == 'I')
+    {
+        return true;
+    }
+    else
+    {
+        ERROR_LINE("illegal hint line");
+        return false;
+    }
+}
