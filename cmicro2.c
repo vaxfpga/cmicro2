@@ -21,14 +21,23 @@ uint num_errors = 0;
 static const char *listing_fname;
 static const char *output_fname;
 
+static bool use_hints    = false;
+static bool create_hints = false;
+
+#define MAX_FILES 128
+static file_info_t file_info[MAX_FILES];
+static uint num_files = 0;
+
 void print_usage(void)
 {
-    printf("usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...\n\n");
-    printf("options:\n");
-    printf("    -h, --help                    prints usage and exits\n");
-    printf("    -d, --debug 0xNN              set debug flags to hex or decimal arg\n");
-    printf("    -l, --listing <listfile.lst>  specify listing file (optional)\n");
-    printf("    -o, --output <outfile.bin>    specify output bin file (mandatory)\n\n");
+    fprintf(stderr, "usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...\n\n");
+    fprintf(stderr, "options:\n");
+    fprintf(stderr, "    -h, --help                    prints usage and exits\n");
+    fprintf(stderr, "    -d, --debug 0xNN              set debug flags to hex or decimal arg\n");
+    fprintf(stderr, "    -l, --listing <listfile.lst>  specify listing file (optional)\n");
+    fprintf(stderr, "    -o, --output <outfile.bin>    specify output bin file (mandatory)\n");
+    fprintf(stderr, "        --use-hints               use hint files, if they exist\n");
+    fprintf(stderr, "        --create-hints            create hint files with current map\n\n");
 }
 
 static inline const char *get_arg(char ***argv) // yes, sigh
@@ -92,6 +101,14 @@ bool process_args(char *argv[])
             }
             output_fname = p;
         }
+        else if (strcmp(*argv, "--use-hints") == 0)
+        {
+            use_hints = true;
+        }
+        else if (strcmp(*argv, "--create-hints") == 0)
+        {
+            create_hints = true;
+        }
         else if (**argv == '-')
         {
             ERROR("cmicro2 unknown option %s\n", *argv);
@@ -106,6 +123,12 @@ bool process_args(char *argv[])
     if (fc < 1)
     {
         ERROR("cmicro2 requires one or more input files\n");
+        return false;
+    }
+
+    if (create_hints && fc > MAX_FILES)
+    {
+        ERROR("too many input files (>%u)\n", MAX_FILES);
         return false;
     }
 
@@ -137,10 +160,17 @@ int main(int argc, char *argv[])
         return 1;
 
     uint fc = 0;
+    uint last_ucode_num = 0;
     // process non-options as input files
     while (*++argv)
     {
-        if (strcmp(*argv, "--") == 0)
+        if (strcmp(*argv, "-h") == 0 || strcmp(*argv, "--help") == 0 ||
+            strcmp(*argv, "--use-hints") == 0 ||
+            strcmp(*argv, "--create-hints") == 0)
+        {
+            continue;
+        }
+        else if (strcmp(*argv, "--") == 0)
         {
             get_arg(&argv);
             break;
@@ -151,15 +181,48 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        if (use_hints)
+            io_process_hints(*argv);
+
         if (io_process_input(*argv))
             ++fc;
+
+        if (use_hints)
+            ucode_apply_hints();
+
+        if (ucode_num > last_ucode_num)
+        {
+            last_ucode_num = ucode_num;
+            file_info[num_files] = (file_info_t) {
+                .filename  = *argv,
+                .ucode_num = ucode_num
+            };
+            ++num_files;
+        }
     }
 
     // process everything after -- as input files
     while (*argv)
     {
-        if (io_process_input(*argv++))
+        if (use_hints)
+            io_process_hints(*argv);
+
+        if (io_process_input(*argv))
             ++fc;
+
+        if (use_hints)
+            ucode_apply_hints();
+
+        if (ucode_num > last_ucode_num)
+        {
+            last_ucode_num = ucode_num;
+            file_info[num_files] = (file_info_t) {
+                .filename  = *argv,
+                .ucode_num = ucode_num
+            };
+            ++num_files;
+        }
+        ++argv;
     }
 
     if (fc <= 0)
@@ -177,6 +240,9 @@ int main(int argc, char *argv[])
 
     io_write_symbol_list();
     io_update_close_list();
+
+    if (create_hints)
+        io_write_hints(output_fname, file_info, num_files);
 
     if (!io_write_bin(output_fname))
         return 1;

@@ -19,8 +19,13 @@ uint          ucode_num = 0;
 
 ucode_inst_t *ucode_alloc[MAXPC+1];
 
-bool ucode_xresv_cst[MAXPC+1];
-bool ucode_xresv_seq[MAXPC+1];
+uint32_t      ucode_hints[MAXUCODE];
+uint          ucode_num_hints = 0;
+
+static uint   last_ucode_num = 0;
+
+static bool ucode_xresv_cst[MAXPC+1];
+static bool ucode_xresv_seq[MAXPC+1];
 
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 static uint32_t ucode_hint = UCODE_UNALLOCATED;
@@ -35,12 +40,16 @@ static const char *this_addr_str = "<.>";
 bool ucode_init(void)
 {
     ucode_num         = 0;
+    ucode_num_hints   = 0;
+    last_ucode_num    = 0;
     ucode_addr        = UCODE_UNALLOCATED;
     ucode_hint        = UCODE_UNALLOCATED;
     ucode_region_low  = 0;
     ucode_region_high = MAXPC;
 
-    memset(ucode_alloc, 0, sizeof(ucode_alloc));
+    memset(ucode_alloc,     0, sizeof(ucode_alloc));
+    memset(ucode_xresv_cst, 0, sizeof(ucode_xresv_cst));
+    memset(ucode_xresv_seq, 0, sizeof(ucode_xresv_cst));
 
     return hashtable_init(&symbols, 256);
 }
@@ -279,6 +288,72 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     return true;
 }
 
+bool ucode_apply_hints(void)
+{
+    const constraint_t *cst = 0;
+    uint32_t base = 0;
+    uint32_t cur = 0;
+
+    for (uint i=last_ucode_num, j=0; i < ucode_num && j < ucode_num_hints; ++i)
+    {
+        // process constraint
+        if (ucode[i].cst)
+        {
+            if (constraint_is_terminator(ucode[i].cst))
+            {
+                cst = 0;
+                cur = base = 0;
+            }
+            else if (!cst)
+            {
+                cst = ucode[i].cst;
+                for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
+                {
+                    if (constraint_matches(cst, a))
+                    {
+                        cur = base = a;
+                        break;
+                    }
+                }
+                if (base == CONSTRAINT_SET_FINISHED)
+                    continue; // unable to satisfy base
+
+                ucode[i].hint = ucode_hints[j++]; // outer
+            }
+            else
+            {
+                // inner-constraint may skip addrs
+                if (!constraint_matches(ucode[i].cst, cur))
+                    cur = constraint_next(cst, ucode[i].cst, base, cur);
+            }
+
+            continue;
+        }
+        else if (!cst)
+        {
+            if (ucode[i].addr == UCODE_UNALLOCATED)
+                ucode[i].hint = ucode_hints[j++]; // outside
+            continue;
+        }
+
+        if (base == CONSTRAINT_SET_FINISHED || cur == CONSTRAINT_SET_FINISHED)
+            continue; // unable to satisfy
+
+        if (ucode[i].addr != UCODE_UNALLOCATED)
+            continue; // assigned inside (error)
+
+        cur = constraint_next(cst, 0, base, cur);
+        if (cur == CONSTRAINT_SET_FINISHED)
+        {
+            cst = 0;
+            cur = base = 0;
+        }
+    }
+
+    last_ucode_num = ucode_num;
+    return true;
+}
+
 static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint line_number)
 {
     if (hint == UCODE_UNALLOCATED)
@@ -296,6 +371,7 @@ static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint line_n
                 return a;
         }
     }
+
     ERROR_LINE("unable to satisfy base constraint\n");
     return CONSTRAINT_SET_FINISHED;
 }
@@ -337,6 +413,7 @@ bool ucode_allocate(void)
             continue;
         }
         ucode_alloc[ucode[i].addr] = &ucode[i];
+        ucode[i].flags.assigned = true;
     }
 
     const constraint_t *cst = 0;
@@ -357,24 +434,37 @@ bool ucode_allocate(void)
             else if (!cst)
             {
                 cst = ucode[i].cst;
-                cur = base = get_cst_base(cst, ucode[i].addr, ucode[i].line);
+                uint32_t hint = ucode[i].addr != UCODE_UNALLOCATED ? ucode[i].addr : ucode[i].hint;
+                cur = base = get_cst_base(cst, hint, ucode[i].line);
                 if (base == CONSTRAINT_SET_FINISHED)
-                {
-                    //return false;
                     continue;
-                }
             }
             else
             {
                 // inner-constraint may skip addrs
                 if (!constraint_matches(ucode[i].cst, cur))
                     cur = constraint_next(cst, ucode[i].cst, base, cur);
+                ucode[i].flags.inner_cst = true;
             }
 
             continue;
         }
-        else if (!cst || ucode[i].addr != UCODE_UNALLOCATED)
-            continue; // skip outside constraint or allocated
+        else if (!cst)
+        {
+            // processed hinted ones early before other constraints fill them
+            if (ucode[i].addr == UCODE_UNALLOCATED && ucode[i].hint != UCODE_UNALLOCATED)
+            {
+                uint32_t addr = ucode[i].hint;
+                if (!ucode_alloc[addr])
+                {
+                    ucode_alloc[addr] = &ucode[i];
+                    ucode[i].addr = addr;
+
+                }
+            }
+
+            continue; // skip outside constraint
+        }
 
         if (base == CONSTRAINT_SET_FINISHED || cur == CONSTRAINT_SET_FINISHED)
         {
@@ -383,9 +473,17 @@ bool ucode_allocate(void)
             continue;
         }
 
+        if (ucode[i].addr != UCODE_UNALLOCATED)
+        {
+            uint line_number = ucode[i].line;
+            ERROR_LINE("ucode assigned address within constraint\n");
+            continue;
+        }
+
         // allocate ucode!
         ucode_alloc[cur] = &ucode[i];
         ucode[i].addr = cur;
+        ucode[i].flags.constrained = true;
 
         cur = constraint_next(cst, 0, base, cur);
         if (cur == CONSTRAINT_SET_FINISHED)
@@ -400,15 +498,6 @@ bool ucode_allocate(void)
     {
         if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
             continue; // skip constraints and allocated
-
-        if (ucode[i].hint != UCODE_UNALLOCATED)
-            if (!ucode_alloc[ucode[i].hint ])
-        {
-            uint32_t addr = ucode[i].hint;
-            ucode_alloc[addr] = &ucode[i];
-            ucode[i].addr = addr;
-            continue;
-        }
 
         uint32_t addr = UCODE_UNALLOCATED;
         for (uint32_t a = ucode_region_low; a <= ucode_region_high; ++a)

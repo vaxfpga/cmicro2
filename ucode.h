@@ -21,6 +21,12 @@ typedef struct ucode_inst_s
     const constraint_t *cst;
     const char *target_addr;
     uint line;
+    struct
+    {
+        uint assigned    : 1;
+        uint constrained : 1;
+        uint inner_cst   : 1;
+    } flags;
     uint32_t uc[3];
 } ucode_inst_t;
 
@@ -31,16 +37,20 @@ typedef struct ucode_field_s
     uint32_t    valint;
 } ucode_field_t;
 
-extern ucode_inst_t ucode[MAXUCODE];
-extern uint ucode_num;
+extern ucode_inst_t  ucode[MAXUCODE];
+extern uint          ucode_num;
 
 extern ucode_inst_t *ucode_alloc[MAXPC+1];
+
+extern uint32_t      ucode_hints[MAXUCODE];
+extern uint          ucode_num_hints;
 
 // callbacks to be defined by impl
 extern bool io_write_uc_placeholder(uint ucode_idx);
 
 bool ucode_init(void);
 
+bool ucode_apply_hints(void);
 bool ucode_allocate(void);
 bool ucode_resolve(void);
 
