@@ -46,6 +46,7 @@ ERROR: line 94, token name truncated: 123456789012345678901234567890123456789012
 ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
 ERROR: line 100, ucode too many fields
 ERROR: 46 errors found in file test_parser.mic
+ERROR: line 14, unable to satisfy constraint
 + ./cmicro2 -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
 DEBUG: opening listing file runs/test2/b.lst
 DEBUG: begin processing file test_parser.mic
@@ -420,6 +421,7 @@ DEBUG: expanding : A/0
 DEBUG: expanded  : A/0
 DEBUG: end processing file test_parser.mic
 ERROR: 46 errors found in file test_parser.mic
+ERROR: line 14, unable to satisfy constraint
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
 ; ---- begin file "test_parser.mic" ----
@@ -581,6 +583,7 @@ U,0201, 0000,0000,0000,0000,0000,0000
 U,0204, 0000,0000,0000,0000,0000,0000
 ;
 ; ---- end file "test_parser.mic", 103 lines, 46 errors ----
+; ERROR: unable to satisfy constraint
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200
@@ -892,6 +895,7 @@ U,0201, 0000,0000,0000,0000,0000,0000
 U,0204, 0000,0000,0000,0000,0000,0000
 ;
 ; ---- end file "test_parser.mic", 103 lines, 46 errors ----
+; ERROR: unable to satisfy constraint
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200
