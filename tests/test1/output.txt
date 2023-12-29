@@ -1,11 +1,11 @@
 + ./cmicro2 -l/dev/null -oruns/x/a.bin -d0xf -- tests/x/input.mic
 DEBUG: opening listing file /dev/null
-DEBUG: begin processing file tests/x/input.mic
 ERROR: failed to open input file "tests/x/input.mic"
 + ./cmicro2 -o /dev/null tests/x/input.mic
 ERROR: failed to open input file "tests/x/input.mic"
 + ./cmicro2 -o /runs/x/a.bin /dev/null
 ERROR: failed to open output file "/runs/x/a.bin"
+ERROR: 1 total errors, failed
 + ./cmicro2 -o /dev/null -- /dev/null
 + ./cmicro2 -h
 usage: cmicro2 [options] [--] <infile.mic> [<infile2.mic>]...

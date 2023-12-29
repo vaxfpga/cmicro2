@@ -76,17 +76,20 @@ bool io_process_hints(const char *fname)
     snprintf(hpath, PATH_MAX, "%s.%s", hfn, ext);
     free(hfn);
 
-    DEBUG_FILES("begin processing hints file %s\n", hpath);
-
-    line_number = 0;
-    num_errors = 0;
-
     FILE *fin = fopen(hpath, "r");
     if (!fin)
     {
         WARNING("failed to open hints file \"%s\"\n", hpath);
-        return false;
+        return true;
     }
+
+    DEBUG_FILES("begin processing hints file %s\n", hpath);
+
+    if (flist)
+        fprintf(flist, "; ---- begin hints file \"%s\" ----\n;\n", hpath);
+
+    line_number = 0;
+    num_errors = 0;
 
     char line[4096];
     while (get_logical_line(line, sizeof(line)))
@@ -96,12 +99,22 @@ bool io_process_hints(const char *fname)
 
     DEBUG_FILES("end processing hints file %s\n", fname);
 
+    if (flist)
+        fprintf(flist, ";\n; ---- end hints file \"%s\" ----\n", hpath);
+
     fclose(fin);
     return true;
 }
 
 bool io_process_input(const char *fname)
 {
+    fin = fopen(fname, "r");
+    if (!fin)
+    {
+        ERROR("failed to open input file \"%s\"\n", fname);
+        return false;
+    }
+
     DEBUG_FILES("begin processing file %s\n", fname);
 
     if (flist)
@@ -109,13 +122,6 @@ bool io_process_input(const char *fname)
 
     line_number = 0;
     num_errors = 0;
-
-    fin = fopen(fname, "r");
-    if (!fin)
-    {
-        ERROR("failed to open input file \"%s\"\n", fname);
-        return false;
-    }
 
     char line[4096];
     while (get_logical_line(line, sizeof(line)))
@@ -125,6 +131,7 @@ bool io_process_input(const char *fname)
 
     DEBUG_FILES("end processing file %s\n", fname);
 
+    total_errors += num_errors;
     if (num_errors > 0)
         ERROR("%u errors found in file %s\n", num_errors, fname);
 

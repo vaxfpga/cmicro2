@@ -417,6 +417,7 @@ DEBUG: end processing file test_macro.mic
 ERROR: 2 errors found in file test_macro.mic
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
+ERROR: 2 total errors, failed
 ; ---- begin file "test_macro.mic" ----
 ;
 ;     1: ; SPDX-License-Identifier: MIT

@@ -25,6 +25,7 @@ typedef unsigned int uint;
 
 extern uint line_number;
 extern uint num_errors;
+extern uint total_errors;
 
 #if !defined(ENABLE_DEBUG)
     #define ENABLE_DEBUG 1

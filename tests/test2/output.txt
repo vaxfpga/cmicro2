@@ -47,6 +47,7 @@ ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
 ERROR: line 100, ucode too many fields
 ERROR: 46 errors found in file test_parser.mic
 ERROR: line 14, unable to satisfy constraint
+ERROR: 47 total errors, failed
 + ./cmicro2 -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
 DEBUG: opening listing file runs/test2/b.lst
 DEBUG: begin processing file test_parser.mic
@@ -424,6 +425,7 @@ ERROR: 46 errors found in file test_parser.mic
 ERROR: line 14, unable to satisfy constraint
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
+ERROR: 47 total errors, failed
 ; ---- begin file "test_parser.mic" ----
 ;
 ;     1: ; SPDX-License-Identifier: MIT

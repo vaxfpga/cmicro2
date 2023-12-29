@@ -17,6 +17,7 @@
 
 uint line_number = 0;
 uint num_errors = 0;
+uint total_errors = 0;
 
 static const char *listing_fname;
 static const char *output_fname;
@@ -182,13 +183,21 @@ int main(int argc, char *argv[])
         }
 
         if (use_hints)
-            io_process_hints(*argv);
+        {
+            if (!io_process_hints(*argv))
+                (void)0; //++total_errors;
+        }
 
         if (io_process_input(*argv))
             ++fc;
+        else
+            ++total_errors;
 
         if (use_hints)
-            ucode_apply_hints();
+        {
+            if(!ucode_apply_hints())
+                ++total_errors;
+        }
 
         if (ucode_num > last_ucode_num)
         {
@@ -205,13 +214,21 @@ int main(int argc, char *argv[])
     while (*argv)
     {
         if (use_hints)
-            io_process_hints(*argv);
+        {
+            if (!io_process_hints(*argv))
+                ++total_errors;
+        }
 
         if (io_process_input(*argv))
             ++fc;
+        else
+            ++total_errors;
 
         if (use_hints)
-            ucode_apply_hints();
+        {
+            if(!ucode_apply_hints())
+                ++total_errors;
+        }
 
         if (ucode_num > last_ucode_num)
         {
@@ -228,24 +245,42 @@ int main(int argc, char *argv[])
     if (fc <= 0)
         return 1;
 
+    num_errors = 0;
+
     if (!ucode_allocate())
     {
         ERROR("failure to allocate all ucode addresses\n");
+        ++total_errors;
     }
 
     if (!ucode_resolve())
     {
         ERROR("failure to resolve all ucode symbol references\n");
+        ++total_errors;
     }
 
-    io_write_symbol_list();
-    io_update_close_list();
+    total_errors += num_errors;
+
+    if (!io_write_symbol_list())
+        ++total_errors;
+
+    if (!io_update_close_list())
+        ++total_errors;
 
     if (create_hints)
-        io_write_hints(output_fname, file_info, num_files);
+    {
+        if (!io_write_hints(output_fname, file_info, num_files))
+            ++total_errors;
+    }
 
     if (!io_write_bin(output_fname))
+        ++total_errors;
+
+    if (total_errors > 0)
+    {
+        ERROR("%u total errors, failed\n", total_errors);
         return 1;
+    }
 
     return 0;
 }
