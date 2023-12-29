@@ -27,6 +27,8 @@ static uint   last_ucode_num = 0;
 static bool ucode_xresv_cst[MAXPC+1];
 static bool ucode_xresv_seq[MAXPC+1];
 
+static bool force_addr = false;
+
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 static uint32_t ucode_hint = UCODE_UNALLOCATED;
 
@@ -98,7 +100,7 @@ bool handle_addr(uint addr)
         ucode_addr = addr;
     else if (addr > MAXPC)
     {
-        ERROR_LINE("address 0x%04x out of range\n", addr);
+        ERROR_LINE("address %04x out of range\n", addr);
         return false;
     }
     else
@@ -207,11 +209,12 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     }
 
     ucode[ucode_num] = (ucode_inst_t) {
-        .addr        = ucode_addr,
-        .hint        = ucode_hint,
-        .cst         = 0,
-        .target_addr = 0,
-        .line        = line_number,
+        .addr             = ucode_addr,
+        .hint             = ucode_hint,
+        .cst              = 0,
+        .target_addr      = 0,
+        .line             = line_number,
+        .flags.force_addr = force_addr,
     };
 
     uint32_t def[3] = { };
@@ -466,7 +469,15 @@ bool ucode_allocate(void)
         if (ucode_alloc[ucode[i].addr])
         {
             uint line_number = ucode[i].line;
-            ERROR_LINE("duplicate address 0x%04x\n", ucode[i].addr);
+            ucode_inst_t *ouc = ucode_alloc[ucode[i].addr];
+            if ( (ouc->uc[2] == ucode[i].uc[2] &&
+                  ouc->uc[1] == ucode[i].uc[1] &&
+                  ouc->uc[0] == ucode[i].uc[0]))
+                WARNING("line %u, duplicate address %04x - same content on line %u\n", ucode[i].line, ucode[i].addr, ouc->line);
+            else if (ouc->flags.force_addr)
+                WARNING("line %u, duplicate address %04x - overridden by line %u, skipping\n", ucode[i].line, ucode[i].addr, ouc->line);
+            else
+                ERROR_LINE("duplicate address %04x on line %u\n", ucode[i].addr, ouc->line);
             //return false;
             continue;
         }
@@ -572,6 +583,23 @@ bool ucode_allocate(void)
             ERROR_LINE("can't allocate, no free address\n");
             //return false;
             continue;
+        }
+
+        if (ucode[i].hint != UCODE_UNALLOCATED && ucode_alloc[ucode[i].hint])
+        {
+            ucode_inst_t *ouc = ucode_alloc[ucode[i].hint];
+            if ( (ouc->uc[2] == ucode[i].uc[2] &&
+                  ouc->uc[1] == ucode[i].uc[1] &&
+                  ouc->uc[0] == ucode[i].uc[0]) &&
+                  ouc->flags.force_addr )
+            {
+                WARNING("line %u, duplicate hint %04x - same content on line %u, skipping\n", ucode[i].line, ucode[i].hint, ouc->line);
+                continue;
+            }
+            else
+            {
+                WARNING("line %u, duplicate hint %04x alloc %04x - duplicate on line %u?\n", ucode[i].line, ucode[i].hint, addr, ouc->line);
+            }
         }
 
         ucode_alloc[addr] = &ucode[i];
@@ -684,6 +712,12 @@ bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv)
 bool handle_xhint(uint32_t hint)
 {
     ucode_hint = hint;
+    return true;
+}
+
+bool handle_xforce(bool force)
+{
+    force_addr = force;
     return true;
 }
 

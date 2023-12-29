@@ -129,6 +129,8 @@ bool io_process_input(const char *fname)
         parse_line(line);
     }
 
+    handle_xforce(false); // force this off at file boundary
+
     DEBUG_FILES("end processing file %s\n", fname);
 
     total_errors += num_errors;

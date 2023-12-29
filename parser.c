@@ -239,7 +239,7 @@ bool parse_directive(const char *name, const char *str)
     }
     else if (strcmp(name, ".XRESERVE") == 0 || strcmp(name, ".XUNRESERVE") == 0)
     {
-        bool resv = name[2] == 'R';
+        bool resv = (name[2] == 'R');
 
         if (*p != '/')
         {
@@ -319,6 +319,14 @@ bool parse_directive(const char *name, const char *str)
             return false;
 
         DEBUG_PARSING("parsed xhint directive\n");
+    }
+    else if (strcmp(name, ".XFORCEADDR") || strcmp(name, ".XUNFORCEADDR"))
+    {
+        bool force = (name[2] == 'F');
+        if (!handle_xforce(force))
+            return false;
+
+        DEBUG_PARSING("parsed xforceaddr %u directive\n", force);
     }
 
     DEBUG_PARSING("parsed directive: %s %s\n", name, str);
