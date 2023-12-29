@@ -465,10 +465,19 @@ bool ucode_allocate(void)
         if (ucode_alloc[ucode[i].addr])
         {
             uint line_number = ucode[i].line;
-            ERROR_LINE("duplicate address 0x%04x\n", ucode[i].addr);
+
+            ucode_inst_t *ouc = ucode_alloc[ucode[i].addr];
+            if ( ouc->uc[2] == ucode[i].uc[2] &&
+                 ouc->uc[1] == ucode[i].uc[1] &&
+                (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff))
+                ERROR_LINE("duplicate address %04x same content on line %u\n", ucode[i].addr, ouc->line);
+            else
+                ERROR_LINE("duplicate address %04x on line %u\n", ucode[i].addr, ouc->line);
+
             //return false;
             continue;
         }
+
         ucode_alloc[ucode[i].addr] = &ucode[i];
         ucode[i].flags.assigned = true;
     }
@@ -571,6 +580,17 @@ bool ucode_allocate(void)
             ERROR_LINE("can't allocate, no free address\n");
             //return false;
             continue;
+        }
+
+        if (ucode[i].hint != UCODE_UNALLOCATED && ucode_alloc[ucode[i].hint] && ucode_alloc[ucode[i].hint] != &ucode[i])
+        {
+            ucode_inst_t *ouc = ucode_alloc[ucode[i].hint];
+            if ( ouc->uc[2] == ucode[i].uc[2] &&
+                 ouc->uc[1] == ucode[i].uc[1] &&
+                (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff))
+                WARNING("line %u, hint %04x failed same content on line %u\n", ucode[i].line, ucode[i].hint, ouc->line);
+            else
+                WARNING("line %u, hint %04x failed conflict on line %u\n", ucode[i].line, ucode[i].hint, ouc->line);
         }
 
         ucode_alloc[addr] = &ucode[i];
