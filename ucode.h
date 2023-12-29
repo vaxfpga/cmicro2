@@ -59,6 +59,7 @@ bool handle_constraint(const constraint_t *cst);
 bool handle_addr (uint32_t addr);
 bool handle_label(const char *label);
 bool handle_ucode(const ucode_field_t *field, uint num);
+bool handle_ucode_raw(uint32_t addr, uint32_t uc[3]);
 
 bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv);
 bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
