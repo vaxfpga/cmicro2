@@ -288,6 +288,32 @@ bool handle_ucode(const ucode_field_t *field, uint num)
     return true;
 }
 
+bool handle_ucode_raw(uint32_t addr, uint32_t uc[3])
+{
+    if (ucode_num >= MAXUCODE)
+    {
+        ERROR_LINE("too many ucodes\n");
+        return false;
+    }
+
+    ucode[ucode_num] = (ucode_inst_t) {
+        .addr             = addr,
+        .hint             = 0,
+        .cst              = 0,
+        .target_addr      = 0,
+        .line             = line_number,
+        .uc[0]            = uc[0],
+        .uc[1]            = uc[1],
+        .uc[2]            = uc[2],
+    };
+
+    io_write_uc_placeholder(ucode_num);
+    ucode_addr = UCODE_UNALLOCATED;
+    ucode_hint = UCODE_UNALLOCATED;
+    ++ucode_num;
+    return true;
+}
+
 bool ucode_apply_hints(void)
 {
     const constraint_t *cst = 0;

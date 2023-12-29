@@ -29,6 +29,7 @@ extern bool handle_macro_def (const char *macro,     const char *value);
 extern bool handle_addr      (uint32_t addr);
 extern bool handle_label     (const char *label);
 extern bool handle_ucode     (const ucode_field_t *field, uint numf);
+extern bool handle_ucode_raw (uint32_t addr, uint32_t uc[3]);
 
 extern bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv);
 extern bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
@@ -44,6 +45,7 @@ const char *parse_constraint(const char *str, constraint_t *cst);
 bool parse_field_def(const char *name, const char *str);
 bool expand_line(char *xline, uint max, const char *line);
 bool parse_microcode(const char *line);
+bool parse_ucode_text(const char *str);
 
 bool parse_line(const char *line);
 bool parse_hints_line(const char *line);

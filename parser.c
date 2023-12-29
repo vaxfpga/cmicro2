@@ -817,6 +817,53 @@ bool parse_microcode(const char *line)
     return false;
 }
 
+bool parse_ucode_text(const char *str)
+{
+    DEBUG_PARSING("parsing ucode text: U%s\n", str);
+
+    const char *p = skip_ws(str + 1); // ','
+
+    char *q = 0;
+    uint32_t addr = strtoul(p, &q, 16);
+    if (q == p) // couldn't parse any numbers
+    {
+        ERROR_LINE("ucode text syntax in %s: expected number for addr\n", str);
+        return false;
+    }
+
+    uint16_t v[6] = { };
+    for (uint i=0; i<6; ++i)
+    {
+        p = skip_ws(q);
+
+        if (*p != ',')
+        {
+            ERROR_LINE("ucode text syntax in %s: expected ',' after number\n", str);
+            return false;
+        }
+
+        p = skip_ws(p+1); // ','
+
+        q = 0;
+        v[i] = strtoul(p, &q, 16);
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR_LINE("ucode text syntax in %s: expected number for uc[%u]\n", str, i);
+            return false;
+        }
+    }
+
+    uint32_t uc[3] = { (v[4]<<16) | v[5], (v[2]<<16) | v[3], (v[0]<<16) | v[1] };
+
+    if (!handle_ucode_raw(addr, uc))
+        return false;
+
+    DEBUG_PARSING("parsed ucode text:  U,%04X, %04X,%04X,%04X,%04X,%04X,%04X\n",
+        addr, uc[2]>>16, uc[2]&0xffff, uc[1]>>16, uc[1]&0xffff, uc[0]>>16, uc[0]&0xffff);
+
+    return true;
+}
+
 bool parse_line(const char *line)
 {
     const char *p = skip_ws(line);
@@ -956,6 +1003,12 @@ bool parse_line(const char *line)
         DEBUG_PARSING("parsed macro: %s %s\n", name, p);
 
         if (!handle_macro_def(name, p))
+            return false;
+    }
+    else if (*p == ',' && name[0] == 'U' && name[1] == 0)
+    {
+        handle_field_def(0, 0); // no longer added fields
+        if (!parse_ucode_text(p))
             return false;
     }
     else  // microcode
