@@ -1,9 +1,9 @@
 + ./cmicro2 -l runs/test2/a.lst -o /dev/null test_parser.mic
 ERROR: line 6, region syntax in .REGION ,BAD1: '/' expected after .REGION
-ERROR: line 7, region syntax in  .REGION /XBAD2: number expected after '/'
-ERROR: line 8, region syntax in  .REGION /BADX3: ',' expected after low address
-ERROR: line 9, region syntax in  .REGION /200,XBAD4: number expected after ','
-ERROR: line 10, region syntax in  .REGION /200,BADX5: bad char X after high address
+ERROR: line 7, region syntax in .REGION /XBAD2: number expected after '/'
+ERROR: line 8, region syntax in .REGION /BADX3: ',' expected after low address
+ERROR: line 9, region syntax in .REGION /200,XBAD4: number expected after ','
+ERROR: line 10, region syntax in .REGION /200,BADX5: bad char X after high address
 ERROR: line 18, constraint syntax in =2: bad char 2 after '='
 ERROR: line 19, constraint syntax in =01*2: bad char 2 after constraint
 ERROR: line 29, field def syntax in /=  FB0: empty name
@@ -64,19 +64,19 @@ ERROR: line 6, region syntax in .REGION ,BAD1: '/' expected after .REGION
 DEBUG: line 7    : .REGION/xbad2
 DEBUG: normalized: .REGION/XBAD2
 DEBUG: parsing directive: .REGION /XBAD2
-ERROR: line 7, region syntax in  .REGION /XBAD2: number expected after '/'
+ERROR: line 7, region syntax in .REGION /XBAD2: number expected after '/'
 DEBUG: line 8    : .REGION/badx3
 DEBUG: normalized: .REGION/BADX3
 DEBUG: parsing directive: .REGION /BADX3
-ERROR: line 8, region syntax in  .REGION /BADX3: ',' expected after low address
+ERROR: line 8, region syntax in .REGION /BADX3: ',' expected after low address
 DEBUG: line 9    : .REGION/200,xbad4
 DEBUG: normalized: .REGION/200,XBAD4
 DEBUG: parsing directive: .REGION /200,XBAD4
-ERROR: line 9, region syntax in  .REGION /200,XBAD4: number expected after ','
+ERROR: line 9, region syntax in .REGION /200,XBAD4: number expected after ','
 DEBUG: line 10   : .REGION/200,badx5
 DEBUG: normalized: .REGION/200,BADX5
 DEBUG: parsing directive: .REGION /200,BADX5
-ERROR: line 10, region syntax in  .REGION /200,BADX5: bad char X after high address
+ERROR: line 10, region syntax in .REGION /200,BADX5: bad char X after high address
 DEBUG: line 11   : 
 DEBUG: line 12   : .MOO COW ; moo
 DEBUG: normalized: .MOO COW
@@ -432,13 +432,13 @@ DEBUG: end writing output file /dev/null
 ;     6: .REGION,bad1
 ; ERROR: region syntax in .REGION ,BAD1: '/' expected after .REGION
 ;     7: .REGION/xbad2
-; ERROR: region syntax in  .REGION /XBAD2: number expected after '/'
+; ERROR: region syntax in .REGION /XBAD2: number expected after '/'
 ;     8: .REGION/badx3
-; ERROR: region syntax in  .REGION /BADX3: ',' expected after low address
+; ERROR: region syntax in .REGION /BADX3: ',' expected after low address
 ;     9: .REGION/200,xbad4
-; ERROR: region syntax in  .REGION /200,XBAD4: number expected after ','
+; ERROR: region syntax in .REGION /200,XBAD4: number expected after ','
 ;    10: .REGION/200,badx5
-; ERROR: region syntax in  .REGION /200,BADX5: bad char X after high address
+; ERROR: region syntax in .REGION /200,BADX5: bad char X after high address
 ;    11: 
 ;    12: .MOO COW ; moo
 ;    13: 
@@ -601,16 +601,16 @@ U,0204, 0000,0000,0000,0000,0000,0000
 ; ERROR: region syntax in .REGION ,BAD1: '/' expected after .REGION
 ;     7: .REGION/xbad2
 ; DEBUG: parsing directive: .REGION /XBAD2
-; ERROR: region syntax in  .REGION /XBAD2: number expected after '/'
+; ERROR: region syntax in .REGION /XBAD2: number expected after '/'
 ;     8: .REGION/badx3
 ; DEBUG: parsing directive: .REGION /BADX3
-; ERROR: region syntax in  .REGION /BADX3: ',' expected after low address
+; ERROR: region syntax in .REGION /BADX3: ',' expected after low address
 ;     9: .REGION/200,xbad4
 ; DEBUG: parsing directive: .REGION /200,XBAD4
-; ERROR: region syntax in  .REGION /200,XBAD4: number expected after ','
+; ERROR: region syntax in .REGION /200,XBAD4: number expected after ','
 ;    10: .REGION/200,badx5
 ; DEBUG: parsing directive: .REGION /200,BADX5
-; ERROR: region syntax in  .REGION /200,BADX5: bad char X after high address
+; ERROR: region syntax in .REGION /200,BADX5: bad char X after high address
 ;    11: 
 ;    12: .MOO COW ; moo
 ; DEBUG: parsing directive: .MOO COW 
