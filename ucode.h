@@ -49,4 +49,7 @@ bool handle_addr (uint32_t addr);
 bool handle_label(const char *label);
 bool handle_ucode(const ucode_field_t *field, uint num);
 
+bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv);
+bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
+
 #endif // INCLUDED_UCODE_H

@@ -19,6 +19,9 @@ uint          ucode_num = 0;
 
 ucode_inst_t *ucode_alloc[MAXPC+1];
 
+bool ucode_xresv_cst[MAXPC+1];
+bool ucode_xresv_seq[MAXPC+1];
+
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 
 static uint32_t ucode_region_low  = 0;
@@ -276,8 +279,8 @@ static uint32_t get_cst_base(const constraint_t *cst, uint line_number)
     {
         if (constraint_matches(cst, a))
         {
-            uint32_t cur  = a;
-            while (cur != CONSTRAINT_SET_FINISHED && !ucode_alloc[cur])
+            uint32_t cur = a;
+            while (cur != CONSTRAINT_SET_FINISHED && !ucode_alloc[cur] && !ucode_xresv_cst[cur])
                 cur = constraint_next(cst, 0, a, cur);
 
             if (cur == CONSTRAINT_SET_FINISHED)
@@ -392,7 +395,7 @@ bool ucode_allocate(void)
         uint32_t addr = UCODE_UNALLOCATED;
         for (uint32_t a = ucode_region_low; a <= ucode_region_high; ++a)
         {
-            if (!ucode_alloc[a])
+            if (!ucode_alloc[a] && !ucode_xresv_seq[a])
             {
                 addr = a;
                 break;
@@ -481,5 +484,35 @@ bool ucode_resolve(void)
         }
     }
 
+    return true;
+}
+
+bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv)
+{
+    if (first < ucode_region_low)
+        first = ucode_region_low;
+    for (uint32_t a=first; a <= ucode_region_high && a < next; ++a)
+    {
+        if (constraint_matches(cst, a))
+        {
+            uint32_t cur = a;
+            while (cur != CONSTRAINT_SET_FINISHED)
+            {
+                ucode_xresv_cst[cur] = resv;
+                cur = constraint_next(cst, 0, a, cur);
+            }
+        }
+    }
+    return true;
+}
+
+bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv)
+{
+    if (first < ucode_region_low)
+        first = ucode_region_low;
+    for (uint32_t a=first; a <= ucode_region_high && a < next; ++a)
+    {
+        ucode_xresv_seq[a] = resv;
+    }
     return true;
 }

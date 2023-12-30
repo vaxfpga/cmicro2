@@ -237,6 +237,66 @@ bool parse_directive(const char *name, const char *str)
         DEBUG_PARSING("parsed region directive: 0x%04x, 0x%04x\n", low, high);
         return handle_region(low, high);
     }
+    else if (strcmp(name, ".XRESERVE") == 0 || strcmp(name, ".XUNRESERVE") == 0)
+    {
+        bool resv = (name[2] == 'R');
+
+        if (*p != '/')
+        {
+            ERROR_LINE("xreserve syntax in %s %s: '/' expected after .XREGION\n", name, str);
+            return false;
+        }
+
+        p = skip_ws(p+1); // '/'
+
+        char *q = 0;
+        uint32_t first = strtoul(p, &q, 16);
+        uint32_t next = first+1;
+        if (q == p) // couldn't parse any numbers
+        {
+            ERROR_LINE("xreserve syntax in %s %s: number expected after .XREGION\n", name, str);
+            return false;
+        }
+
+        p = skip_ws(q);
+
+        if (*p == ',')
+        {
+            p = skip_ws(p+1); // ','
+
+            q = 0;
+            next = strtoul(p, &q, 16);
+            if (q == p) // couldn't parse any numbers
+            {
+                ERROR_LINE("xreserve syntax in %s %s: number expected after .XREGION\n", name, str);
+                return false;
+            }
+        }
+
+        p = skip_ws(q);
+
+        if (*p == '=')
+        {
+            p = skip_ws(p+1); // '='
+
+            constraint_t cst = { };
+            p = parse_constraint(p, &cst);
+            if (!p)
+                return false;
+
+            if (!handle_xresv_constraint(first, next, &cst, resv))
+                return false;
+
+            DEBUG_PARSING("parsed xreserve constraint directive\n");
+        }
+        else
+        {
+            if (!handle_xresv_sequential(first, next, resv))
+                return false;
+
+            DEBUG_PARSING("parsed xreserve sequential directive\n");
+        }
+    }
 
     DEBUG_PARSING("parsed directive: %s %s\n", name, str);
 
@@ -246,11 +306,9 @@ bool parse_directive(const char *name, const char *str)
     return true;
 }
 
-const char *parse_constraint(const char *str)
+const char *parse_constraint(const char *str, constraint_t *cst)
 {
     DEBUG_PARSING("parsing constraint: %s\n", str);
-
-    constraint_t cst = { };
 
     const char *p = skip_ws(str);
 
@@ -262,23 +320,23 @@ const char *parse_constraint(const char *str)
 
     while (*p == '0' || *p == '1' || *p == '*')
     {
-        cst.incr  <<= 1;
-        cst.mmask <<= 1;
-        cst.cmask <<= 1;
+        cst->incr  <<= 1;
+        cst->mmask <<= 1;
+        cst->cmask <<= 1;
 
         if (*p == '0')
         {
-            cst.incr = 1;
-            cst.mmask |= 1;
+            cst->incr = 1;
+            cst->mmask |= 1;
         }
         else if (*p == '1')
         {
-            cst.mmask |= 1;
-            cst.cmask |= 1;
+            cst->mmask |= 1;
+            cst->cmask |= 1;
         }
         else if (*p == '*')
         {
-            cst.cmask |= 1;
+            cst->cmask |= 1;
         }
 
         ++p;
@@ -290,13 +348,11 @@ const char *parse_constraint(const char *str)
         return false;
     }
 
-    cst.vmask = cst.mmask & cst.cmask;
+    cst->vmask = cst->mmask & cst->cmask;
 
     DEBUG_PARSING("parsed constraint: i=%08b v=%08b m=%08b c=%08b\n",
-          cst.incr, cst.vmask, cst.mmask, cst.cmask);
+          cst->incr, cst->vmask, cst->mmask, cst->cmask);
 
-    if (!handle_constraint(&cst))
-        return 0;
 
     return p;
 }
@@ -789,8 +845,14 @@ bool parse_line(const char *line)
         else // constraint
         {
             handle_field_def(0, 0); // no longer added fields
-            p = parse_constraint(p);
+
+            constraint_t cst = { };
+
+            p = parse_constraint(p, &cst);
             if (!p)
+                return false;
+
+            if (!handle_constraint(&cst))
                 return false;
 
             // microcode can follow address/label on same line
