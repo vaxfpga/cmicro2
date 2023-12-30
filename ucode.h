@@ -26,6 +26,7 @@ typedef struct ucode_inst_s
         uint assigned    : 1;
         uint constrained : 1;
         uint inner_cst   : 1;
+        uint fill        : 1;
     } flags;
     uint32_t uc[3];
 } ucode_inst_t;
@@ -65,5 +66,6 @@ bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *
 bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
 
 bool handle_xhint(uint32_t hint);
+bool handle_xfill(void);
 
 #endif // INCLUDED_UCODE_H

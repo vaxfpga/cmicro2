@@ -320,8 +320,35 @@ bool parse_directive(const char *name, const char *str)
 
         DEBUG_PARSING("parsed xhint directive\n");
     }
+    else if (strcmp(name, ".XFILL") == 0)
+    {
+        if (*p != '/')
+        {
+            ERROR_LINE("xfill syntax in %s %s: '/' expected after .XFILL\n", name, str);
+            return false;
+        }
 
-    DEBUG_PARSING("parsed directive: %s %s\n", name, str);
+        p = skip_ws(p+1); // '/'
+
+        handle_xfill();
+
+        char name2[MAXNAME];
+        const char *q = parse_token(p, name2, sizeof(name2), 0, false);
+        if (*q == ',' && name2[0] == 'U' && !name2[1])
+        {
+            if (!parse_ucode_text(q))
+                return false;
+        }
+        else if (*p)
+        {
+            if (!parse_microcode(p))
+                return false;
+        }
+
+        DEBUG_PARSING("parsed xfill directive\n");
+    }
+    else
+        DEBUG_PARSING("parsed directive: %s %s\n", name, str);
 
     return true;
 }
@@ -717,11 +744,11 @@ bool parse_microcode(const char *line)
     DEBUG_PARSING("parsing microcode: %s\n", line);
 
     char xline[MAXLINE];
-    const char *p = xline;
     if (!expand_line(xline, sizeof(xline), line))
         return false;
 
     char buf[MAXLINE];
+    const char *p = xline;
     char *q = buf;
     uint max = sizeof(buf);
 

@@ -27,6 +27,10 @@ static uint   last_ucode_num = 0;
 static bool ucode_xresv_cst[MAXPC+1];
 static bool ucode_xresv_seq[MAXPC+1];
 
+static bool ucode_xfill_define = false;
+static bool ucode_xfill_valid  = false;
+static ucode_inst_t ucode_xfill;
+
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 static uint32_t ucode_hint = UCODE_UNALLOCATED;
 
@@ -281,6 +285,14 @@ bool handle_ucode(const ucode_field_t *field, uint num)
             ucode[ucode_num].target_addr = next_addr_str;
     }
 
+    if (ucode_xfill_define)
+    {
+        ucode_xfill = ucode[ucode_num];
+        ucode_xfill_valid  = true;
+        ucode_xfill_define = false;
+        return true;
+    }
+
     io_write_uc_placeholder(ucode_num);
     ucode_addr = UCODE_UNALLOCATED;
     ucode_hint = UCODE_UNALLOCATED;
@@ -306,6 +318,14 @@ bool handle_ucode_raw(uint32_t addr, uint32_t uc[3])
         .uc[1]            = uc[1],
         .uc[2]            = uc[2],
     };
+
+    if (ucode_xfill_define)
+    {
+        ucode_xfill = ucode[ucode_num];
+        ucode_xfill_valid  = true;
+        ucode_xfill_define = false;
+        return true;
+    }
 
     io_write_uc_placeholder(ucode_num);
     ucode_addr = UCODE_UNALLOCATED;
@@ -435,6 +455,13 @@ static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
 
 static void init_default_ucode(uint addr, uint ucode_idx)
 {
+    if (ucode_xfill_valid)
+    {
+        ucode[ucode_idx] = ucode_xfill;
+        ucode[ucode_idx].addr = addr;
+        return;
+    }
+
     uint32_t def[3] = { };
 
     // set defaulted fields
@@ -598,14 +625,27 @@ bool ucode_allocate(void)
     }
 
     // fill unallocated space
-    for (uint i=0, j=ucode_num; i<=MAXPC && j<MAXUCODE; ++i)
+    for (uint i=0; i<=MAXPC; ++i)
     {
         if (ucode_alloc[i])
             continue;
 
-        init_default_ucode(i, j);
-        ucode_alloc[i] = &ucode[j];
-        ++j;
+        if (ucode_num >= MAXUCODE)
+        {
+            ERROR_LINE("too many ucodes\n");
+            return false;
+        }
+
+        init_default_ucode(i, ucode_num);
+        ucode_alloc[i] = &ucode[ucode_num];
+
+        if (ucode_num >= MAXUCODE)
+        {
+            ERROR_LINE("too many ucodes\n");
+            return false;
+        }
+
+        ++ucode_num;
     }
 
     return true;
@@ -703,6 +743,12 @@ bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv)
 bool handle_xhint(uint32_t hint)
 {
     ucode_hint = hint;
+    return true;
+}
+
+bool handle_xfill(void)
+{
+    ucode_xfill_define = true;
     return true;
 }
 

@@ -35,6 +35,7 @@ extern bool handle_xresv_constraint(uint32_t first, uint32_t next, const constra
 extern bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv);
 
 extern bool handle_xhint(uint32_t hint);
+extern bool handle_xfill(void);
 
 // normalizes, removes comments, and splices
 bool get_logical_line(char *line, uint max);
