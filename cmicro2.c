@@ -15,6 +15,7 @@
 #include "ucode.h"
 #include "utils.h"
 
+const char *file_name = "?";
 uint line_number = 0;
 uint num_errors = 0;
 uint total_errors = 0;

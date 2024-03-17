@@ -88,6 +88,7 @@ bool io_process_hints(const char *fname)
     if (flist)
         fprintf(flist, "; ---- begin hints file \"%s\" ----\n;\n", hpath);
 
+    file_name = hpath;
     line_number = 0;
     num_errors = 0;
 
@@ -120,6 +121,7 @@ bool io_process_input(const char *fname)
     if (flist)
         fprintf(flist, "; ---- begin file \"%s\" ----\n;\n", fname);
 
+    file_name = fname;
     line_number = 0;
     num_errors = 0;
 

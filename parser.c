@@ -1061,7 +1061,12 @@ bool parse_hints_line(const char *line)
         uint32_t hint = strtoul(p, &q, 16);
         if (q == p) // couldn't parse any numbers
         {
-            ERROR_LINE("number syntax");
+            ERROR_LINE("number syntax\n");
+            return false;
+        }
+        else if (hint > MAXPC)
+        {
+            ERROR_LINE("hint addr out of range: 0x%04x\n", hint);
             return false;
         }
 
@@ -1074,7 +1079,7 @@ bool parse_hints_line(const char *line)
     }
     else
     {
-        ERROR_LINE("illegal hint line");
+        ERROR_LINE("illegal hint line\n");
         return false;
     }
 }

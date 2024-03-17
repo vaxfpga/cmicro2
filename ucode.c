@@ -87,6 +87,7 @@ bool handle_constraint(const constraint_t *cst)
         .hint        = ucode_hint,
         .cst         = c,
         .target_addr = 0,
+        .file_name   = file_name,
         .line        = line_number,
     };
 
@@ -215,6 +216,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
         .hint        = ucode_hint,
         .cst         = 0,
         .target_addr = 0,
+        .file_name   = file_name,
         .line        = line_number,
     };
 
@@ -313,6 +315,7 @@ bool handle_ucode_raw(uint32_t addr, uint32_t uc[3])
         .hint             = 0,
         .cst              = 0,
         .target_addr      = 0,
+        .file_name        = file_name,
         .line             = line_number,
         .uc[0]            = uc[0],
         .uc[1]            = uc[1],
@@ -448,6 +451,7 @@ static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
         }
     }
 
+    const char *file_name = ucode[uidx].file_name;
     uint line_number = ucode[uidx].line;
     ERROR_LINE("unable to satisfy constraint\n");
     return CONSTRAINT_SET_FINISHED;
@@ -486,17 +490,19 @@ bool ucode_allocate(void)
     // allocate fixed
     for (uint i=0; i<ucode_num; ++i)
     {
+        const char *file_name = ucode[i].file_name;
+        uint line_number = ucode[i].line;
+
         if (ucode[i].cst || ucode[i].addr == UCODE_UNALLOCATED)
             continue; // skip constraints and unallocated
 
         if (ucode_alloc[ucode[i].addr])
         {
-            uint line_number = ucode[i].line;
-
             ucode_inst_t *ouc = ucode_alloc[ucode[i].addr];
             if ( ouc->uc[2] == ucode[i].uc[2] &&
                  ouc->uc[1] == ucode[i].uc[1] &&
-                (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff))
+                (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff)
+            )
                 ERROR_LINE("duplicate address %04x same content on line %u\n", ucode[i].addr, ouc->line);
             else
                 ERROR_LINE("duplicate address %04x on line %u\n", ucode[i].addr, ouc->line);
@@ -516,6 +522,7 @@ bool ucode_allocate(void)
     // allocate constrained
     for (uint i=0; i<ucode_num; ++i)
     {
+        const char *file_name = ucode[i].file_name;
         uint line_number = ucode[i].line;
 
         // process constraint
@@ -587,6 +594,7 @@ bool ucode_allocate(void)
     // allocate rest
     for (uint i=0; i<ucode_num; ++i)
     {
+        const char *file_name = ucode[i].file_name;
         uint line_number = ucode[i].line;
 
         if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
@@ -615,9 +623,9 @@ bool ucode_allocate(void)
             if ( ouc->uc[2] == ucode[i].uc[2] &&
                  ouc->uc[1] == ucode[i].uc[1] &&
                 (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff))
-                WARNING("line %u, hint %04x failed same content on line %u\n", ucode[i].line, ucode[i].hint, ouc->line);
+                WARNING("%s:%u, hint %04x failed same content as %s:%u\n", ucode[i].file_name, ucode[i].line, ucode[i].hint, ouc->file_name, ouc->line);
             else
-                WARNING("line %u, hint %04x failed conflict on line %u\n", ucode[i].line, ucode[i].hint, ouc->line);
+                WARNING("%s:%u, hint %04x failed conflict with %s:%u\n", ucode[i].file_name, ucode[i].line, ucode[i].hint, ouc->file_name, ouc->line);
         }
 
         ucode_alloc[addr] = &ucode[i];
@@ -632,7 +640,7 @@ bool ucode_allocate(void)
 
         if (ucode_num >= MAXUCODE)
         {
-            ERROR_LINE("too many ucodes\n");
+            ERROR("too many ucodes\n");
             return false;
         }
 
@@ -641,7 +649,7 @@ bool ucode_allocate(void)
 
         if (ucode_num >= MAXUCODE)
         {
-            ERROR_LINE("too many ucodes\n");
+            ERROR("too many ucodes\n");
             return false;
         }
 
@@ -669,6 +677,7 @@ bool ucode_resolve(void)
 
     for (uint i=0; i<ucode_num; ++i)
     {
+        const char *file_name = ucode[i].file_name;
         uint line_number = ucode[i].line;
         if (!ucode[i].target_addr)
             continue;

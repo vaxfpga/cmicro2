@@ -20,6 +20,7 @@ typedef struct ucode_inst_s
     uint32_t hint;
     const constraint_t *cst;
     const char *target_addr;
+    const char *file_name;
     uint line;
     struct
     {
