@@ -298,7 +298,7 @@ bool io_write_hints(const char *output_fname, const file_info_t file_info[], uin
                 else if (ucode[j].flags.inner_cst)
                     fprintf(f, "I %04x ; line %u %s\n", ucode[k].addr, ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
                 else
-                    fprintf(f, "B %04x ; line %u %s\n", ucode[k].addr, ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
+                    fprintf(f, "B %04x ; line %u %s\n", ucode[k].addr & (~(ucode[j].cst->mmask|ucode[j].cst->cmask)|ucode[j].cst->cmask), ucode[j].line, constraint_text(buf, sizeof(buf), ucode[j].cst));
             }
             else
             {

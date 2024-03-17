@@ -406,8 +406,8 @@ static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
 
     for (uint32_t a=hint; a <= ucode_region_high; ++a)
     {
-        if (ucode_alloc[a])
-            continue;
+//        if (ucode_alloc[a])
+//            continue;
 
         if (!constraint_matches(cst, a))
             continue;
@@ -534,11 +534,18 @@ bool ucode_allocate(void)
             {
                 cst = ucode[i].cst;
                 uint32_t hint = ucode[i].addr != UCODE_UNALLOCATED ? ucode[i].addr : ucode[i].hint;
+                if (hint != UCODE_UNALLOCATED && !constraint_matches(cst, hint))
+                    hint &= (~(cst->mmask|cst->cmask)|cst->cmask);
+
                 cur = base = get_cst_base(cst, hint, i);
                 if (base == CONSTRAINT_SET_FINISHED)
                 {
                     cst = 0;
                     continue; // error
+                }
+                else if (hint != UCODE_UNALLOCATED && base != hint)
+                {
+                    WARNING("%s:%u, hint %04x failed to satisfy constraint, got %04x\n", ucode[i].file_name, ucode[i].line, hint, base);
                 }
             }
             else
