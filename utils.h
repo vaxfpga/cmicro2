@@ -17,7 +17,7 @@
 
 #define MAXFIELD 64
 
-#define MAXUCODE  10000
+#define MAXUCODE 0x4000
 #define MAXPC    0x1fff
 
 
