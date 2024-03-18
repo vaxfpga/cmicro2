@@ -49,6 +49,7 @@ extern bool io_write_error_list(const char *fmt, ...);
 #define WARNING(fmt, ...)    do { fprintf(stderr, "WARNING: " fmt, ##__VA_ARGS__); } while (0)
 #define ERROR(fmt, ...)      do { fprintf(stderr, "ERROR: " fmt, ##__VA_ARGS__); } while (0)
 #define ERROR_LINE(fmt, ...) do { ++num_errors; io_write_error_list("; ERROR: " fmt, ##__VA_ARGS__); fprintf(stderr, "ERROR: %s:%u, " fmt, file_name, line_number, ##__VA_ARGS__); } while (0)
+#define ERROR_LINE_UIDX(uidx, fmt, ...) do { ++num_errors; io_write_error_list("; ERROR: " fmt, ##__VA_ARGS__); fprintf(stderr, "ERROR: %s:%u, " fmt, ucode[uidx].file_name, ucode[uidx].line, ##__VA_ARGS__); } while (0)
 
 
 typedef struct

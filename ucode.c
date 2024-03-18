@@ -453,7 +453,8 @@ static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
 
     const char *file_name = ucode[uidx].file_name;
     uint line_number = ucode[uidx].line;
-    ERROR_LINE("unable to satisfy constraint\n");
+    char buf[33];
+    ERROR_LINE("unable to satisfy constraint %s\n", constraint_text(buf, sizeof(buf), cst));
     return CONSTRAINT_SET_FINISHED;
 }
 
@@ -490,9 +491,6 @@ bool ucode_allocate(void)
     // allocate fixed
     for (uint i=0; i<ucode_num; ++i)
     {
-        const char *file_name = ucode[i].file_name;
-        uint line_number = ucode[i].line;
-
         if (ucode[i].cst || ucode[i].addr == UCODE_UNALLOCATED)
             continue; // skip constraints and unallocated
 
@@ -503,9 +501,9 @@ bool ucode_allocate(void)
                  ouc->uc[1] == ucode[i].uc[1] &&
                 (ouc->uc[0] & ~0x1fff) == (ucode[i].uc[0] & ~0x1fff)
             )
-                ERROR_LINE("duplicate address %04x same content on line %u\n", ucode[i].addr, ouc->line);
+                ERROR_LINE_UIDX(i, "duplicate address %04x same content on line %u\n", ucode[i].addr, ouc->line);
             else
-                ERROR_LINE("duplicate address %04x on line %u\n", ucode[i].addr, ouc->line);
+                ERROR_LINE_UIDX(i, "duplicate address %04x on line %u\n", ucode[i].addr, ouc->line);
 
             //return false;
             continue;
@@ -522,9 +520,6 @@ bool ucode_allocate(void)
     // allocate constrained
     for (uint i=0; i<ucode_num; ++i)
     {
-        const char *file_name = ucode[i].file_name;
-        uint line_number = ucode[i].line;
-
         // process constraint
         if (ucode[i].cst)
         {
@@ -556,7 +551,7 @@ bool ucode_allocate(void)
                     cur = constraint_next(cst, ucode[i].cst, base, cur);
                     if (cur == CONSTRAINT_SET_FINISHED)
                     {
-                        ERROR_LINE("unable to satisfy inner constraint\n");
+                        ERROR_LINE_UIDX(i, "unable to satisfy inner constraint\n");
                         continue;
                     }
                 }
@@ -584,7 +579,7 @@ bool ucode_allocate(void)
 
         if (ucode[i].addr != UCODE_UNALLOCATED)
         {
-            ERROR_LINE("ucode assigned address within constraint\n");
+            ERROR_LINE_UIDX(i, "ucode assigned address within constraint\n");
             continue;
         }
 
@@ -601,9 +596,6 @@ bool ucode_allocate(void)
     // allocate rest
     for (uint i=0; i<ucode_num; ++i)
     {
-        const char *file_name = ucode[i].file_name;
-        uint line_number = ucode[i].line;
-
         if (ucode[i].cst || ucode[i].addr != UCODE_UNALLOCATED)
             continue; // skip constraints and allocated
 
@@ -619,7 +611,7 @@ bool ucode_allocate(void)
 
         if (addr == UCODE_UNALLOCATED)
         {
-            ERROR_LINE("can't allocate, no free address\n");
+            ERROR_LINE_UIDX(i, "can't allocate, no free address\n");
             //return false;
             continue;
         }
@@ -653,12 +645,6 @@ bool ucode_allocate(void)
 
         init_default_ucode(i, ucode_num);
         ucode_alloc[i] = &ucode[ucode_num];
-
-        if (ucode_num >= MAXUCODE)
-        {
-            ERROR("too many ucodes\n");
-            return false;
-        }
 
         ++ucode_num;
     }
