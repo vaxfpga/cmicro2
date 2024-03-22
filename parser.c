@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+bool skippy = false;
+
 typedef struct args_s
 {
     char buf[MAXLINE];
@@ -346,6 +348,16 @@ bool parse_directive(const char *name, const char *str)
         }
 
         DEBUG_PARSING("parsed xfill directive\n");
+    }
+    else if (strcmp(name, ".XSKIP") == 0)
+    {
+        skippy = true;
+        DEBUG_PARSING("parsed xskip directive\n");
+    }
+    else if (strcmp(name, ".XUNSKIP") == 0)
+    {
+        skippy = false;
+        DEBUG_PARSING("parsed xunskip directive\n");
     }
     else
         DEBUG_PARSING("parsed directive: %s %s\n", name, str);
@@ -893,6 +905,9 @@ bool parse_ucode_text(const char *str)
 
 bool parse_line(const char *line)
 {
+    if (skippy)
+        return true;
+
     const char *p = skip_ws(line);
 
     char name[MAXNAME];
@@ -1046,6 +1061,12 @@ bool parse_line(const char *line)
             return false;
     }
 
+    return true;
+}
+
+bool parse_end_of_file(void)
+{
+    skippy = false;
     return true;
 }
 

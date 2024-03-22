@@ -131,6 +131,8 @@ bool io_process_input(const char *fname)
         parse_line(line);
     }
 
+    parse_end_of_file();
+
     DEBUG_FILES("end processing file %s\n", fname);
 
     total_errors += num_errors;

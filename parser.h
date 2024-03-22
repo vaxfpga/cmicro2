@@ -49,6 +49,7 @@ bool parse_microcode(const char *line);
 bool parse_ucode_text(const char *str);
 
 bool parse_line(const char *line);
+bool parse_end_of_file(void);
 bool parse_hints_line(const char *line);
 
 
