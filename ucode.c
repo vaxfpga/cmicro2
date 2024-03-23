@@ -20,6 +20,7 @@ uint          ucode_num = 0;
 ucode_inst_t *ucode_alloc[MAXPC+1];
 
 uint32_t      ucode_hints[MAXUCODE];
+uint          ucode_hint_type[MAXUCODE];
 uint          ucode_num_hints = 0;
 
 static uint   last_ucode_num = 0;
@@ -353,6 +354,7 @@ bool ucode_apply_hints(void)
             else if (!cst)
             {
                 cst = ucode[i].cst;
+                // this is just to count inner/outer constraints accurately
                 for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
                 {
                     if (constraint_matches(cst, a))
@@ -364,7 +366,9 @@ bool ucode_apply_hints(void)
                 if (base == CONSTRAINT_SET_FINISHED)
                     continue; // unable to satisfy base
 
-                ucode[i].hint = ucode_hints[j++]; // outer
+                if (ucode_hint_type[j] == 'B')
+                    ucode[i].hint = ucode_hints[j++]; // outer
+                // else (H), ignore
             }
             else
             {
@@ -382,7 +386,13 @@ bool ucode_apply_hints(void)
         else if (!cst)
         {
             if (ucode[i].addr == UCODE_UNALLOCATED)
-                ucode[i].hint = ucode_hints[j++]; // outside
+            {
+                if (ucode_hint_type[j] == 'X')
+                    ++j; // skip X
+                else if (ucode_hint_type[j] == 'H')
+                    ucode[i].hint = ucode_hints[j++]; // outside (H)
+                // else (B), ignore
+            }
             continue;
         }
 

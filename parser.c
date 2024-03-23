@@ -1074,6 +1074,7 @@ bool parse_hints_line(const char *line)
 {
     const char *p = skip_ws(line);
 
+    char c = *p;
     if (*p == 'H' || *p == 'B')
     {
         p = skip_ws(p+1); // 'H/B'
@@ -1091,7 +1092,14 @@ bool parse_hints_line(const char *line)
             return false;
         }
 
+        ucode_hint_type[ucode_num_hints] = c;
         ucode_hints[ucode_num_hints++] = hint;
+        return true;
+    }
+    else if (*p == 'X')
+    {
+        ucode_hint_type[ucode_num_hints] = c;
+        ucode_hints[ucode_num_hints++] = UCODE_UNALLOCATED;
         return true;
     }
     else if (*p == 'A' || *p == 'C' || *p == 'E' || *p == 'I')

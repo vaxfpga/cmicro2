@@ -18,6 +18,7 @@ typedef struct ucode_inst_s
 {
     uint32_t addr;
     uint32_t hint;
+
     const constraint_t *cst;
     const char *target_addr;
     const char *file_name;
@@ -45,6 +46,7 @@ extern uint          ucode_num;
 extern ucode_inst_t *ucode_alloc[MAXPC+1];
 
 extern uint32_t      ucode_hints[MAXUCODE];
+extern uint          ucode_hint_type[MAXUCODE];
 extern uint          ucode_num_hints;
 
 // callbacks to be defined by impl
