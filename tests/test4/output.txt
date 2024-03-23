@@ -7,7 +7,8 @@ DEBUG: line 3    :
 DEBUG: line 4    : .REGION/0200,02ff
 DEBUG: normalized: .REGION/0200,02FF
 DEBUG: parsing directive: .REGION /0200,02FF
-DEBUG: parsed region directive: 0x0200, 0x02ff
+DEBUG: region directive: region 0x0200, 0x02ff
+DEBUG: parsed region directive: 1 regions
 DEBUG: line 5    : 
 DEBUG: line 6    : X/=<23:16>
 DEBUG: normalized: X/=<23:16>

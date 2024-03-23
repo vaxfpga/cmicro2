@@ -1,52 +1,52 @@
 + ./cmicro2 -l runs/test2/a.lst -o /dev/null test_parser.mic
-ERROR: line 6, region syntax in .REGION ,BAD1: '/' expected after .REGION
-ERROR: line 7, region syntax in .REGION /XBAD2: number expected after '/'
-ERROR: line 8, region syntax in .REGION /BADX3: ',' expected after low address
-ERROR: line 9, region syntax in .REGION /200,XBAD4: number expected after ','
-ERROR: line 10, region syntax in .REGION /200,BADX5: bad char X after high address
-ERROR: line 18, constraint syntax in =2: bad char 2 after '='
-ERROR: line 19, constraint syntax in =01*2: bad char 2 after constraint
-ERROR: line 29, field def syntax in /=  FB0: empty name
-ERROR: line 30, field def syntax in FB1 /=  X: '<' expected after '/='
-ERROR: line 31, field def syntax in FB2 /=  <X: number expected after '<'
-ERROR: line 32, field def syntax in FB3 /=  <0X: '>' expected after number
-ERROR: line 33, field def syntax in FB4 /=  <0:X: number expected after ':'
-ERROR: line 34, field def syntax in FB5 /=  <0>X: bad char X after '>'
-ERROR: line 35, field syntax in FB6 /=  <0>,]: qualifier expected after ','
-ERROR: line 36, field def syntax in FB7 /=  <0>,.POOP: bad qualifier .POOP
-ERROR: line 37, field syntax in FB8 /=  <0>,.DEFAULT]: expected '=' after .DEFAULT
-ERROR: line 38, field def syntax in FB8 /=  <0>,.DEFAULT=X: number expected after '='
-ERROR: line 39, field def syntax in FB8 /=  <0>,.DEFAULT=F]: bad char ] after .DEFAULT=
-ERROR: line 40, field def syntax in FB8 /=  <0>,.ADDRESS]: bad char ] after .ADDRESS=
-ERROR: line 41, field def syntax in FB8 /=  <0>,.NEXTADDRESS]: bad char ] after .NEXTADDRESS=
-ERROR: line 42, illegal field indexes <0:1> in FB9
-ERROR: line 43, field FG1 already defined
-ERROR: line 51, field val syntax in FDB1 = X: expected number
-ERROR: line 52, field val syntax in FDB2 = 0X: bad char X after number
-ERROR: line 53, field value FDG1 = 0x0 already defined in field A
-ERROR: line 58, macro def syntax: expected trailing '"'
-ERROR: line 59, macro MG1 already defined
-ERROR: line 61, field value FDB3 = 0x0 cannot be defined outside active field
-ERROR: line 64, ucode syntax: line truncated after '/'
-ERROR: line 65, duplicate label: LG1
-ERROR: line 68, multiple address specifiers
-ERROR: line 69, addr syntax: bad char : after number
-ERROR: line 70, label syntax: empty label before ':'
-ERROR: line 74, ucode syntax: number format bad: 0X
-ERROR: line 75, ucode syntax: expected ',' after 0
-ERROR: line 76, ucode syntax: expected '/' after X
-ERROR: line 77, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 78, ucode syntax: expected '/' after X
-ERROR: line 81, macro expansion bad arg: @:
-ERROR: line 84, macro expansion bad arg: @/
-ERROR: line 87, macro expansion not enough arguments for @2
-ERROR: line 88, ucode syntax: expected '/' after MB4
-ERROR: line 91, ucode syntax: expected '/' after MB5
-ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
-ERROR: line 100, ucode too many fields
+ERROR: test_parser.mic:6, region syntax in .REGION ,BAD1: '/' expected after .REGION
+ERROR: test_parser.mic:7, region syntax in .REGION /XBAD2: number expected after '/'
+ERROR: test_parser.mic:8, region syntax in .REGION /BADX3: ',' expected after low address
+ERROR: test_parser.mic:9, region syntax in .REGION /200,XBAD4: number expected after ','
+ERROR: test_parser.mic:10, region syntax in .REGION /200,BADX5: bad char X after high address
+ERROR: test_parser.mic:18, constraint syntax in =2: bad char 2 after '='
+ERROR: test_parser.mic:19, constraint syntax in =01*2: bad char 2 after constraint
+ERROR: test_parser.mic:29, field def syntax in /=  FB0: empty name
+ERROR: test_parser.mic:30, field def syntax in FB1 /=  X: '<' expected after '/='
+ERROR: test_parser.mic:31, field def syntax in FB2 /=  <X: number expected after '<'
+ERROR: test_parser.mic:32, field def syntax in FB3 /=  <0X: '>' expected after number
+ERROR: test_parser.mic:33, field def syntax in FB4 /=  <0:X: number expected after ':'
+ERROR: test_parser.mic:34, field def syntax in FB5 /=  <0>X: bad char X after '>'
+ERROR: test_parser.mic:35, field syntax in FB6 /=  <0>,]: qualifier expected after ','
+ERROR: test_parser.mic:36, field def syntax in FB7 /=  <0>,.POOP: bad qualifier .POOP
+ERROR: test_parser.mic:37, field syntax in FB8 /=  <0>,.DEFAULT]: expected '=' after .DEFAULT
+ERROR: test_parser.mic:38, field def syntax in FB8 /=  <0>,.DEFAULT=X: number expected after '='
+ERROR: test_parser.mic:39, field def syntax in FB8 /=  <0>,.DEFAULT=F]: bad char ] after .DEFAULT=
+ERROR: test_parser.mic:40, field def syntax in FB8 /=  <0>,.ADDRESS]: bad char ] after .ADDRESS=
+ERROR: test_parser.mic:41, field def syntax in FB8 /=  <0>,.NEXTADDRESS]: bad char ] after .NEXTADDRESS=
+ERROR: test_parser.mic:42, illegal field indexes <0:1> in FB9
+ERROR: test_parser.mic:43, field FG1 already defined
+ERROR: test_parser.mic:51, field val syntax in FDB1 = X: expected number
+ERROR: test_parser.mic:52, field val syntax in FDB2 = 0X: bad char X after number
+ERROR: test_parser.mic:53, field value FDG1 = 0x0 already defined in field A
+ERROR: test_parser.mic:58, macro def syntax: expected trailing '"'
+ERROR: test_parser.mic:59, macro MG1 already defined
+ERROR: test_parser.mic:61, field value FDB3 = 0x0 cannot be defined outside active field
+ERROR: test_parser.mic:64, ucode syntax: line truncated after '/'
+ERROR: test_parser.mic:65, duplicate label: LG1
+ERROR: test_parser.mic:68, multiple address specifiers
+ERROR: test_parser.mic:69, addr syntax: bad char : after number
+ERROR: test_parser.mic:70, label syntax: empty label before ':'
+ERROR: test_parser.mic:74, ucode syntax: number format bad: 0X
+ERROR: test_parser.mic:75, ucode syntax: expected ',' after 0
+ERROR: test_parser.mic:76, ucode syntax: expected '/' after X
+ERROR: test_parser.mic:77, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+ERROR: test_parser.mic:78, ucode syntax: expected '/' after X
+ERROR: test_parser.mic:81, macro expansion bad arg: @:
+ERROR: test_parser.mic:84, macro expansion bad arg: @/
+ERROR: test_parser.mic:87, macro expansion not enough arguments for @2
+ERROR: test_parser.mic:88, ucode syntax: expected '/' after MB4
+ERROR: test_parser.mic:91, ucode syntax: expected '/' after MB5
+ERROR: test_parser.mic:94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+ERROR: test_parser.mic:95, ucode syntax: empty token at start or after '/' or ','
+ERROR: test_parser.mic:100, ucode too many fields
 ERROR: 46 errors found in file test_parser.mic
-ERROR: line 14, unable to satisfy constraint
+ERROR: test_parser.mic:14, unable to satisfy constraint =01*
 ERROR: 47 total errors, failed
 + ./cmicro2 -d 0xf -l runs/test2/b.lst -o /dev/null test_parser.mic
 DEBUG: opening listing file runs/test2/b.lst
@@ -57,28 +57,29 @@ DEBUG: line 3    :
 DEBUG: line 4    : .REGION/200,2ff
 DEBUG: normalized: .REGION/200,2FF
 DEBUG: parsing directive: .REGION /200,2FF
-DEBUG: parsed region directive: 0x0200, 0x02ff
+DEBUG: region directive: region 0x0200, 0x02ff
+DEBUG: parsed region directive: 1 regions
 DEBUG: line 5    : 
 DEBUG: line 6    : .REGION,bad1
 DEBUG: normalized: .REGION,BAD1
 DEBUG: parsing directive: .REGION ,BAD1
-ERROR: line 6, region syntax in .REGION ,BAD1: '/' expected after .REGION
+ERROR: test_parser.mic:6, region syntax in .REGION ,BAD1: '/' expected after .REGION
 DEBUG: line 7    : .REGION/xbad2
 DEBUG: normalized: .REGION/XBAD2
 DEBUG: parsing directive: .REGION /XBAD2
-ERROR: line 7, region syntax in .REGION /XBAD2: number expected after '/'
+ERROR: test_parser.mic:7, region syntax in .REGION /XBAD2: number expected after '/'
 DEBUG: line 8    : .REGION/badx3
 DEBUG: normalized: .REGION/BADX3
 DEBUG: parsing directive: .REGION /BADX3
-ERROR: line 8, region syntax in .REGION /BADX3: ',' expected after low address
+ERROR: test_parser.mic:8, region syntax in .REGION /BADX3: ',' expected after low address
 DEBUG: line 9    : .REGION/200,xbad4
 DEBUG: normalized: .REGION/200,XBAD4
 DEBUG: parsing directive: .REGION /200,XBAD4
-ERROR: line 9, region syntax in .REGION /200,XBAD4: number expected after ','
+ERROR: test_parser.mic:9, region syntax in .REGION /200,XBAD4: number expected after ','
 DEBUG: line 10   : .REGION/200,badx5
 DEBUG: normalized: .REGION/200,BADX5
 DEBUG: parsing directive: .REGION /200,BADX5
-ERROR: line 10, region syntax in .REGION /200,BADX5: bad char X after high address
+ERROR: test_parser.mic:10, region syntax in .REGION /200,BADX5: bad char X after high address
 DEBUG: line 11   : 
 DEBUG: line 12   : .MOO COW ; moo
 DEBUG: normalized: .MOO COW
@@ -104,11 +105,11 @@ DEBUG: parsed constraint: i=00000000 v=00000000 m=00000000 c=00000000
 DEBUG: line 18   : =2
 DEBUG: normalized: =2
 DEBUG: parsing constraint: 2
-ERROR: line 18, constraint syntax in =2: bad char 2 after '='
+ERROR: test_parser.mic:18, constraint syntax in =2: bad char 2 after '='
 DEBUG: line 19   : =01*2
 DEBUG: normalized: =01*2
 DEBUG: parsing constraint: 01*2
-ERROR: line 19, constraint syntax in =01*2: bad char 2 after constraint
+ERROR: test_parser.mic:19, constraint syntax in =01*2: bad char 2 after constraint
 DEBUG: line 20   : 
 DEBUG: line 21   : FG1/=<0>
 DEBUG: normalized: FG1/=<0>
@@ -139,65 +140,65 @@ DEBUG: line 28   :
 DEBUG: line 29   : /= FB0
 DEBUG: normalized: /= FB0
 DEBUG: parsing field def:  /=  FB0
-ERROR: line 29, field def syntax in /=  FB0: empty name
+ERROR: test_parser.mic:29, field def syntax in /=  FB0: empty name
 DEBUG: line 30   : FB1 /= x
 DEBUG: normalized: FB1 /= X
 DEBUG: parsing field def: FB1 /=  X
-ERROR: line 30, field def syntax in FB1 /=  X: '<' expected after '/='
+ERROR: test_parser.mic:30, field def syntax in FB1 /=  X: '<' expected after '/='
 DEBUG: line 31   : FB2 /= <x
 DEBUG: normalized: FB2 /= <X
 DEBUG: parsing field def: FB2 /=  <X
-ERROR: line 31, field def syntax in FB2 /=  <X: number expected after '<'
+ERROR: test_parser.mic:31, field def syntax in FB2 /=  <X: number expected after '<'
 DEBUG: line 32   : FB3 /= <0x
 DEBUG: normalized: FB3 /= <0X
 DEBUG: parsing field def: FB3 /=  <0X
-ERROR: line 32, field def syntax in FB3 /=  <0X: '>' expected after number
+ERROR: test_parser.mic:32, field def syntax in FB3 /=  <0X: '>' expected after number
 DEBUG: line 33   : FB4 /= <0:x
 DEBUG: normalized: FB4 /= <0:X
 DEBUG: parsing field def: FB4 /=  <0:X
-ERROR: line 33, field def syntax in FB4 /=  <0:X: number expected after ':'
+ERROR: test_parser.mic:33, field def syntax in FB4 /=  <0:X: number expected after ':'
 DEBUG: line 34   : FB5 /= <0>x
 DEBUG: normalized: FB5 /= <0>X
 DEBUG: parsing field def: FB5 /=  <0>X
-ERROR: line 34, field def syntax in FB5 /=  <0>X: bad char X after '>'
+ERROR: test_parser.mic:34, field def syntax in FB5 /=  <0>X: bad char X after '>'
 DEBUG: line 35   : FB6 /= <0>,]
 DEBUG: normalized: FB6 /= <0>,]
 DEBUG: parsing field def: FB6 /=  <0>,]
-ERROR: line 35, field syntax in FB6 /=  <0>,]: qualifier expected after ','
+ERROR: test_parser.mic:35, field syntax in FB6 /=  <0>,]: qualifier expected after ','
 DEBUG: line 36   : FB7 /= <0>,.POOP
 DEBUG: normalized: FB7 /= <0>,.POOP
 DEBUG: parsing field def: FB7 /=  <0>,.POOP
-ERROR: line 36, field def syntax in FB7 /=  <0>,.POOP: bad qualifier .POOP
+ERROR: test_parser.mic:36, field def syntax in FB7 /=  <0>,.POOP: bad qualifier .POOP
 DEBUG: line 37   : FB8 /= <0>,.DEFAULT]
 DEBUG: normalized: FB8 /= <0>,.DEFAULT]
 DEBUG: parsing field def: FB8 /=  <0>,.DEFAULT]
-ERROR: line 37, field syntax in FB8 /=  <0>,.DEFAULT]: expected '=' after .DEFAULT
+ERROR: test_parser.mic:37, field syntax in FB8 /=  <0>,.DEFAULT]: expected '=' after .DEFAULT
 DEBUG: line 38   : FB8 /= <0>,.DEFAULT=x
 DEBUG: normalized: FB8 /= <0>,.DEFAULT=X
 DEBUG: parsing field def: FB8 /=  <0>,.DEFAULT=X
-ERROR: line 38, field def syntax in FB8 /=  <0>,.DEFAULT=X: number expected after '='
+ERROR: test_parser.mic:38, field def syntax in FB8 /=  <0>,.DEFAULT=X: number expected after '='
 DEBUG: line 39   : FB8 /= <0>,.DEFAULT=f] 
 DEBUG: normalized: FB8 /= <0>,.DEFAULT=F]
 DEBUG: parsing field def: FB8 /=  <0>,.DEFAULT=F]
-ERROR: line 39, field def syntax in FB8 /=  <0>,.DEFAULT=F]: bad char ] after .DEFAULT=
+ERROR: test_parser.mic:39, field def syntax in FB8 /=  <0>,.DEFAULT=F]: bad char ] after .DEFAULT=
 DEBUG: line 40   : FB8 /= <0>,.ADDRESS]
 DEBUG: normalized: FB8 /= <0>,.ADDRESS]
 DEBUG: parsing field def: FB8 /=  <0>,.ADDRESS]
-ERROR: line 40, field def syntax in FB8 /=  <0>,.ADDRESS]: bad char ] after .ADDRESS=
+ERROR: test_parser.mic:40, field def syntax in FB8 /=  <0>,.ADDRESS]: bad char ] after .ADDRESS=
 DEBUG: line 41   : FB8 /= <0>,.NEXTADDRESS]
 DEBUG: normalized: FB8 /= <0>,.NEXTADDRESS]
 DEBUG: parsing field def: FB8 /=  <0>,.NEXTADDRESS]
-ERROR: line 41, field def syntax in FB8 /=  <0>,.NEXTADDRESS]: bad char ] after .NEXTADDRESS=
+ERROR: test_parser.mic:41, field def syntax in FB8 /=  <0>,.NEXTADDRESS]: bad char ] after .NEXTADDRESS=
 DEBUG: line 42   : FB9 /= <0:1>
 DEBUG: normalized: FB9 /= <0:1>
 DEBUG: parsing field def: FB9 /=  <0:1>
 DEBUG: parsed field def FB9: li=0, ri=1 def=0x0 flags=0b000
-ERROR: line 42, illegal field indexes <0:1> in FB9
+ERROR: test_parser.mic:42, illegal field indexes <0:1> in FB9
 DEBUG: line 43   : FG1 /= <0>
 DEBUG: normalized: FG1 /= <0>
 DEBUG: parsing field def: FG1 /=  <0>
 DEBUG: parsed field def FG1: li=0, ri=0 def=0x0 flags=0b000
-ERROR: line 43, field FG1 already defined
+ERROR: test_parser.mic:43, field FG1 already defined
 DEBUG: line 44   : 
 DEBUG: line 45   : A /= <0>
 DEBUG: normalized: A /= <0>
@@ -223,16 +224,16 @@ DEBUG: line 50   :
 DEBUG: line 51   :     FDB1 = x
 DEBUG: normalized:     FDB1 = X
 DEBUG: parsing field val: FDB1 = X
-ERROR: line 51, field val syntax in FDB1 = X: expected number
+ERROR: test_parser.mic:51, field val syntax in FDB1 = X: expected number
 DEBUG: line 52   :     FDB2 = 0x
 DEBUG: normalized:     FDB2 = 0X
 DEBUG: parsing field val: FDB2 = 0X
-ERROR: line 52, field val syntax in FDB2 = 0X: bad char X after number
+ERROR: test_parser.mic:52, field val syntax in FDB2 = 0X: bad char X after number
 DEBUG: line 53   :     FDG1 = 0
 DEBUG: normalized:     FDG1 = 0
 DEBUG: parsing field val: FDG1 = 0
 DEBUG: parsed field val: FDG1 0x0
-ERROR: line 53, field value FDG1 = 0x0 already defined in field A
+ERROR: test_parser.mic:53, field value FDG1 = 0x0 already defined in field A
 DEBUG: line 54   : 
 DEBUG: line 55   : MG1 "A/FDG1"
 DEBUG: normalized: MG1 "A/FDG1"
@@ -246,18 +247,18 @@ DEBUG: line 57   :
 DEBUG: line 58   : MB1 "A/A1
 DEBUG: normalized: MB1 "A/A1
 DEBUG: parsing macro: MB1 "A/A1
-ERROR: line 58, macro def syntax: expected trailing '"'
+ERROR: test_parser.mic:58, macro def syntax: expected trailing '"'
 DEBUG: line 59   : MG1 "MB2"
 DEBUG: normalized: MG1 "MB2"
 DEBUG: parsing macro: MG1 "MB2"
 DEBUG: parsed macro: MG1 "MB2"
-ERROR: line 59, macro MG1 already defined
+ERROR: test_parser.mic:59, macro MG1 already defined
 DEBUG: line 60   : 
 DEBUG: line 61   : FDB3 = 0
 DEBUG: normalized: FDB3 = 0
 DEBUG: parsing field val: FDB3 = 0
 DEBUG: parsed field val: FDB3 0x0
-ERROR: line 61, field value FDB3 = 0x0 cannot be defined outside active field
+ERROR: test_parser.mic:61, field value FDB3 = 0x0 cannot be defined outside active field
 DEBUG: line 62   : 
 DEBUG: line 63   : lg1: A/FDG1
 DEBUG: normalized: LG1: A/FDG1
@@ -273,12 +274,12 @@ DEBUG: parsed label LG2
 DEBUG: parsing microcode: X/
 DEBUG: expanding : X/
 DEBUG: expanded  : X/
-ERROR: line 64, ucode syntax: line truncated after '/'
+ERROR: test_parser.mic:64, ucode syntax: line truncated after '/'
 DEBUG: line 65   : lg1: A/FDG1 ; bad dup label
 DEBUG: normalized: LG1: A/FDG1
 DEBUG: parsing address/label: LG1
 DEBUG: parsed label LG1
-ERROR: line 65, duplicate label: LG1
+ERROR: test_parser.mic:65, duplicate label: LG1
 DEBUG: line 66   :    
 DEBUG: line 67   : 0cab: ; lg3
 DEBUG: normalized: 0CAB:
@@ -288,15 +289,15 @@ DEBUG: line 68   : 0x12: ; lb3 bad mult addr
 DEBUG: normalized: 0X12:
 DEBUG: parsing address/label: 0X12
 DEBUG: parsed address 0x12
-ERROR: line 68, multiple address specifiers
+ERROR: test_parser.mic:68, multiple address specifiers
 DEBUG: line 69   : 123x: ; lb4
 DEBUG: normalized: 123X:
 DEBUG: parsing address/label: 123X
-ERROR: line 69, addr syntax: bad char : after number
+ERROR: test_parser.mic:69, addr syntax: bad char : after number
 DEBUG: line 70   : : ;lb5
 DEBUG: normalized: :
 DEBUG: parsing address/label: 
-ERROR: line 70, label syntax: empty label before ':'
+ERROR: test_parser.mic:70, label syntax: empty label before ':'
 DEBUG: line 71   : 
 DEBUG: line 72   : A/0
 DEBUG: normalized: A/0
@@ -309,31 +310,31 @@ DEBUG: normalized: X/0X,X/
 DEBUG: parsing microcode: X/0X,X/
 DEBUG: expanding : X/0X,X/
 DEBUG: expanded  : X/0X,X/
-ERROR: line 74, ucode syntax: number format bad: 0X
+ERROR: test_parser.mic:74, ucode syntax: number format bad: 0X
 DEBUG: line 75   : X/0/
 DEBUG: normalized: X/0/
 DEBUG: parsing microcode: X/0/
 DEBUG: expanding : X/0/
 DEBUG: expanded  : X/0/
-ERROR: line 75, ucode syntax: expected ',' after 0
+ERROR: test_parser.mic:75, ucode syntax: expected ',' after 0
 DEBUG: line 76   : X,X
 DEBUG: normalized: X,X
 DEBUG: parsing microcode: X,X
 DEBUG: expanding : X,X
 DEBUG: expanded  : X,X
-ERROR: line 76, ucode syntax: expected '/' after X
+ERROR: test_parser.mic:76, ucode syntax: expected '/' after X
 DEBUG: line 77   : X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: normalized: X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: parsing microcode: X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: expanding : X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: expanded  : X/1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
-ERROR: line 77, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+ERROR: test_parser.mic:77, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: line 78   : X]
 DEBUG: normalized: X]
 DEBUG: parsing microcode: X]
 DEBUG: expanding : X]
 DEBUG: expanded  : X]
-ERROR: line 78, ucode syntax: expected '/' after X
+ERROR: test_parser.mic:78, ucode syntax: expected '/' after X
 DEBUG: line 79   : 
 DEBUG: line 80   : MB2[] "@:"
 DEBUG: normalized: MB2[] "@:"
@@ -343,7 +344,7 @@ DEBUG: line 81   : MB2[A/0]
 DEBUG: normalized: MB2[A/0]
 DEBUG: parsing microcode: MB2[A/0]
 DEBUG: expanding : MB2[A/0]
-ERROR: line 81, macro expansion bad arg: @:
+ERROR: test_parser.mic:81, macro expansion bad arg: @:
 DEBUG: line 82   : 
 DEBUG: line 83   : MB3[] "@/"
 DEBUG: normalized: MB3[] "@/"
@@ -353,7 +354,7 @@ DEBUG: line 84   : MB3[A/0]
 DEBUG: normalized: MB3[A/0]
 DEBUG: parsing microcode: MB3[A/0]
 DEBUG: expanding : MB3[A/0]
-ERROR: line 84, macro expansion bad arg: @/
+ERROR: test_parser.mic:84, macro expansion bad arg: @/
 DEBUG: line 85   : 
 DEBUG: line 86   : MB4[] "@2"
 DEBUG: normalized: MB4[] "@2"
@@ -363,13 +364,13 @@ DEBUG: line 87   : MB4[A/0]
 DEBUG: normalized: MB4[A/0]
 DEBUG: parsing microcode: MB4[A/0]
 DEBUG: expanding : MB4[A/0]
-ERROR: line 87, macro expansion not enough arguments for @2
+ERROR: test_parser.mic:87, macro expansion not enough arguments for @2
 DEBUG: line 88   : MB4[@
 DEBUG: normalized: MB4[@
 DEBUG: parsing microcode: MB4[@
 DEBUG: expanding : MB4[@
 DEBUG: expanded  : MB4[@
-ERROR: line 88, ucode syntax: expected '/' after MB4
+ERROR: test_parser.mic:88, ucode syntax: expected '/' after MB4
 DEBUG: line 89   : 
 DEBUG: line 90   : MB5 "A/0,MB5"
 DEBUG: normalized: MB5 "A/0,MB5"
@@ -381,18 +382,18 @@ DEBUG: parsing microcode: MB5
 DEBUG: expanding : MB5
 DEBUG: expanding macro MB5 to "A/0,MB5"
 DEBUG: expanded  : A/0,MB5
-ERROR: line 91, ucode syntax: expected '/' after MB5
+ERROR: test_parser.mic:91, ucode syntax: expected '/' after MB5
 DEBUG: line 92   : 
 DEBUG: line 93   : ; 127 max name
 DEBUG: line 94   : 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
 DEBUG: normalized: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567/0
-ERROR: line 94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+ERROR: test_parser.mic:94, token name truncated: 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
 DEBUG: line 95   : /0
 DEBUG: normalized: /0
 DEBUG: parsing microcode: /0
 DEBUG: expanding : /0
 DEBUG: expanded  : /0
-ERROR: line 95, ucode syntax: empty token at start or after '/' or ','
+ERROR: test_parser.mic:95, ucode syntax: empty token at start or after '/' or ','
 DEBUG: line 96   : 
 DEBUG: line 97   : MG2[A/0,MG2[MG1,MG1]]
 DEBUG: normalized: MG2[A/0,MG2[MG1,MG1]]
@@ -410,7 +411,7 @@ DEBUG: normalized: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A
 DEBUG: parsing microcode: A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: expanding : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
 DEBUG: expanded  : A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0,A/0
-ERROR: line 100, ucode too many fields
+ERROR: test_parser.mic:100, ucode too many fields
 DEBUG: line 101  : 
 DEBUG: line 102  : ; smashing microcode on same line as constraint
 DEBUG: line 103  : =100 A/0
@@ -422,7 +423,7 @@ DEBUG: expanding : A/0
 DEBUG: expanded  : A/0
 DEBUG: end processing file test_parser.mic
 ERROR: 46 errors found in file test_parser.mic
-ERROR: line 14, unable to satisfy constraint
+ERROR: test_parser.mic:14, unable to satisfy constraint =01*
 DEBUG: begin writing output file /dev/null
 DEBUG: end writing output file /dev/null
 ERROR: 47 total errors, failed
@@ -585,7 +586,7 @@ U,0201, 0000,0000,0000,0000,0000,0000
 U,0204, 0000,0000,0000,0000,0000,0000
 ;
 ; ---- end file "test_parser.mic", 103 lines, 46 errors ----
-; ERROR: unable to satisfy constraint
+; ERROR: unable to satisfy constraint =01*
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200
@@ -599,7 +600,8 @@ U,0204, 0000,0000,0000,0000,0000,0000
 ;     3: 
 ;     4: .REGION/200,2ff
 ; DEBUG: parsing directive: .REGION /200,2FF
-; DEBUG: parsed region directive: 0x0200, 0x02ff
+; DEBUG: region directive: region 0x0200, 0x02ff
+; DEBUG: parsed region directive: 1 regions
 ;     5: 
 ;     6: .REGION,bad1
 ; DEBUG: parsing directive: .REGION ,BAD1
@@ -897,7 +899,7 @@ U,0201, 0000,0000,0000,0000,0000,0000
 U,0204, 0000,0000,0000,0000,0000,0000
 ;
 ; ---- end file "test_parser.mic", 103 lines, 46 errors ----
-; ERROR: unable to satisfy constraint
+; ERROR: unable to satisfy constraint =01*
 ; ---- begin symbol table ----
 ; 2 symbols
 ;   LG1      : 0x0200

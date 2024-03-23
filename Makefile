@@ -21,6 +21,7 @@ SOURCES = \
     hashtable.c \
     io.c \
     macros.c \
+    region.c \
     parser.c \
     ucode.c \
     utils.c

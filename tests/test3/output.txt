@@ -77,7 +77,7 @@ DEBUG: line 25   :   L2=3
 DEBUG: normalized:   L2=3
 DEBUG: parsing field val: L2 = 3
 DEBUG: parsed field val: L2 0x3
-ERROR: line 25, field value L2 = 0x3 already defined in field X
+ERROR: test_macro.mic:25, field value L2 = 0x3 already defined in field X
 DEBUG: line 26   : 
 DEBUG: line 27   : J/=<7:0>,.NEXTADDRESS
 DEBUG: normalized: J/=<7:0>,.NEXTADDRESS
@@ -283,7 +283,7 @@ DEBUG: line 93   : L1: X/L2,M1
 DEBUG: normalized: L1: X/L2,M1
 DEBUG: parsing address/label: L1
 DEBUG: parsed label L1
-ERROR: line 93, duplicate label: L1
+ERROR: test_macro.mic:93, duplicate label: L1
 DEBUG: line 94   : 
 DEBUG: line 95   : ME         "A/0"
 DEBUG: normalized: ME         "A/0"

@@ -6,6 +6,7 @@
 #include "constraints.h"
 #include "fields.h"
 #include "macros.h"
+#include "region.h"
 #include "ucode.h"
 #include "utils.h"
 
@@ -195,49 +196,64 @@ bool parse_directive(const char *name, const char *str)
 
     if (strcmp(name, ".REGION") == 0)
     {
-        // TODO: should allow multiple ranges...
-        if (*p != '/')
+        region_list_t r = { };
+
+        for(uint i=0; i<NUM_ELEMS(r.regions); ++i)
         {
-            ERROR_LINE("region syntax in %s %s: '/' expected after .REGION\n", name, str);
-            return false;
+            if (*p != '/')
+            {
+                ERROR_LINE("region syntax in %s %s: '/' expected after .REGION\n", name, str);
+                return false;
+            }
+
+            p = skip_ws(p+1);
+
+            char *q = 0;
+            uint32_t low = strtoul(p, &q, 16);
+            if (q == p) // couldn't parse any numbers
+            {
+                ERROR_LINE("region syntax in %s %s: number expected after '/'\n", name, str);
+                return false;
+            }
+
+            p = skip_ws(q);
+            if (*p != ',')
+            {
+                ERROR_LINE("region syntax in %s %s: ',' expected after low address\n", name, str);
+                return false;
+            }
+
+            p = skip_ws(p+1);
+
+            q = 0;
+            uint32_t high = strtoul(p, &q, 16);
+            if (q == p) // couldn't parse any numbers
+            {
+                ERROR_LINE("region syntax in %s %s: number expected after ','\n", name, str);
+                return false;
+            }
+
+            p = skip_ws(q);
+            if (*p && *p != '/')
+            {
+                ERROR_LINE("region syntax in %s %s: bad char %c after high address\n", name, str, *p);
+                return false;
+            }
+
+            DEBUG_PARSING("region directive: region 0x%04x, 0x%04x\n", low, high);
+            r.regions[i].low_addr = low;
+            r.regions[i].max_addr = high;
+
+            if (!*p)
+            {
+                r.num_regions = i+1;
+                DEBUG_PARSING("parsed region directive: %u regions\n", r.num_regions);
+                return handle_region(&r);
+            }
         }
 
-        p = skip_ws(p+1);
-
-        char *q = 0;
-        uint32_t low = strtoul(p, &q, 16);
-        if (q == p) // couldn't parse any numbers
-        {
-            ERROR_LINE("region syntax in %s %s: number expected after '/'\n", name, str);
-            return false;
-        }
-
-        p = skip_ws(q);
-        if (*p != ',')
-        {
-            ERROR_LINE("region syntax in %s %s: ',' expected after low address\n", name, str);
-            return false;
-        }
-
-        p = skip_ws(p+1);
-
-        q = 0;
-        uint32_t high = strtoul(p, &q, 16);
-        if (q == p) // couldn't parse any numbers
-        {
-            ERROR_LINE("region syntax in %s %s: number expected after ','\n", name, str);
-            return false;
-        }
-
-        p = skip_ws(q);
-        if (*p)
-        {
-            ERROR_LINE("region syntax in %s %s: bad char %c after high address\n", name, str, *p);
-            return false;
-        }
-
-        DEBUG_PARSING("parsed region directive: 0x%04x, 0x%04x\n", low, high);
-        return handle_region(low, high);
+        ERROR_LINE("region syntax in %s %s: too many regions\n", name, str);
+        return false;
     }
     else if (strcmp(name, ".XRESERVE") == 0 || strcmp(name, ".XUNRESERVE") == 0)
     {

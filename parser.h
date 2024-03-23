@@ -13,6 +13,7 @@
 // forward decls
 typedef struct constraint_s  constraint_t;
 typedef struct field_def_s   field_def_t;
+typedef struct region_list_s region_list_t;
 typedef struct ucode_field_s ucode_field_t;
 
 
@@ -21,7 +22,7 @@ extern bool io_get_line(char *buf, uint max);
 extern bool io_write_expanded(const char *xline);
 
 //extern bool handle_directive (const char *directive, const char *value);
-extern bool handle_region    (uint32_t low, uint32_t high);
+extern bool handle_region    (region_list_t *r);
 extern bool handle_field_def (const char *field,     const field_def_t *fdef);
 extern bool handle_field_val (const char *field_val, uint32_t value);
 extern bool handle_constraint(const constraint_t *cst);

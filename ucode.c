@@ -6,6 +6,7 @@
 #include "constraints.h"
 #include "fields.h"
 #include "hashtable.h"
+#include "region.h"
 #include "utils.h"
 
 #include <stdint.h>
@@ -35,8 +36,11 @@ static ucode_inst_t ucode_xfill;
 static uint32_t ucode_addr = UCODE_UNALLOCATED;
 static uint32_t ucode_hint = UCODE_UNALLOCATED;
 
-static uint32_t ucode_region_low  = 0;
-static uint32_t ucode_region_high = MAXPC;
+static region_list_t *region_list = &(region_list_t)
+{
+    .regions = { [0]{ .low_addr=0, .max_addr=MAXPC } },
+    .num_regions = 1,
+};
 
 static const char *next_addr_str = "<.+1>";
 static const char *this_addr_str = "<.>";
@@ -49,8 +53,6 @@ bool ucode_init(void)
     last_ucode_num    = 0;
     ucode_addr        = UCODE_UNALLOCATED;
     ucode_hint        = UCODE_UNALLOCATED;
-    ucode_region_low  = 0;
-    ucode_region_high = MAXPC;
 
     memset(ucode_alloc,     0, sizeof(ucode_alloc));
     memset(ucode_xresv_cst, 0, sizeof(ucode_xresv_cst));
@@ -59,10 +61,11 @@ bool ucode_init(void)
     return hashtable_init(&symbols, 256);
 }
 
-bool handle_region(uint32_t low, uint32_t high)
+bool handle_region(region_list_t *r)
 {
-    ucode_region_low  = low;
-    ucode_region_high = high;
+    region_list_t *rl = calloc(1, sizeof(region_list_t));
+    memcpy(rl, r, sizeof(region_list_t));
+    region_list = rl;
     return true;
 }
 
@@ -355,7 +358,7 @@ bool ucode_apply_hints(void)
             {
                 cst = ucode[i].cst;
                 // this is just to count inner/outer constraints accurately
-                for (uint32_t a=ucode_region_low; a <= ucode_region_high; ++a)
+                for (uint32_t a=region_init_addr(region_list, 0); a != REGION_FINISHED; a=region_next_addr(region_list, a))
                 {
                     if (constraint_matches(cst, a))
                     {
@@ -411,14 +414,8 @@ bool ucode_apply_hints(void)
 static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
 {
 
-    if (hint == UCODE_UNALLOCATED)
-        hint = ucode_region_low;
-
-    for (uint32_t a=hint; a <= ucode_region_high; ++a)
+    for (uint32_t a=region_init_addr(region_list, hint); a != REGION_FINISHED; a=region_next_addr(region_list, a))
     {
-//        if (ucode_alloc[a])
-//            continue;
-
         if (!constraint_matches(cst, a))
             continue;
 
@@ -610,7 +607,7 @@ bool ucode_allocate(void)
             continue; // skip constraints and allocated
 
         uint32_t addr = UCODE_UNALLOCATED;
-        for (uint32_t a = ucode_region_low; a <= ucode_region_high; ++a)
+        for (uint32_t a=region_init_addr(region_list, 0); a != REGION_FINISHED; a=region_next_addr(region_list, a))
         {
             if (!ucode_alloc[a] && !ucode_xresv_seq[a])
             {
@@ -724,9 +721,7 @@ bool ucode_resolve(void)
 
 bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *cst, bool resv)
 {
-    if (first < ucode_region_low)
-        first = ucode_region_low;
-    for (uint32_t a=first; a <= ucode_region_high && a < next; ++a)
+    for (uint32_t a=region_init_addr(region_list, first); a != REGION_FINISHED && a < next; a=region_next_addr(region_list, a))
     {
         if (constraint_matches(cst, a))
         {
@@ -743,9 +738,7 @@ bool handle_xresv_constraint(uint32_t first, uint32_t next, const constraint_t *
 
 bool handle_xresv_sequential(uint32_t first, uint32_t next, bool resv)
 {
-    if (first < ucode_region_low)
-        first = ucode_region_low;
-    for (uint32_t a=first; a <= ucode_region_high && a < next; ++a)
+    for (uint32_t a=region_init_addr(region_list, first); a != REGION_FINISHED && a < next; a=region_next_addr(region_list, a))
     {
         ucode_xresv_seq[a] = resv;
     }

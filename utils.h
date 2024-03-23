@@ -20,6 +20,8 @@
 #define MAXUCODE 0x4000
 #define MAXPC    0x1fff
 
+#define NUM_ELEMS(a) (sizeof(a)/sizeof((a)[0]))
+
 
 typedef unsigned int uint;
 

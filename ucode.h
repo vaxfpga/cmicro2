@@ -12,7 +12,8 @@
 
 #define UCODE_UNALLOCATED (~(uint32_t)0)
 
-typedef struct constraint_s constraint_t;
+typedef struct constraint_s  constraint_t;
+typedef struct region_list_s region_list_t;
 
 typedef struct ucode_inst_s
 {
@@ -58,7 +59,7 @@ bool ucode_apply_hints(void);
 bool ucode_allocate(void);
 bool ucode_resolve(void);
 
-bool handle_region(uint32_t low, uint32_t high);
+bool handle_region(region_list_t *r);
 bool handle_constraint(const constraint_t *cst);
 bool handle_addr (uint32_t addr);
 bool handle_label(const char *label);
