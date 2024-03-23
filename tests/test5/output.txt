@@ -1,0 +1,204 @@
++ ./cmicro2 -d 0xf -l runs/test5/a.lst -o /dev/null test_ucode.mic
+DEBUG: opening listing file runs/test5/a.lst
+DEBUG: begin processing file test_ucode.mic
+DEBUG: line 1    : ; SPDX-License-Identifier: MIT
+DEBUG: line 2    : ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+DEBUG: line 3    : 
+DEBUG: line 4    : .REGION/0200,02ff
+DEBUG: normalized: .REGION/0200,02FF
+DEBUG: parsing directive: .REGION /0200,02FF
+DEBUG: region directive: region 0x0200, 0x02ff
+DEBUG: parsed region directive: 1 regions
+DEBUG: line 5    : 
+DEBUG: line 6    : A /= <7:4>, .DEFAULT = 2
+DEBUG: normalized: A /= <7:4>, .DEFAULT = 2
+DEBUG: parsing field def: A /=  <7:4>, .DEFAULT = 2
+DEBUG: parsed field def A: li=7, ri=4 def=0x2 flags=0b100
+DEBUG: line 7    :   A0 = 0
+DEBUG: normalized:   A0 = 0
+DEBUG: parsing field val: A0 = 0
+DEBUG: parsed field val: A0 0x0
+DEBUG: line 8    :   A1 = 1
+DEBUG: normalized:   A1 = 1
+DEBUG: parsing field val: A1 = 1
+DEBUG: parsed field val: A1 0x1
+DEBUG: line 9    :   A4 = 4
+DEBUG: normalized:   A4 = 4
+DEBUG: parsing field val: A4 = 4
+DEBUG: parsed field val: A4 0x4
+DEBUG: line 10   :  
+DEBUG: line 11   : B /= <3:0>, .DEFAULT = 2
+DEBUG: normalized: B /= <3:0>, .DEFAULT = 2
+DEBUG: parsing field def: B /=  <3:0>, .DEFAULT = 2
+DEBUG: parsed field def B: li=3, ri=0 def=0x2 flags=0b100
+DEBUG: line 12   :   B0 = 0
+DEBUG: normalized:   B0 = 0
+DEBUG: parsing field val: B0 = 0
+DEBUG: parsed field val: B0 0x0
+DEBUG: line 13   :   B1 = 1
+DEBUG: normalized:   B1 = 1
+DEBUG: parsing field val: B1 = 1
+DEBUG: parsed field val: B1 0x1
+DEBUG: line 14   : 
+DEBUG: line 15   : X /= <15:8>, .ADDRESS
+DEBUG: normalized: X /= <15:8>, .ADDRESS
+DEBUG: parsing field def: X /=  <15:8>, .ADDRESS
+DEBUG: parsed field def X: li=15, ri=8 def=0x0 flags=0b010
+DEBUG: line 16   : 
+DEBUG: line 17   : M1[]    "A/@1"
+DEBUG: normalized: M1[]    "A/@1"
+DEBUG: parsing macro: M1[]    "A/@1"
+DEBUG: parsed macro: M1[] "A/@1"
+DEBUG: line 18   : M2[]+[] "A/@1,B/@2"
+DEBUG: normalized: M2[]+[] "A/@1,B/@2"
+DEBUG: parsing macro: M2[]+[] "A/@1,B/@2"
+DEBUG: parsed macro: M2[]+[] "A/@1,B/@2"
+DEBUG: line 19   : 
+DEBUG: line 20   : A: M1[A1]
+DEBUG: normalized: A: M1[A1]
+DEBUG: parsing address/label: A
+DEBUG: parsed label A
+DEBUG: parsing microcode: M1[A1]
+DEBUG: expanding : M1[A1]
+DEBUG: expanding macro M1[](A1) to "A/A1"
+DEBUG: expanded  : A/A1
+DEBUG: line 21   : 
+DEBUG: line 22   : .REGION/0300,0301/0400,04ff
+DEBUG: normalized: .REGION/0300,0301/0400,04FF
+DEBUG: parsing directive: .REGION /0300,0301/0400,04FF
+DEBUG: region directive: region 0x0300, 0x0301
+DEBUG: region directive: region 0x0400, 0x04ff
+DEBUG: parsed region directive: 2 regions
+DEBUG: line 23   : B: M2[A1]+[B1]
+DEBUG: normalized: B: M2[A1]+[B1]
+DEBUG: parsing address/label: B
+DEBUG: parsed label B
+DEBUG: parsing microcode: M2[A1]+[B1]
+DEBUG: expanding : M2[A1]+[B1]
+DEBUG: expanding macro M2[]+[](A1,B1) to "A/A1,B/B1"
+DEBUG: expanded  : A/A1,B/B1
+DEBUG: line 24   : A/A4,B/B1
+DEBUG: normalized: A/A4,B/B1
+DEBUG: parsing microcode: A/A4,B/B1
+DEBUG: expanding : A/A4,B/B1
+DEBUG: expanded  : A/A4,B/B1
+DEBUG: line 25   : B/B1,A/A3
+DEBUG: normalized: B/B1,A/A3
+DEBUG: parsing microcode: B/B1,A/A3
+DEBUG: expanding : B/B1,A/A3
+DEBUG: expanded  : B/B1,A/A3
+ERROR: test_ucode.mic:25, undefined field value A3
+DEBUG: line 26   : B/B1,A/A2
+DEBUG: normalized: B/B1,A/A2
+DEBUG: parsing microcode: B/B1,A/A2
+DEBUG: expanding : B/B1,A/A2
+DEBUG: expanded  : B/B1,A/A2
+ERROR: test_ucode.mic:26, undefined field value A2
+DEBUG: line 27   : B/B1,A/A1
+DEBUG: normalized: B/B1,A/A1
+DEBUG: parsing microcode: B/B1,A/A1
+DEBUG: expanding : B/B1,A/A1
+DEBUG: expanded  : B/B1,A/A1
+DEBUG: end processing file test_ucode.mic
+ERROR: 2 errors found in file test_ucode.mic
+DEBUG: begin writing output file /dev/null
+DEBUG: end writing output file /dev/null
+ERROR: 2 total errors, failed
+; ---- begin file "test_ucode.mic" ----
+;
+;     1: ; SPDX-License-Identifier: MIT
+;     2: ; SPDX-FileCopyrightText: 2023 vaxfpga <vaxfpga@users.noreply.github.com>
+;     3: 
+;     4: .REGION/0200,02ff
+; DEBUG: parsing directive: .REGION /0200,02FF
+; DEBUG: region directive: region 0x0200, 0x02ff
+; DEBUG: parsed region directive: 1 regions
+;     5: 
+;     6: A /= <7:4>, .DEFAULT = 2
+; DEBUG: parsing field def: A /=  <7:4>, .DEFAULT = 2
+; DEBUG: parsed field def A: li=7, ri=4 def=0x2 flags=0b100
+;     7:   A0 = 0
+; DEBUG: parsing field val: A0 = 0
+; DEBUG: parsed field val: A0 0x0
+;     8:   A1 = 1
+; DEBUG: parsing field val: A1 = 1
+; DEBUG: parsed field val: A1 0x1
+;     9:   A4 = 4
+; DEBUG: parsing field val: A4 = 4
+; DEBUG: parsed field val: A4 0x4
+;    10:  
+;    11: B /= <3:0>, .DEFAULT = 2
+; DEBUG: parsing field def: B /=  <3:0>, .DEFAULT = 2
+; DEBUG: parsed field def B: li=3, ri=0 def=0x2 flags=0b100
+;    12:   B0 = 0
+; DEBUG: parsing field val: B0 = 0
+; DEBUG: parsed field val: B0 0x0
+;    13:   B1 = 1
+; DEBUG: parsing field val: B1 = 1
+; DEBUG: parsed field val: B1 0x1
+;    14: 
+;    15: X /= <15:8>, .ADDRESS
+; DEBUG: parsing field def: X /=  <15:8>, .ADDRESS
+; DEBUG: parsed field def X: li=15, ri=8 def=0x0 flags=0b010
+;    16: 
+;    17: M1[]    "A/@1"
+; DEBUG: parsing macro: M1[]    "A/@1"
+; DEBUG: parsed macro: M1[] "A/@1"
+;    18: M2[]+[] "A/@1,B/@2"
+; DEBUG: parsing macro: M2[]+[] "A/@1,B/@2"
+; DEBUG: parsed macro: M2[]+[] "A/@1,B/@2"
+;    19: 
+;    20: A: M1[A1]
+; DEBUG: parsing address/label: A
+; DEBUG: parsed label A
+; DEBUG: parsing microcode: M1[A1]
+; DEBUG: expanding : M1[A1]
+; DEBUG: expanding macro M1[](A1) to "A/A1"
+; DEBUG: expanded  : A/A1
+;         "A/A1"
+U,0200, 0000,0000,0000,0000,0000,0012
+;    21: 
+;    22: .REGION/0300,0301/0400,04ff
+; DEBUG: parsing directive: .REGION /0300,0301/0400,04FF
+; DEBUG: region directive: region 0x0300, 0x0301
+; DEBUG: region directive: region 0x0400, 0x04ff
+; DEBUG: parsed region directive: 2 regions
+;    23: B: M2[A1]+[B1]
+; DEBUG: parsing address/label: B
+; DEBUG: parsed label B
+; DEBUG: parsing microcode: M2[A1]+[B1]
+; DEBUG: expanding : M2[A1]+[B1]
+; DEBUG: expanding macro M2[]+[](A1,B1) to "A/A1,B/B1"
+; DEBUG: expanded  : A/A1,B/B1
+;         "A/A1,B/B1"
+U,0300, 0000,0000,0000,0000,0000,0011
+;    24: A/A4,B/B1
+; DEBUG: parsing microcode: A/A4,B/B1
+; DEBUG: expanding : A/A4,B/B1
+; DEBUG: expanded  : A/A4,B/B1
+U,0301, 0000,0000,0000,0000,0000,0041
+;    25: B/B1,A/A3
+; DEBUG: parsing microcode: B/B1,A/A3
+; DEBUG: expanding : B/B1,A/A3
+; DEBUG: expanded  : B/B1,A/A3
+; ERROR: undefined field value A3
+U,0400, 0000,0000,0000,0000,0000,0021
+;    26: B/B1,A/A2
+; DEBUG: parsing microcode: B/B1,A/A2
+; DEBUG: expanding : B/B1,A/A2
+; DEBUG: expanded  : B/B1,A/A2
+; ERROR: undefined field value A2
+U,0401, 0000,0000,0000,0000,0000,0021
+;    27: B/B1,A/A1
+; DEBUG: parsing microcode: B/B1,A/A1
+; DEBUG: expanding : B/B1,A/A1
+; DEBUG: expanded  : B/B1,A/A1
+U,0402, 0000,0000,0000,0000,0000,0011
+;
+; ---- end file "test_ucode.mic", 27 lines, 2 errors ----
+; ---- begin symbol table ----
+; 2 symbols
+;   A        : 0x0200
+;   B        : 0x0300
+;
+; ---- end symbol table ----

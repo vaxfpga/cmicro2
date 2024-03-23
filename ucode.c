@@ -90,6 +90,7 @@ bool handle_constraint(const constraint_t *cst)
         .addr        = ucode_addr,
         .hint        = ucode_hint,
         .cst         = c,
+        .rl          = region_list,
         .target_addr = 0,
         .file_name   = file_name,
         .line        = line_number,
@@ -219,6 +220,7 @@ bool handle_ucode(const ucode_field_t *field, uint num)
         .addr        = ucode_addr,
         .hint        = ucode_hint,
         .cst         = 0,
+        .rl          = region_list,
         .target_addr = 0,
         .file_name   = file_name,
         .line        = line_number,
@@ -318,6 +320,7 @@ bool handle_ucode_raw(uint32_t addr, uint32_t uc[3])
         .addr             = addr,
         .hint             = 0,
         .cst              = 0,
+        .rl               = region_list,
         .target_addr      = 0,
         .file_name        = file_name,
         .line             = line_number,
@@ -413,8 +416,8 @@ bool ucode_apply_hints(void)
 
 static uint32_t get_cst_base(const constraint_t *cst, uint32_t hint, uint uidx)
 {
-
-    for (uint32_t a=region_init_addr(region_list, hint); a != REGION_FINISHED; a=region_next_addr(region_list, a))
+    const region_list_t *rl = ucode[uidx].rl;
+    for (uint32_t a=region_init_addr(rl, hint); a != REGION_FINISHED; a=region_next_addr(rl, a))
     {
         if (!constraint_matches(cst, a))
             continue;
@@ -607,7 +610,8 @@ bool ucode_allocate(void)
             continue; // skip constraints and allocated
 
         uint32_t addr = UCODE_UNALLOCATED;
-        for (uint32_t a=region_init_addr(region_list, 0); a != REGION_FINISHED; a=region_next_addr(region_list, a))
+        const region_list_t *rl = ucode[i].rl;
+        for (uint32_t a=region_init_addr(rl, 0); a != REGION_FINISHED; a=region_next_addr(rl, a))
         {
             if (!ucode_alloc[a] && !ucode_xresv_seq[a])
             {

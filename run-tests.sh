@@ -67,3 +67,12 @@ mkdir -p "./runs/test4"
 ) >runs/test4/output.txt 2>&1
 cat runs/test4/*.lst >> runs/test4/output.txt
 check "test4"
+
+mkdir -p "./runs/test5"
+# ucode
+(
+    set -x
+    "${cmd}" -d 0xf -l runs/test5/a.lst -o /dev/null test_ucode.mic
+) >runs/test5/output.txt 2>&1
+cat runs/test5/*.lst >> runs/test5/output.txt
+check "test5"

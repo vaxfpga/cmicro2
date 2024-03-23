@@ -21,6 +21,7 @@ typedef struct ucode_inst_s
     uint32_t hint;
 
     const constraint_t *cst;
+    const region_list_t *rl;
     const char *target_addr;
     const char *file_name;
     uint line;
@@ -59,7 +60,7 @@ bool ucode_apply_hints(void);
 bool ucode_allocate(void);
 bool ucode_resolve(void);
 
-bool handle_region(region_list_t *r);
+bool handle_region(region_list_t *rl);
 bool handle_constraint(const constraint_t *cst);
 bool handle_addr (uint32_t addr);
 bool handle_label(const char *label);
